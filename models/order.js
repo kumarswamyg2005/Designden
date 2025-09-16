@@ -36,6 +36,7 @@ const orderSchema = new mongoose.Schema({
       "pending",
       "assigned",
       "in_production",
+      "ready_for_review",
       "completed",
       "shipped",
       "delivered",

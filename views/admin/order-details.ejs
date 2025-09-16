@@ -87,20 +87,29 @@
 
           <div class="mb-4">
             <h5>Update Order Status</h5>
-            <form action="/admin/order/<%= order._id %>/update-status" method="POST" class="row g-2 align-items-end">
+            <form action="/admin/order/<%= order._id %>/update-status" method="POST" class="row g-2 align-items-end"
+              id="updateStatusForm" novalidate>
               <div class="col-md-6">
                 <select name="status" id="adminStatusSelect" class="form-select" required>
                   <option value="Pending" <%=order.status==='Pending' ? 'selected' : '' %>>Pending</option>
                   <option value="Assigned" <%=order.status==='Assigned' ? 'selected' : '' %>>Assigned</option>
-                  <option value="In Progress" <%=order.status==='In Progress' ? 'selected' : '' %>>In Progress</option>
+                  <option value="In Progress" <%=order.status==='In Progress' ? 'selected' : '' %>>In Progress
+                  </option>
                   <option value="In Production" <%=order.status==='In Production' ? 'selected' : '' %>>In Production
                   </option>
                   <option value="Completed" <%=order.status==='Completed' ? 'selected' : '' %>>Completed</option>
                   <option value="Cancelled" <%=order.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
                 </select>
+                <div class="invalid-feedback">
+                  Please select a status.
+                </div>
               </div>
               <div class="col-md-6">
-                <input type="text" name="note" class="form-control" placeholder="Optional note (visible in timeline)">
+                <input type="text" name="note" id="statusNote" class="form-control"
+                  placeholder="Optional note (visible in timeline)" maxlength="500">
+                <div class="invalid-feedback">
+                  Note must be less than 500 characters.
+                </div>
               </div>
               <div class="col-md-3 d-grid">
                 <button type="submit" class="btn btn-primary">Update Status</button>
@@ -111,9 +120,9 @@
           <% if (order.status==='Pending' ) { %>
             <div class="mb-4">
               <h5>Assign to Designer</h5>
-              <form action="/admin/assign-order/<%= order._id %>" method="POST">
+              <form action="/admin/assign-order/<%= order._id %>" method="POST" id="assignDesignerForm" novalidate>
                 <div class="mb-3">
-                  <select class="form-select" name="designerId" required>
+                  <select class="form-select" name="designerId" id="designerSelect" required>
                     <option value="" selected disabled>Choose a designer</option>
                     <% designers.filter(d=> d.email === 'tailor@designden.com').forEach(designer => { %>
                       <option value="<%= designer._id %>">
@@ -121,6 +130,9 @@
                       </option>
                       <% }) %>
                   </select>
+                  <div class="invalid-feedback">
+                    Please select a designer to assign the order.
+                  </div>
                 </div>
                 <div class="d-grid">
                   <button type="submit" class="btn btn-primary">Assign Order</button>
@@ -197,69 +209,166 @@
                 <div class="card-body">
                   <% if (order.timeline && order.timeline.length) { %>
                     <ul class="list-group list-group-flush">
-                      <% order.timeline.slice().reverse().forEach(ev=> { %>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                          <div>
-                            <strong>
-                              <%= ev.status %>
-                            </strong>
-                            <% if (ev.note) { %>
-                              <span class="text-muted"> - <%= ev.note %></span>
+                      <% order.timeline.slice().reverse().forEach(ev=> {
+                        const isProgressUpdate = ev.note && ev.note.includes('Progress Update:');
+                        const percentMatch = isProgressUpdate ? ev.note.match(/(\d+)% complete/) : null;
+                        const percentage = percentMatch ? percentMatch[1] : '0';
+                        %>
+                        <li class="list-group-item <%= isProgressUpdate ? 'bg-light' : '' %>">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                              <div class="d-flex align-items-center mb-1">
+                                <% if (isProgressUpdate) { %>
+                                  <% if (parseInt(percentage)>= 75) { %>
+                                    <span class="badge bg-success me-2">🎉 <%= percentage %>% Complete</span>
+                                    <% } else if (parseInt(percentage)>= 50) { %>
+                                      <span class="badge bg-info me-2">⚡ <%= percentage %>% Complete</span>
+                                      <% } else { %>
+                                        <span class="badge bg-primary me-2">🔨 <%= percentage %>% Complete</span>
+                                        <% } %>
+                                          <% } else { %>
+                                            <strong class="text-capitalize">
+                                              <%= ev.status.replace('_', ' ' ) %>
+                                            </strong>
+                                            <% } %>
+                                              <small class="text-muted ms-2">
+                                                <%= new Date(ev.at).toLocaleString() %>
+                                              </small>
+                              </div>
+                              <% if (ev.note) { %>
+                                <p class="mb-1 <%= isProgressUpdate ? 'text-dark fw-bold' : 'text-muted' %>">
+                                  <%= ev.note.replace('Progress Update: ', '') %>
+                                </p>
                               <% } %>
+                              <% if (isProgressUpdate) { %>
+                                <div class="progress mt-2" style="height: 8px;">
+                                  <div class="progress-bar <%= parseInt(percentage) >= 75 ? ' bg-success' :
+                                    parseInt(percentage)>= 50 ? 'bg-info' : 'bg-primary' %>"
+                                    role="progressbar"
+                                    style="width: <%= percentage %>%;"
+                                      aria-valuenow="<%= percentage %>"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100">
+                            </div>
                           </div>
-                          <small class="text-muted">
-                            <%= new Date(ev.at).toLocaleString() %>
-                          </small>
-                        </li>
-                        <% }) %>
-                    </ul>
-                    <% } else { %>
-                      <div class="alert alert-info">No timeline entries yet.</div>
-                      <% } %>
+                          <% } %>
                 </div>
               </div>
+              </li>
+              <% }) %>
+                </ul>
+                <% } else { %>
+                  <div class="alert alert-info">No timeline entries yet.</div>
+                  <% } %>
             </div>
           </div>
-          <h4>
-            <%= order.designId.name %>
-          </h4>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Fabric:</span>
-              <span>
-                <%= order.designId.fabric %>
-              </span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Color:</span>
-              <span>
-                <%= order.designId.color %>
-              </span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Pattern:</span>
-              <span>
-                <%= order.designId.pattern %>
-              </span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Size:</span>
-              <span>
-                <%= order.designId.size %>
-              </span>
-            </li>
-          </ul>
-          <% if (order.designId.additionalNotes) { %>
-            <div class="mt-3">
-              <h5>Additional Notes:</h5>
-              <p>
-                <%= order.designId.additionalNotes %>
-              </p>
-            </div>
-            <% } %>
         </div>
       </div>
+      <h4>
+        <%= order.designId.name %>
+      </h4>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Fabric:</span>
+          <span>
+            <%= order.designId.fabric %>
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Color:</span>
+          <span>
+            <%= order.designId.color %>
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Pattern:</span>
+          <span>
+            <%= order.designId.pattern %>
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Size:</span>
+          <span>
+            <%= order.designId.size %>
+          </span>
+        </li>
+      </ul>
+      <% if (order.designId.additionalNotes) { %>
+        <div class="mt-3">
+          <h5>Additional Notes:</h5>
+          <p>
+            <%= order.designId.additionalNotes %>
+          </p>
+        </div>
+        <% } %>
     </div>
   </div>
+  </div>
+  </div>
+
+  <script>
+    // Form validation for admin forms
+    (function () {
+      'use strict';
+
+      const updateStatusForm = document.getElementById('updateStatusForm');
+      const assignDesignerForm = document.getElementById('assignDesignerForm');
+
+      // Update Status Form Validation
+      if (updateStatusForm) {
+        const statusSelect = document.getElementById('adminStatusSelect');
+        const noteInput = document.getElementById('statusNote');
+
+        noteInput.addEventListener('input', function () {
+          if (this.value.length > 500) {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+          } else if (this.value.length > 0) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+          } else {
+            this.classList.remove('is-invalid');
+            this.classList.remove('is-valid');
+          }
+        });
+
+        updateStatusForm.addEventListener('submit', function (event) {
+          let isValid = true;
+
+          if (!statusSelect.value) {
+            statusSelect.classList.add('is-invalid');
+            isValid = false;
+          }
+
+          if (noteInput.value.length > 500) {
+            noteInput.classList.add('is-invalid');
+            isValid = false;
+          }
+
+          if (!isValid || !updateStatusForm.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          updateStatusForm.classList.add('was-validated');
+        }, false);
+      }
+
+      // Assign Designer Form Validation
+      if (assignDesignerForm) {
+        const designerSelect = document.getElementById('designerSelect');
+
+        assignDesignerForm.addEventListener('submit', function (event) {
+          if (!designerSelect.value) {
+            designerSelect.classList.add('is-invalid');
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          assignDesignerForm.classList.add('was-validated');
+        }, false);
+      }
+    })();
+  </script>
 
   <%- include('../partials/footer') %>

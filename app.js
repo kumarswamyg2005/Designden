@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const customerSession = session({
   secret: "designden_secret_key_12345",
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true, // Changed to true to allow flash messages without logged-in session
   cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
   name: "designden.sid",
 });

@@ -82,15 +82,36 @@
                   const rows = orders.map(o => {
                     const idShort = (o._id || '').toString().substring(0, 8) + '...'
                     const date = new Date(o.orderDate).toLocaleDateString()
-                    const statusClass = o.status === 'pending' ? 'bg-warning' : o.status === 'assigned' ? 'bg-info' : o.status === 'in_production' ? 'bg-primary' : (o.status === 'completed' || o.status === 'delivered') ? 'bg-success' : o.status === 'shipped' ? 'bg-info' : 'bg-danger'
+                    const statusClass = o.status === 'pending' ? 'bg-warning' :
+                      o.status === 'assigned' ? 'bg-info' :
+                        o.status === 'in_production' ? 'bg-primary' :
+                          (o.status === 'completed' || o.status === 'delivered') ? 'bg-success' :
+                            o.status === 'shipped' ? 'bg-info' :
+                              o.status === 'cancelled' ? 'bg-danger' :
+                                'bg-secondary'
+                    const statusText = o.status === 'cancelled' ? 'CANCELLED' : o.status.toUpperCase()
                     const designName = o.designId && o.designId.name ? o.designId.name : 'Custom Design'
                     const total = typeof o.totalPrice === 'number' ? `₹${o.totalPrice.toFixed(2)}` : '-'
-                    const feedbackBtn = (o.status === 'completed' || o.status === 'delivered') ? `<a href="/feedback/submit/${o._id}" class="btn btn-sm btn-outline-success">Leave Feedback</a>` : ''
+
+                    // Feedback button logic - show different text if feedback already given
+                    let feedbackBtn = '';
+                    if (o.status === 'completed' || o.status === 'delivered') {
+                      if (o.hasFeedback) {
+                        feedbackBtn = `<span class="btn btn-sm btn-success disabled" title="Feedback already submitted">
+                          <i class="fas fa-check-circle me-1"></i>Feedback Given
+                        </span>`;
+                      } else {
+                        feedbackBtn = `<a href="/feedback/submit/${o._id}" class="btn btn-sm btn-outline-success">
+                          <i class="fas fa-comment-dots me-1"></i>Leave Feedback
+                        </a>`;
+                      }
+                    }
+
                     return `<tr>
           <td>${idShort}</td>
           <td>${designName}</td>
           <td>${date}</td>
-          <td><span class="badge ${statusClass}">${o.status}</span></td>
+          <td><span class="badge ${statusClass}">${statusText}</span></td>
           <td>${total}</td>
           <td>
             <a href="/customer/order/${o._id}" class="btn btn-sm btn-outline-primary">View</a>

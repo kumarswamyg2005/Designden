@@ -27,13 +27,31 @@ router.get("/dashboard", isCustomer, async (req, res) => {
       })
       .sort({ orderDate: -1 });
 
+    // Get feedback information for all orders
+    const Feedback = require("../models/feedback");
+    const feedbackData = await Feedback.find({
+      customerId: req.session.user.id,
+    }).select("orderId");
+
+    // Create a Set of order IDs that have feedback
+    const ordersWithFeedback = new Set(
+      feedbackData.map((f) => f.orderId.toString())
+    );
+
+    // Add hasFeedback property to each order
+    const ordersWithFeedbackInfo = orders.map((order) => {
+      const orderObj = order.toObject();
+      orderObj.hasFeedback = ordersWithFeedback.has(order._id.toString());
+      return orderObj;
+    });
+
     // If AJAX request, return JSON (also include wishlist items)
     if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
       const wishlist = await Design.find({
         customerId: req.session.user.id,
         wishlist: true,
       }).sort({ createdAt: -1 });
-      return res.json({ orders, wishlist });
+      return res.json({ orders: ordersWithFeedbackInfo, wishlist });
     }
 
     const wishlist = await Design.find({
@@ -48,7 +66,7 @@ router.get("/dashboard", isCustomer, async (req, res) => {
     res.render("customer/dashboard", {
       title: "Customer Dashboard",
       user: req.session.user,
-      orders,
+      orders: ordersWithFeedbackInfo,
       orderSuccess,
       wishlist,
     });
@@ -119,6 +137,7 @@ router.post("/save-design", isCustomer, async (req, res) => {
       category,
       urgency,
       graphic,
+      price,
       _fabric_mirror,
       _color_mirror,
       _pattern_mirror,
@@ -128,6 +147,9 @@ router.post("/save-design", isCustomer, async (req, res) => {
     const fabric = req.body.fabric || _fabric_mirror || "Cotton";
     const color = req.body.color || _color_mirror || "White";
     const pattern = req.body.pattern || _pattern_mirror || "Solid";
+
+    // Parse price from form or use default
+    const designPrice = price ? parseInt(price) : 1200;
 
     const formAction = req.body.formAction || "save"; // Check which button was clicked
 
@@ -155,6 +177,7 @@ router.post("/save-design", isCustomer, async (req, res) => {
       size,
       additionalNotes,
       category, // Add category field
+      price: designPrice, // Use calculated price from form
       sustainabilityScore: await (async () => {
         try {
           const fab = await Fabric.findOne({ name: fabric });
@@ -171,14 +194,42 @@ router.post("/save-design", isCustomer, async (req, res) => {
 
     // If the "Add to Cart" button was clicked
     if (formAction === "addToCart") {
+      // Get or create a default fabric
+      const Fabric = require("../models/fabric");
+      let defaultFabric;
+      try {
+        defaultFabric = await Fabric.findOne({ name: fabric });
+        if (!defaultFabric) {
+          // Find any fabric as fallback
+          defaultFabric = await Fabric.findOne();
+        }
+        if (!defaultFabric) {
+          console.error("[save-design] No fabric found in database");
+          req.flash(
+            "error_msg",
+            "❌ Failed to add to cart: No fabric available"
+          );
+          return res.redirect("/customer/design-studio");
+        }
+      } catch (error) {
+        console.error("[save-design] Error finding fabric:", error);
+        req.flash("error_msg", "❌ Failed to add to cart");
+        return res.redirect("/customer/design-studio");
+      }
+
       // Create a customization from the design
       const customization = new Customization({
-        customerId: req.session.user.id,
-        fabricId: null,
+        userId: req.session.user.id,
+        fabricId: defaultFabric._id,
+        designId: design._id,
         designTemplateId: null,
-        customImage: null,
-        customText: design.additionalNotes,
-        price: design.price || 50,
+        productId: null, // This is a custom design, not a shop product
+        customImage: design.productImage,
+        customText:
+          design.additionalNotes || "Custom Design from Design Studio",
+        color: design.color,
+        size: design.size,
+        price: design.price || 1200,
       });
       await customization.save();
 
@@ -194,6 +245,7 @@ router.post("/save-design", isCustomer, async (req, res) => {
       }
       await cart.save();
 
+      req.flash("success_msg", "✅ Design added to cart successfully!");
       return res.redirect("/customer/cart");
     }
 
@@ -254,14 +306,39 @@ router.post("/add-to-cart-design", isCustomer, async (req, res) => {
 
     await design.save();
 
+    // Get or create a default fabric
+    const Fabric = require("../models/fabric");
+    let defaultFabric;
+    try {
+      defaultFabric = await Fabric.findOne({ name: fabric });
+      if (!defaultFabric) {
+        defaultFabric = await Fabric.findOne();
+      }
+      if (!defaultFabric) {
+        throw new Error("No fabric found");
+      }
+    } catch (error) {
+      console.error("[add-to-cart-design] Error finding fabric:", error);
+      return res.render("customer/design-studio", {
+        title: "Design Studio",
+        user: req.session.user,
+        error: "Failed to add design to cart: No fabric available",
+        formData: req.body,
+      });
+    }
+
     // Create a customization from the design
     const customization = new Customization({
-      customerId: req.session.user.id,
-      fabricId: null,
+      userId: req.session.user.id,
+      fabricId: defaultFabric._id,
+      designId: design._id,
       designTemplateId: null,
-      customImage: null,
-      customText: design.additionalNotes,
-      price: design.price || 50,
+      productId: null,
+      customImage: design.productImage,
+      customText: design.additionalNotes || "Custom Design",
+      color: design.color,
+      size: design.size,
+      price: design.price || 1200,
     });
     await customization.save();
 
@@ -300,7 +377,7 @@ router.get("/place-order/:designId", isCustomer, async (req, res) => {
 
     // Adjust price for urgency if provided
     let hintedUrgency = (req.query && req.query.urgency) || "standard";
-    const basePrice = design.price || 50;
+    const basePrice = design.price || 1200;
     const price =
       hintedUrgency === "express" ? Math.round(basePrice * 1.2) : basePrice;
 
@@ -359,7 +436,8 @@ router.post("/place-order", isCustomer, async (req, res) => {
     }
 
     // Calculate price using design price or provided base with urgency
-    const base = Number(basePrice) > 0 ? Number(basePrice) : design.price || 50;
+    const base =
+      Number(basePrice) > 0 ? Number(basePrice) : design.price || 1200;
     const unit = urgency === "express" ? Math.round(base * 1.2) : base;
     const totalPrice = unit * Number.parseInt(quantity);
 
@@ -499,6 +577,86 @@ router.get("/order/:orderId", isCustomer, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.redirect("/customer/dashboard");
+  }
+});
+
+// Cancel order
+router.post("/order/:orderId/cancel", isCustomer, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId).populate(
+      "customerId",
+      "username email"
+    );
+
+    // Verify order exists and belongs to customer
+    if (!order || order.customerId._id.toString() !== req.session.user.id) {
+      req.flash("error_msg", "❌ Order not found or unauthorized");
+      return res.redirect("/customer/dashboard");
+    }
+
+    // Only allow cancellation for orders that haven't been shipped or delivered
+    const cancellableStatuses = ["pending", "assigned", "in_production"];
+    if (!cancellableStatuses.includes(order.status)) {
+      req.flash(
+        "error_msg",
+        `❌ Cannot cancel order. Current status: ${order.status
+          .replace("_", " ")
+          .toUpperCase()}. Only pending, assigned, or in-production orders can be cancelled.`
+      );
+      return res.redirect(`/customer/order/${order._id}`);
+    }
+
+    // Update order status to cancelled
+    order.status = "cancelled";
+    order.timeline = order.timeline || [];
+    order.timeline.push({
+      status: "cancelled",
+      note: "Order cancelled by customer",
+      at: new Date(),
+    });
+    await order.save();
+
+    // Notify manager about cancellation
+    const Notification = require("../models/notification");
+    const User = require("../models/user");
+    const managers = await User.find({ role: "manager" });
+
+    for (const manager of managers) {
+      await Notification.create({
+        userId: manager._id,
+        title: "🚫 Order Cancelled",
+        message: `Order #${order._id.toString().slice(-6)} was cancelled by ${
+          order.customerId.username
+        }. Total: ₹${order.totalPrice.toFixed(2)}`,
+        meta: { orderId: order._id },
+      });
+    }
+
+    // Notify designer if assigned
+    if (order.designerId) {
+      await Notification.create({
+        userId: order.designerId,
+        title: "🚫 Order Cancelled",
+        message: `Order #${order._id
+          .toString()
+          .slice(-6)} you were working on has been cancelled by the customer.`,
+        meta: { orderId: order._id },
+      });
+    }
+
+    console.log(
+      `[ORDER-CANCEL] ✅ Order ${order._id} cancelled by customer ${order.customerId.username}`
+    );
+
+    req.flash(
+      "success_msg",
+      "✅ Order cancelled successfully. No charges will be applied."
+    );
+    res.redirect("/customer/dashboard");
+  } catch (error) {
+    console.error("Cancel order error:", error);
+    req.flash("error_msg", `❌ Failed to cancel order: ${error.message}`);
     res.redirect("/customer/dashboard");
   }
 });
@@ -683,7 +841,7 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
         customText: design.additionalNotes || "Custom Design",
         size: size || "M",
         color: color || "Default",
-        price: design.price || 50,
+        price: design.price || 1200,
       });
       await customization.save();
       finalCustomizationId = customization._id;
@@ -935,7 +1093,54 @@ router.get("/checkout", isCustomer, async (req, res) => {
 // Process checkout
 router.post("/process-checkout", isCustomer, async (req, res) => {
   try {
-    const { deliveryAddress } = req.body;
+    const { name, email, phone, deliveryAddress, city, state, pincode } =
+      req.body;
+
+    // Server-side validation
+    if (!name || name.trim().length < 3 || name.trim().length > 100) {
+      req.flash("error_msg", "Full name must be between 3 and 100 characters");
+      return res.redirect("/customer/checkout");
+    }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      req.flash("error_msg", "Please enter a valid email address");
+      return res.redirect("/customer/checkout");
+    }
+
+    if (!phone || !/^[0-9]{10}$/.test(phone)) {
+      req.flash("error_msg", "Please enter a valid 10-digit phone number");
+      return res.redirect("/customer/checkout");
+    }
+
+    if (
+      !deliveryAddress ||
+      deliveryAddress.trim().length < 10 ||
+      deliveryAddress.trim().length > 500
+    ) {
+      req.flash(
+        "error_msg",
+        "Delivery address must be between 10 and 500 characters"
+      );
+      return res.redirect("/customer/checkout");
+    }
+
+    if (!city || city.trim().length < 2 || city.trim().length > 50) {
+      req.flash("error_msg", "City name must be between 2 and 50 characters");
+      return res.redirect("/customer/checkout");
+    }
+
+    if (!state || state.trim().length < 2 || state.trim().length > 50) {
+      req.flash("error_msg", "State name must be between 2 and 50 characters");
+      return res.redirect("/customer/checkout");
+    }
+
+    if (!pincode || !/^[0-9]{6}$/.test(pincode)) {
+      req.flash("error_msg", "Please enter a valid 6-digit pincode");
+      return res.redirect("/customer/checkout");
+    }
+
+    // Combine full delivery address
+    const fullDeliveryAddress = `${deliveryAddress.trim()}, ${city.trim()}, ${state.trim()} - ${pincode}`;
 
     // Get user's cart with design info to check for wishlist items
     const cart = await Cart.findOne({ userId: req.session.user.id }).populate({
@@ -960,7 +1165,7 @@ router.post("/process-checkout", isCustomer, async (req, res) => {
 
     for (const item of cartItems) {
       // Calculate price using customization price
-      const basePrice = item.customizationId.price || 50;
+      const basePrice = item.customizationId.price || 1200;
       const itemTotal = basePrice * item.quantity;
       orderTotalPrice += itemTotal;
 
@@ -998,19 +1203,19 @@ router.post("/process-checkout", isCustomer, async (req, res) => {
       !isShopOrder
     );
 
-    // Auto-approve shop orders to "in_production" (no designer assignment needed)
-    // Custom orders stay "pending" (require manager to assign designer)
+    // Shop orders (ready-made) go to "in_production" - manager will pack them
+    // Custom design orders stay "pending" - require manager to assign to designer first
     const orderStatus = isShopOrder ? "in_production" : "pending";
 
     // Create new order with all items
     const order = new Order({
       customerId: req.session.user.id,
       items: orderItems,
-      deliveryAddress,
+      deliveryAddress: fullDeliveryAddress,
       status: orderStatus,
       paymentStatus: "unpaid", // Correct enum value
       totalPrice: orderTotalPrice, // Required field
-      productionStartedAt: isShopOrder ? new Date() : undefined, // Auto-start production for shop orders
+      productionStartedAt: isShopOrder ? new Date() : undefined, // Shop orders start in production immediately
     });
 
     // Add timeline for shop orders
@@ -1018,7 +1223,7 @@ router.post("/process-checkout", isCustomer, async (req, res) => {
       order.timeline = [
         {
           status: "in_production",
-          note: "Shop order auto-approved and moved to production",
+          note: "Ready-made shop order - awaiting packing by manager",
           at: new Date(),
         },
       ];
@@ -1032,135 +1237,11 @@ router.post("/process-checkout", isCustomer, async (req, res) => {
       orderStatus
     );
 
-    // Auto-progress shop orders through statuses (ready-made products only)
-    if (isShopOrder) {
-      console.log(
-        `[SHOP-AUTO-PROGRESS] Order ${order._id} will auto-progress through statuses`
-      );
-
-      // Stage 1: Packing (completed) - after 3 seconds
-      setTimeout(async () => {
-        try {
-          const orderToUpdate = await Order.findById(order._id).populate(
-            "customerId",
-            "username email"
-          );
-          if (orderToUpdate && orderToUpdate.status === "in_production") {
-            orderToUpdate.status = "completed";
-            orderToUpdate.productionCompletedAt = new Date();
-            orderToUpdate.timeline = orderToUpdate.timeline || [];
-            orderToUpdate.timeline.push({
-              status: "completed",
-              note: "Shop order packing completed",
-              at: new Date(),
-            });
-            await orderToUpdate.save();
-
-            const Notification = require("../models/notification");
-            await Notification.create({
-              userId: orderToUpdate.customerId._id,
-              title: "📦 Order Packing Complete!",
-              message: `Your order #${orderToUpdate._id
-                .toString()
-                .slice(-6)} has been packed and is ready for shipping.`,
-              meta: { orderId: orderToUpdate._id },
-            });
-
-            console.log(
-              `[SHOP-AUTO-PROGRESS] ✅ Order ${orderToUpdate._id} → COMPLETED (packed)`
-            );
-          }
-        } catch (error) {
-          console.error(
-            `[SHOP-AUTO-PROGRESS] Error marking order as completed:`,
-            error
-          );
-        }
-      }, 3000); // 3 seconds
-
-      // Stage 2: Shipped - after 6 seconds (3 + 3)
-      setTimeout(async () => {
-        try {
-          const orderToUpdate = await Order.findById(order._id).populate(
-            "customerId",
-            "username email"
-          );
-          if (orderToUpdate && orderToUpdate.status === "completed") {
-            orderToUpdate.status = "shipped";
-            orderToUpdate.shippedAt = new Date();
-            orderToUpdate.timeline = orderToUpdate.timeline || [];
-            orderToUpdate.timeline.push({
-              status: "shipped",
-              note: "Shop order shipped for delivery",
-              at: new Date(),
-            });
-            await orderToUpdate.save();
-
-            const Notification = require("../models/notification");
-            await Notification.create({
-              userId: orderToUpdate.customerId._id,
-              title: "🚚 Order Shipped!",
-              message: `Your order #${orderToUpdate._id
-                .toString()
-                .slice(-6)} is on its way to you!`,
-              meta: { orderId: orderToUpdate._id },
-            });
-
-            console.log(
-              `[SHOP-AUTO-PROGRESS] ✅ Order ${orderToUpdate._id} → SHIPPED`
-            );
-          }
-        } catch (error) {
-          console.error(
-            `[SHOP-AUTO-PROGRESS] Error marking order as shipped:`,
-            error
-          );
-        }
-      }, 6000); // 6 seconds total
-
-      // Stage 3: Delivered - after 9 seconds (3 + 3 + 3)
-      setTimeout(async () => {
-        try {
-          const orderToUpdate = await Order.findById(order._id).populate(
-            "customerId",
-            "username email"
-          );
-          if (orderToUpdate && orderToUpdate.status === "shipped") {
-            orderToUpdate.status = "delivered";
-            orderToUpdate.deliveredAt = new Date();
-            orderToUpdate.paymentStatus = "paid"; // Mark as paid when delivered
-            orderToUpdate.timeline = orderToUpdate.timeline || [];
-            orderToUpdate.timeline.push({
-              status: "delivered",
-              note: "Shop order delivered successfully - Payment confirmed",
-              at: new Date(),
-            });
-            await orderToUpdate.save();
-
-            const Notification = require("../models/notification");
-            await Notification.create({
-              userId: orderToUpdate.customerId._id,
-              title: "✅ Order Delivered!",
-              message: `Your order #${orderToUpdate._id
-                .toString()
-                .slice(
-                  -6
-                )} has been delivered successfully! Enjoy your purchase!`,
-              meta: { orderId: orderToUpdate._id },
-            });
-
-            console.log(
-              `[SHOP-AUTO-PROGRESS] ✅ Order ${orderToUpdate._id} → DELIVERED (complete)`
-            );
-          }
-        } catch (error) {
-          console.error(
-            `[SHOP-AUTO-PROGRESS] Error marking order as delivered:`,
-            error
-          );
-        }
-      }, 9000); // 9 seconds total
-    }
+    // Manual status management: Orders will stay in 'in_production' until manager manually updates status
+    // Manager can progress orders through: in_production → completed (packing) → shipped → delivered
+    console.log(
+      `[MANUAL-WORKFLOW] Order ${order._id} created with status 'in_production'. Manager will manually update status.`
+    );
 
     // Remove wishlist items that were ordered
     const wishlistDesignIds = [];

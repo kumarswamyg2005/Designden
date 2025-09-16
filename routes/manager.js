@@ -43,14 +43,24 @@ router.get("/", isManager, async (req, res) => {
       .sort({ orderDate: -1 });
 
     // Calculate order statistics
-    const pendingOrders = allOrders.filter((o) => o.status === "pending");
+    // Only show recent pending orders (last 30 days) to avoid showing old/stale orders
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const pendingOrders = allOrders.filter(
+      (o) => o.status === "pending" && new Date(o.orderDate) >= thirtyDaysAgo
+    );
     const inProductionOrders = allOrders.filter(
       (o) => o.status === "in_production"
+    );
+    const readyForReviewOrders = allOrders.filter(
+      (o) => o.status === "ready_for_review"
     );
     const completedOrders = allOrders.filter(
       (o) => o.status === "completed" || o.status === "delivered"
     );
     const shippedOrders = allOrders.filter((o) => o.status === "shipped");
+    const cancelledOrders = allOrders.filter((o) => o.status === "cancelled");
 
     // Fetch designers for assignment
     const designers = await User.find({ role: "designer" }).select(
@@ -88,8 +98,10 @@ router.get("/", isManager, async (req, res) => {
       orders: allOrders,
       pendingOrders,
       inProductionOrders,
+      readyForReviewOrders,
       completedOrders,
       shippedOrders,
+      cancelledOrders,
       designers,
       designerStats,
       products,
@@ -98,8 +110,10 @@ router.get("/", isManager, async (req, res) => {
         totalOrders: allOrders.length,
         pendingCount: pendingOrders.length,
         inProductionCount: inProductionOrders.length,
+        readyForReviewCount: readyForReviewOrders.length,
         completedCount: completedOrders.length,
         shippedCount: shippedOrders.length,
+        cancelledCount: cancelledOrders.length,
         totalProducts: products.length,
         lowStockCount: lowStockProducts.length,
       },
@@ -112,8 +126,10 @@ router.get("/", isManager, async (req, res) => {
       orders: [],
       pendingOrders: [],
       inProductionOrders: [],
+      readyForReviewOrders: [],
       completedOrders: [],
       shippedOrders: [],
+      cancelledOrders: [],
       designers: [],
       designerStats: [],
       products: [],
@@ -323,5 +339,196 @@ router.post(
     }
   }
 );
+
+// ============ MANUAL ORDER STATUS MANAGEMENT (Amazon-style workflow) ============
+
+// Mark order as COMPLETED (Packing done)
+router.post("/orders/:orderId/mark-completed", isManager, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId).populate(
+      "customerId",
+      "username email"
+    );
+
+    if (!order) {
+      req.flash("error_msg", "❌ Order not found");
+      return res
+        .status(404)
+        .json({ error: "Order not found", redirect: "/manager" });
+    }
+
+    // Only allow progression from in_production OR ready_for_review
+    if (
+      order.status !== "in_production" &&
+      order.status !== "ready_for_review"
+    ) {
+      req.flash(
+        "error_msg",
+        `❌ Cannot mark as completed. Order status is: ${order.status}`
+      );
+      return res.status(400).json({
+        error: `Order must be in production or ready for review to mark as completed. Current status: ${order.status}`,
+        redirect: "/manager",
+      });
+    }
+
+    order.status = "completed";
+    order.productionCompletedAt = new Date();
+    order.timeline = order.timeline || [];
+    order.timeline.push({
+      status: "completed",
+      note: "Order packing completed by manager",
+      at: new Date(),
+    });
+    await order.save();
+
+    // Notify customer
+    await Notification.create({
+      userId: order.customerId._id,
+      title: "📦 Order Packing Complete!",
+      message: `Your order #${order._id
+        .toString()
+        .slice(-6)} has been packed and is ready for shipping.`,
+      meta: { orderId: order._id },
+    });
+
+    console.log(
+      `[MANUAL-WORKFLOW] ✅ Order ${order._id} → COMPLETED (packed by manager)`
+    );
+
+    req.flash("success_msg", "✅ Order marked as COMPLETED (Packing done)!");
+    res.json({ ok: true, order, redirect: "/manager" });
+  } catch (e) {
+    console.error("Mark completed error:", e);
+    req.flash("error_msg", `❌ Failed to mark as completed: ${e.message}`);
+    res.status(500).json({ error: e.message, redirect: "/manager" });
+  }
+});
+
+// Mark order as SHIPPED (Out for delivery)
+router.post("/orders/:orderId/mark-shipped", isManager, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId).populate(
+      "customerId",
+      "username email"
+    );
+
+    if (!order) {
+      req.flash("error_msg", "❌ Order not found");
+      return res
+        .status(404)
+        .json({ error: "Order not found", redirect: "/manager" });
+    }
+
+    // Only allow progression from completed
+    if (order.status !== "completed") {
+      req.flash(
+        "error_msg",
+        `❌ Cannot ship. Order must be packed first. Current status: ${order.status}`
+      );
+      return res.status(400).json({
+        error: `Order must be completed (packed) before shipping. Current status: ${order.status}`,
+        redirect: "/manager",
+      });
+    }
+
+    order.status = "shipped";
+    order.shippedAt = new Date();
+    order.timeline = order.timeline || [];
+    order.timeline.push({
+      status: "shipped",
+      note: "Order shipped - Out for delivery",
+      at: new Date(),
+    });
+    await order.save();
+
+    // Notify customer
+    await Notification.create({
+      userId: order.customerId._id,
+      title: "🚚 Order Shipped!",
+      message: `Your order #${order._id
+        .toString()
+        .slice(-6)} is out for delivery and on its way to you!`,
+      meta: { orderId: order._id },
+    });
+
+    console.log(
+      `[MANUAL-WORKFLOW] ✅ Order ${order._id} → SHIPPED (out for delivery)`
+    );
+
+    req.flash("success_msg", "✅ Order marked as SHIPPED (Out for delivery)!");
+    res.json({ ok: true, order, redirect: "/manager" });
+  } catch (e) {
+    console.error("Mark shipped error:", e);
+    req.flash("error_msg", `❌ Failed to mark as shipped: ${e.message}`);
+    res.status(500).json({ error: e.message, redirect: "/manager" });
+  }
+});
+
+// Mark order as DELIVERED (Final step)
+router.post("/orders/:orderId/mark-delivered", isManager, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId).populate(
+      "customerId",
+      "username email"
+    );
+
+    if (!order) {
+      req.flash("error_msg", "❌ Order not found");
+      return res
+        .status(404)
+        .json({ error: "Order not found", redirect: "/manager" });
+    }
+
+    // Only allow progression from shipped
+    if (order.status !== "shipped") {
+      req.flash(
+        "error_msg",
+        `❌ Cannot deliver. Order must be shipped first. Current status: ${order.status}`
+      );
+      return res.status(400).json({
+        error: `Order must be shipped before delivery. Current status: ${order.status}`,
+        redirect: "/manager",
+      });
+    }
+
+    order.status = "delivered";
+    order.deliveredAt = new Date();
+    order.paymentStatus = "paid"; // Mark as paid when delivered (COD)
+    order.timeline = order.timeline || [];
+    order.timeline.push({
+      status: "delivered",
+      note: "Order delivered successfully - Payment confirmed (COD)",
+      at: new Date(),
+    });
+    await order.save();
+
+    // Notify customer
+    await Notification.create({
+      userId: order.customerId._id,
+      title: "✅ Order Delivered!",
+      message: `Your order #${order._id
+        .toString()
+        .slice(
+          -6
+        )} has been delivered successfully! Thank you for shopping with us!`,
+      meta: { orderId: order._id },
+    });
+
+    console.log(
+      `[MANUAL-WORKFLOW] ✅ Order ${order._id} → DELIVERED (complete & paid)`
+    );
+
+    req.flash(
+      "success_msg",
+      "✅ Order marked as DELIVERED! Payment confirmed."
+    );
+    res.json({ ok: true, order, redirect: "/manager" });
+  } catch (e) {
+    console.error("Mark delivered error:", e);
+    req.flash("error_msg", `❌ Failed to mark as delivered: ${e.message}`);
+    res.status(500).json({ error: e.message, redirect: "/manager" });
+  }
+});
 
 module.exports = router;

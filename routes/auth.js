@@ -13,14 +13,39 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password, contactNumber } = req.body;
 
+    // Validation checks
+    if (
+      !username ||
+      username.trim().length < 3 ||
+      username.trim().length > 50
+    ) {
+      req.flash("error_msg", "Username must be between 3 and 50 characters");
+      return res.redirect("/signup");
+    }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      req.flash("error_msg", "Please enter a valid email address");
+      return res.redirect("/signup");
+    }
+
+    if (!password || password.length < 6) {
+      req.flash("error_msg", "Password must be at least 6 characters long");
+      return res.redirect("/signup");
+    }
+
+    if (!contactNumber || !/^[0-9]{10}$/.test(contactNumber)) {
+      req.flash("error_msg", "Please enter a valid 10-digit phone number");
+      return res.redirect("/signup");
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.render("signup", {
-        title: "Sign Up",
-        error: "Email already in use",
-        formData: req.body,
-      });
+      req.flash(
+        "error_msg",
+        "Email already in use. Please use a different email or login."
+      );
+      return res.redirect("/signup");
     }
 
     // Create new user - ONLY customers can signup
@@ -83,11 +108,8 @@ router.post("/signup", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.render("signup", {
-      title: "Sign Up",
-      error: "An error occurred during signup",
-      formData: req.body,
-    });
+    req.flash("error_msg", "An error occurred during signup: " + error.message);
+    res.redirect("/signup");
   }
 });
 
@@ -103,6 +125,10 @@ router.get("/login", (req, res) => {
       return res.redirect("/admin/dashboard");
     return res.redirect("/");
   }
+
+  // Debug: Log without reading flash (reading clears them!)
+  console.log("GET /login - Rendering login page");
+
   res.render("login", { title: "Login" });
 });
 
@@ -111,6 +137,22 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("Login attempt with email:", email);
+
+    // Validation checks
+    if (!email || email.trim().length === 0) {
+      req.flash("error_msg", "Email is required");
+      return res.redirect("/login");
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      req.flash("error_msg", "Please enter a valid email address");
+      return res.redirect("/login");
+    }
+
+    if (!password || password.length < 6) {
+      req.flash("error_msg", "Password must be at least 6 characters long");
+      return res.redirect("/login");
+    }
 
     // Find user by email or username (more flexible)
     const user = await User.findOne({
@@ -129,10 +171,12 @@ router.post("/login", async (req, res) => {
     // Check if user exists and password matches
     if (!user || user.password !== password) {
       console.log("Login failed: Invalid credentials");
-      return res.render("login", {
-        title: "Login",
-        error: "Invalid email or password",
-      });
+      req.flash(
+        "error_msg",
+        "Invalid email or password. Please check your credentials and try again."
+      );
+      console.log("Flash message set for error_msg"); // Debug without reading flash
+      return res.redirect("/login");
     }
 
     // Set user in session with proper session saving (base customer)
@@ -175,10 +219,8 @@ router.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error("Login error:", error);
-    res.render("login", {
-      title: "Login",
-      error: "An error occurred during login: " + error.message,
-    });
+    req.flash("error_msg", "An error occurred during login: " + error.message);
+    res.redirect("/login");
   }
 });
 

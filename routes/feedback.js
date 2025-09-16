@@ -64,6 +64,21 @@ router.post("/submit", isLoggedIn, async (req, res) => {
   try {
     const { orderId, rating, comments } = req.body;
 
+    // Server-side validation
+    if (!rating || !["1", "2", "3", "4", "5"].includes(rating.toString())) {
+      req.flash("error_msg", "Please select a valid rating (1-5 stars)");
+      return res.redirect(`/feedback/submit/${orderId}`);
+    }
+
+    if (
+      !comments ||
+      comments.trim().length < 10 ||
+      comments.trim().length > 1000
+    ) {
+      req.flash("error_msg", "Comments must be between 10 and 1000 characters");
+      return res.redirect(`/feedback/submit/${orderId}`);
+    }
+
     const order = await Order.findById(orderId);
 
     if (
@@ -71,6 +86,20 @@ router.post("/submit", isLoggedIn, async (req, res) => {
       order.customerId.toString() !== req.session.user.id ||
       (order.status !== "completed" && order.status !== "delivered")
     ) {
+      req.flash(
+        "error_msg",
+        "Invalid order or order not eligible for feedback"
+      );
+      return res.redirect("/customer/dashboard");
+    }
+
+    // Check if feedback already exists
+    const existingFeedback = await Feedback.findOne({ orderId });
+    if (existingFeedback) {
+      req.flash(
+        "info_msg",
+        "You have already submitted feedback for this order"
+      );
       return res.redirect("/customer/dashboard");
     }
 
@@ -78,8 +107,8 @@ router.post("/submit", isLoggedIn, async (req, res) => {
     const feedback = new Feedback({
       orderId,
       customerId: req.session.user.id,
-      rating,
-      comments,
+      rating: parseInt(rating),
+      comments: comments.trim(),
     });
 
     await feedback.save();

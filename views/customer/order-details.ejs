@@ -36,13 +36,17 @@
                   <span>Status:</span>
                   <span class="badge <%= 
                   order.status === 'pending' ? 'bg-warning' : 
+                  order.status === 'assigned' ? 'bg-secondary' : 
                   order.status === 'in_production' ? 'bg-primary' : 
-                  order.status === 'completed' ? 'bg-success' : 
+                  order.status === 'ready_for_review' ? 'bg-success' : 
+                  order.status === 'completed' ? 'bg-warning text-dark' : 
                   order.status === 'shipped' ? 'bg-info' :
                   order.status === 'delivered' ? 'bg-success' :
-                  'bg-danger' 
+                  order.status === 'cancelled' ? 'bg-danger' :
+                  'bg-dark' 
                 %>">
-                    <%= order.status.replace('_', ' ' ).toUpperCase() %>
+                    <%= order.status==='ready_for_review' ? 'QUALITY REVIEW' : order.status==='cancelled' ? 'CANCELLED'
+                      : order.status.replace('_', ' ' ).toUpperCase() %>
                   </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
@@ -234,11 +238,62 @@
             </div>
           </div>
 
-          <% if (order.status==='delivered' || order.status==='completed' ) { %>
-            <div class="d-grid">
-              <a href="/feedback/submit/<%= order._id %>" class="btn btn-success">Leave Feedback</a>
+          <!-- Detailed Progress Updates from Designer -->
+          <% if (order.timeline && order.timeline.length> 0) {
+            // Filter only progress updates
+            const progressUpdates = order.timeline.filter(t => t.note && t.note.includes('Progress Update:'));
+            if (progressUpdates.length > 0) { %>
+            <div class="mb-4">
+              <h5 class="mb-3">
+                <i class="fas fa-tasks me-2"></i>Designer Progress Updates
+              </h5>
+              <div class="list-group">
+                <% progressUpdates.reverse().forEach((update, index)=> {
+                  // Extract percentage from note
+                  const percentMatch = update.note.match(/(\d+)% complete/);
+                  const percentage = percentMatch ? percentMatch[1] : '0';
+                  const cleanNote = update.note.replace('Progress Update: ', '').replace(/\(\d+% complete\)/,
+                  '').trim();
+                  %>
+                  <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                      <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                          <% if (parseInt(percentage)>= 75) { %>
+                            <span class="badge bg-success me-2">🎉 <%= percentage %>% Complete</span>
+                            <% } else if (parseInt(percentage)>= 50) { %>
+                              <span class="badge bg-info me-2">⚡ <%= percentage %>% Complete</span>
+                              <% } else { %>
+                                <span class="badge bg-primary me-2">🔨 <%= percentage %>% Complete</span>
+                                <% } %>
+                                  <small class="text-muted">
+                                    <%= new Date(update.at).toLocaleString() %>
+                                  </small>
+                        </div>
+                        <p class="mb-1">
+                          <%= cleanNote %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 8px;">
+                      <div
+                        class="progress-bar <%= parseInt(percentage) >= 75 ? 'bg-success' : parseInt(percentage) >= 50 ? 'bg-info' : 'bg-primary' %>"
+                        role="progressbar" style="width: <%= percentage %>%;" aria-valuenow="<%= percentage %>"
+                        aria-valuemin="0" aria-valuemax="100">
+                      </div>
+                    </div>
+                  </div>
+                  <% }); %>
+              </div>
             </div>
             <% } %>
+              <% } %>
+
+                <% if (order.status==='delivered' || order.status==='completed' ) { %>
+                  <div class="d-grid">
+                    <a href="/feedback/submit/<%= order._id %>" class="btn btn-success">Leave Feedback</a>
+                  </div>
+                  <% } %>
         </div>
       </div>
     </div>
@@ -275,9 +330,10 @@
             order.status === 'completed' ? 'bg-success' : 
             order.status === 'shipped' ? 'bg-info' :
             order.status === 'delivered' ? 'bg-success' :
-            'bg-danger' 
+            order.status === 'cancelled' ? 'bg-danger' :
+            'bg-dark' 
           %> fs-6">
-              <%= order.status.replace('_', ' ' ).toUpperCase() %>
+              <%= order.status==='cancelled' ? 'CANCELLED' : order.status.replace('_', ' ' ).toUpperCase() %>
             </span>
           </div>
         </div>
@@ -290,15 +346,32 @@
         </div>
         <div class="card-body">
           <div class="d-grid gap-2">
-            <% if (order.status==='pending' ) { %>
-              <button class="btn btn-outline-danger btn-sm"
-                onclick="if(confirm('Cancel this order?')) window.location.href='/customer/order/<%= order._id %>/cancel'">
-                <i class="fas fa-times"></i> Cancel Order
-              </button>
-              <% } %>
-                <a href="/customer/dashboard" class="btn btn-outline-secondary btn-sm">
-                  <i class="fas fa-arrow-left"></i> Back to Orders
-                </a>
+            <% // Allow cancellation for pending, assigned, or in_production orders const
+              canCancel=['pending', 'assigned' , 'in_production' ].includes(order.status); %>
+              <% if (canCancel) { %>
+                <form action="/customer/order/<%= order._id %>/cancel" method="POST"
+                  onsubmit="return confirm('⚠️ Are you sure you want to cancel this order?\n\nThis action cannot be undone.');">
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="fas fa-times-circle"></i> Cancel Order
+                  </button>
+                </form>
+                <small class="text-muted text-center">
+                  <i class="fas fa-info-circle"></i> You can cancel before the order is shipped
+                </small>
+                <% } else if (order.status==='cancelled' ) { %>
+                  <div class="alert alert-danger mb-0">
+                    <i class="fas fa-ban me-2"></i>
+                    <strong>This order has been cancelled</strong>
+                  </div>
+                  <% } else { %>
+                    <div class="alert alert-info mb-0">
+                      <i class="fas fa-info-circle me-2"></i>
+                      <small>Order cannot be cancelled at this stage</small>
+                    </div>
+                    <% } %>
+                      <a href="/customer/dashboard" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to Orders
+                      </a>
           </div>
         </div>
       </div>

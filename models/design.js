@@ -45,7 +45,7 @@ const designSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    default: 50,
+    default: 1200,
     min: 0,
   },
   sustainabilityScore: {

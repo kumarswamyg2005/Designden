@@ -905,3 +905,393 @@ body:not(.dark-theme) footer.bg-dark {
 .dark-theme .form-text {
   color: var(--text-muted);
 }
+
+/* ============================================================
+   MANAGER & DESIGNER DASHBOARD DARK THEME FIXES
+   ============================================================ */
+
+/* Fix card backgrounds in dark theme */
+.dark-theme .card {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Ensure card headers are visible */
+.dark-theme .card-header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Fix white background cards to have proper dark theme */
+.dark-theme .card-header.bg-white,
+.dark-theme .bg-white.card-header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text) !important;
+}
+
+/* Ensure all card text is readable */
+.dark-theme .card-body,
+.dark-theme .card-body h1,
+.dark-theme .card-body h2,
+.dark-theme .card-body h3,
+.dark-theme .card-body h4,
+.dark-theme .card-body h5,
+.dark-theme .card-body h6 {
+  color: var(--text) !important;
+}
+
+/* Fix colored header cards (success, primary, info, etc.) */
+.dark-theme .card.bg-success,
+.dark-theme .card.bg-primary,
+.dark-theme .card.bg-info,
+.dark-theme .card.bg-warning,
+.dark-theme .card.bg-danger {
+  color: #ffffff !important;
+}
+
+.dark-theme .card.bg-success .card-body,
+.dark-theme .card.bg-primary .card-body,
+.dark-theme .card.bg-info .card-body,
+.dark-theme .card.bg-warning .card-body,
+.dark-theme .card.bg-danger .card-body {
+  color: #ffffff !important;
+}
+
+/* Fix text-white to remain white */
+.dark-theme .text-white,
+.dark-theme .text-white * {
+  color: #ffffff !important;
+}
+
+/* Fix text-muted in dark theme */
+.dark-theme .text-muted,
+.dark-theme small.text-muted {
+  color: #9aa9bb !important;
+}
+
+/* Fix tables in dark theme */
+.dark-theme .table {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+
+.dark-theme .table thead th {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark-theme .table tbody td {
+  color: var(--text) !important;
+  border-color: rgba(255, 255, 255, 0.04) !important;
+  background: transparent !important;
+}
+
+.dark-theme .table tbody tr {
+  background: transparent !important;
+}
+
+.dark-theme .table tbody tr:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark-theme .table tbody tr:nth-child(even) {
+  background: transparent !important;
+}
+
+.dark-theme .table-hover tbody tr:hover,
+.dark-theme .table-hover tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text) !important;
+}
+
+/* Force all table content to be visible */
+.dark-theme .table tbody td *,
+.dark-theme .table tbody td strong,
+.dark-theme .table tbody td small,
+.dark-theme .table tbody td span {
+  color: inherit !important;
+}
+
+.dark-theme .table tbody td small.text-muted {
+  color: #9aa9bb !important;
+}
+
+/* Fix badges in dark theme */
+.dark-theme .badge {
+  color: #ffffff;
+}
+
+.dark-theme .badge.bg-warning {
+  background: #f59e0b !important;
+  color: #111827 !important;
+}
+
+.dark-theme .badge.bg-info {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .badge.bg-success {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .badge.bg-danger {
+  background: #e04b4b !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .badge.bg-secondary {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #e6eef8 !important;
+}
+
+/* Fix buttons in dark theme */
+.dark-theme .btn-primary {
+  background: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .btn-success {
+  background: #16a34a !important;
+  border-color: #0e7a34 !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .btn-danger {
+  background: #e04b4b !important;
+  border-color: #b43636 !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .btn-warning {
+  background: #f59e0b !important;
+  border-color: #d97706 !important;
+  color: #111827 !important;
+}
+
+.dark-theme .btn-info {
+  background: #3b82f6 !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .btn-outline-primary {
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+  background: transparent;
+}
+
+.dark-theme .btn-outline-primary:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #93c5fd !important;
+}
+
+.dark-theme .btn-outline-secondary {
+  color: var(--text) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: transparent;
+}
+
+.dark-theme .btn-outline-secondary:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* Fix modal backgrounds */
+.dark-theme .modal-content {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .modal-header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .modal-header.bg-success,
+.dark-theme .modal-header.bg-primary,
+.dark-theme .modal-header.bg-info {
+  color: #ffffff !important;
+}
+
+.dark-theme .modal-body {
+  color: var(--text) !important;
+}
+
+.dark-theme .modal-footer {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fix form elements in dark theme */
+.dark-theme .form-control,
+.dark-theme .form-select {
+  background: #0b1220 !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark-theme .form-control:focus,
+.dark-theme .form-select:focus {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.dark-theme .form-control::placeholder {
+  color: rgba(230, 238, 248, 0.4) !important;
+}
+
+.dark-theme .form-label {
+  color: var(--text) !important;
+}
+
+/* Fix bg-light sections in dark theme */
+.dark-theme .bg-light,
+.dark-theme .card.bg-light {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text) !important;
+}
+
+/* Fix small text and icons */
+.dark-theme small {
+  color: var(--text-muted) !important;
+}
+
+.dark-theme i,
+.dark-theme .fas,
+.dark-theme .far {
+  color: inherit;
+}
+
+/* Fix border colors */
+.dark-theme .border,
+.dark-theme .border-start,
+.dark-theme .border-end,
+.dark-theme .border-top,
+.dark-theme .border-bottom {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ensure gradient backgrounds work correctly */
+.dark-theme .bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Fix alert messages */
+.dark-theme .alert {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .alert-success {
+  background: rgba(22, 163, 74, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(22, 163, 74, 0.3);
+}
+
+.dark-theme .alert-danger {
+  background: rgba(224, 75, 75, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(224, 75, 75, 0.3);
+}
+
+.dark-theme .alert-warning {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.dark-theme .alert-info {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Fix progress bars */
+.dark-theme .progress {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Fix dropdown menus */
+.dark-theme .dropdown-menu {
+  background: #0f1724 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .dropdown-item {
+  color: var(--text) !important;
+}
+
+.dark-theme .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* Fix list groups */
+.dark-theme .list-group-item {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-theme .list-group-item:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Fix pagination */
+.dark-theme .pagination .page-link {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .pagination .page-link:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .pagination .page-item.active .page-link {
+  background: #2563eb !important;
+  border-color: #2563eb;
+  color: #ffffff !important;
+}
+
+/* Ensure hr elements are visible */
+.dark-theme hr {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  opacity: 1;
+}
+
+/* Fix any remaining white text on white backgrounds */
+.dark-theme .card.bg-white .card-body {
+  background: #0f1724 !important;
+  color: var(--text) !important;
+}
+
+/* Fix table-responsive container */
+.dark-theme .table-responsive {
+  background: transparent !important;
+}
+
+/* Ensure table doesn't inherit white backgrounds */
+.dark-theme .card .table-responsive,
+.dark-theme .card-body .table-responsive {
+  background: transparent !important;
+}
+
+.dark-theme .card .table,
+.dark-theme .card-body .table {
+  background: transparent !important;
+  color: var(--text) !important;
+}

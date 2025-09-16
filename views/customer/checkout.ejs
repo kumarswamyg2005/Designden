@@ -20,40 +20,66 @@
           <h3>Shipping Information</h3>
         </div>
         <div class="card-body">
-          <form action="/customer/process-checkout" method="POST" id="checkoutForm">
+          <form action="/customer/process-checkout" method="POST" id="checkoutForm" novalidate>
             <div class="mb-3">
-              <label for="name" class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="name" name="name" value="<%= user.username %>" required>
+              <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= user.username %>" required
+                minlength="3" maxlength="100">
+              <div class="invalid-feedback">
+                Full name is required (3-100 characters).
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
               <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="phone" class="form-label">Phone Number</label>
-              <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.contactNumber %>" required>
+              <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.contactNumber %>" required
+                pattern="[0-9]{10}" maxlength="10">
+              <div class="invalid-feedback">
+                Please enter a valid 10-digit phone number.
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="deliveryAddress" class="form-label">Delivery Address</label>
-              <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" required></textarea>
+              <label for="deliveryAddress" class="form-label">Delivery Address <span
+                  class="text-danger">*</span></label>
+              <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" required
+                minlength="10" maxlength="500"></textarea>
+              <div class="invalid-feedback">
+                Delivery address is required (10-500 characters).
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="city" class="form-label">City</label>
-              <input type="text" class="form-control" id="city" name="city" required>
+              <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="city" name="city" required minlength="2" maxlength="50">
+              <div class="invalid-feedback">
+                City name is required (2-50 characters).
+              </div>
             </div>
 
             <div class="row mb-3">
               <div class="col-md-6">
-                <label for="state" class="form-label">State</label>
-                <input type="text" class="form-control" id="state" name="state" required>
+                <label for="state" class="form-label">State <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="state" name="state" required minlength="2" maxlength="50">
+                <div class="invalid-feedback">
+                  State name is required (2-50 characters).
+                </div>
               </div>
               <div class="col-md-6">
-                <label for="pincode" class="form-label">Pincode</label>
-                <input type="text" class="form-control" id="pincode" name="pincode" required>
+                <label for="pincode" class="form-label">Pincode <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="pincode" name="pincode" required pattern="[0-9]{6}"
+                  maxlength="6">
+                <div class="invalid-feedback">
+                  Please enter a valid 6-digit pincode.
+                </div>
               </div>
             </div>
           </form>
@@ -129,7 +155,8 @@
           </div>
 
           <div class="d-grid gap-2">
-            <button type="submit" form="checkoutForm" class="btn btn-primary" <%=(cartItems && cartItems.length> 0) ? ''
+            <button type="submit" form="checkoutForm" class="btn btn-primary" <%=(cartItems && cartItems.length> 0) ?
+              ''
               : 'disabled' %>>
               Place Order
             </button>
@@ -139,5 +166,161 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Checkout Form Validation
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('checkoutForm');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const addressInput = document.getElementById('deliveryAddress');
+      const cityInput = document.getElementById('city');
+      const stateInput = document.getElementById('state');
+      const pincodeInput = document.getElementById('pincode');
+
+      // Validation patterns
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phonePattern = /^[0-9]{10}$/;
+      const pincodePattern = /^[0-9]{6}$/;
+
+      // Real-time validation for name
+      nameInput.addEventListener('blur', function () {
+        const value = this.value.trim();
+        if (value.length < 3 || value.length > 100) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for email
+      emailInput.addEventListener('blur', function () {
+        if (!emailPattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for phone
+      phoneInput.addEventListener('input', function () {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        if (!phonePattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for address
+      addressInput.addEventListener('blur', function () {
+        const value = this.value.trim();
+        if (value.length < 10 || value.length > 500) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for city
+      cityInput.addEventListener('blur', function () {
+        const value = this.value.trim();
+        if (value.length < 2 || value.length > 50) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for state
+      stateInput.addEventListener('blur', function () {
+        const value = this.value.trim();
+        if (value.length < 2 || value.length > 50) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for pincode
+      pincodeInput.addEventListener('input', function () {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        if (!pincodePattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Form submission validation
+      form.addEventListener('submit', function (event) {
+        let isValid = true;
+
+        // Validate all fields
+        if (nameInput.value.trim().length < 3 || nameInput.value.trim().length > 100) {
+          nameInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (!emailPattern.test(emailInput.value)) {
+          emailInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (!phonePattern.test(phoneInput.value)) {
+          phoneInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (addressInput.value.trim().length < 10 || addressInput.value.trim().length > 500) {
+          addressInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (cityInput.value.trim().length < 2 || cityInput.value.trim().length > 50) {
+          cityInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (stateInput.value.trim().length < 2 || stateInput.value.trim().length > 50) {
+          stateInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (!pincodePattern.test(pincodeInput.value)) {
+          pincodeInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (!isValid || !form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
 
   <%- include('../partials/footer') %>

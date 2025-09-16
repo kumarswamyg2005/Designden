@@ -320,7 +320,7 @@
 
             <div class="row g-3 mb-3">
               <div class="col-md-6">
-                <label class="form-label">Estimated Price</label>
+                <label class="form-label">Price</label>
                 <div class="form-control" id="estimatedPrice" aria-readonly="true">₹0.00</div>
               </div>
               <div class="col-md-6 d-flex align-items-end">
@@ -333,6 +333,9 @@
             <input type="hidden" name="_color_mirror" id="colorMirror" />
             <input type="hidden" name="_pattern_mirror" id="patternMirror" />
             <input type="hidden" name="_fabric_mirror" id="fabricMirror" />
+
+            <!-- Hidden field to send calculated price to backend -->
+            <input type="hidden" name="price" id="priceHidden" value="1200" />
 
             <!-- Update the form buttons to properly handle the cart functionality -->
             <div class="d-grid gap-2">
@@ -988,21 +991,21 @@
         return baseline[fabric] || 50;
       }
 
-      function computeEstimatedPrice({ base = 50, fabric, urgency }) {
+      function computeEstimatedPrice({ base = 1200, fabric, urgency }) {
         const fabricMultiplier = {
           'Cotton': 1.0,
-          'Linen': 1.2,
-          'Silk': 1.6,
-          'Polyester': 0.9,
-          'Wool': 1.4,
-          'Denim': 1.1,
-          'Fleece': 1.0,
+          'Linen': 1.3,
+          'Silk': 2.0,
+          'Polyester': 0.8,
+          'Wool': 1.8,
+          'Denim': 1.2,
+          'Fleece': 1.1,
           'Jersey': 1.0,
-          'Twill': 1.05,
-          'Chiffon': 1.3,
+          'Twill': 1.15,
+          'Chiffon': 1.5,
           'Rayon': 1.0
         };
-        const u = urgency === 'express' ? 1.2 : 1.0;
+        const u = urgency === 'express' ? 1.5 : 1.0;
         const f = fabricMultiplier[fabric] || 1.0;
         return Math.round(base * f * u);
       }
@@ -1142,6 +1145,10 @@
         try {
           const price = computeEstimatedPrice({ fabric: fabricSelect.value, urgency: urgencySelect?.value });
           if (estimatedPriceEl) estimatedPriceEl.textContent = '₹' + Number(price).toFixed(2);
+
+          // Update hidden price field for form submission
+          const priceHiddenEl = document.getElementById('priceHidden');
+          if (priceHiddenEl) priceHiddenEl.value = price;
         } catch (e) { }
 
         // Keep hidden mirrors fresh before model update

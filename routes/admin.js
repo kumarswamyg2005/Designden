@@ -247,8 +247,16 @@ router.get("/order/:orderId", isAdmin, async (req, res) => {
 router.post("/order/:orderId/update-status", isAdmin, async (req, res) => {
   try {
     const { status, note } = req.body;
+
+    // Validation
+    if (!status || typeof status !== "string") {
+      req.flash("error_msg", "Status is required");
+      return res.redirect(`/admin/order/${req.params.orderId}`);
+    }
+
     const order = await Order.findById(req.params.orderId);
     if (!order) {
+      req.flash("error_msg", "Order not found");
       return res.redirect("/admin/dashboard");
     }
 
@@ -261,15 +269,31 @@ router.post("/order/:orderId/update-status", isAdmin, async (req, res) => {
       "Completed",
       "Cancelled",
     ];
+
+    if (!allowed.includes(status)) {
+      req.flash("error_msg", "Invalid status selected");
+      return res.redirect(`/admin/order/${req.params.orderId}`);
+    }
+
+    if (note && (note.length < 3 || note.length > 500)) {
+      req.flash(
+        "error_msg",
+        "Note must be between 3 and 500 characters if provided"
+      );
+      return res.redirect(`/admin/order/${req.params.orderId}`);
+    }
+
     const nextStatus = allowed.includes(status) ? status : order.status;
     if (nextStatus !== order.status) {
       order.status = nextStatus;
       order.timeline = order.timeline || [];
       order.timeline.push({
         status: nextStatus,
-        note: note || "",
+        note: note ? note.trim() : "",
         at: new Date(),
       });
+
+      req.flash("success_msg", `Order status updated to ${nextStatus}`);
     }
     await order.save();
 
@@ -281,6 +305,7 @@ router.post("/order/:orderId/update-status", isAdmin, async (req, res) => {
     res.redirect(`/admin/order/${req.params.orderId}`);
   } catch (error) {
     console.error("Admin update-status error:", error);
+    req.flash("error_msg", "Failed to update order status");
     res.redirect(`/admin/order/${req.params.orderId}`);
   }
 });
@@ -318,17 +343,34 @@ router.post("/product/:productId/toggle-stock", isAdmin, async (req, res) => {
 router.post("/product/:productId/update-stock", isAdmin, async (req, res) => {
   try {
     const { stockQuantity } = req.body;
-    const product = await Product.findById(req.params.productId);
-    if (!product) return res.redirect("/admin/products");
 
-    product.stockQuantity = parseInt(stockQuantity) || 0;
+    // Validation
+    const quantity = parseInt(stockQuantity);
+    if (isNaN(quantity) || quantity < 0 || quantity > 10000) {
+      req.flash(
+        "error_msg",
+        "Stock quantity must be a number between 0 and 10000"
+      );
+      return res.redirect("/admin/products");
+    }
+
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      req.flash("error_msg", "Product not found");
+      return res.redirect("/admin/products");
+    }
+
+    product.stockQuantity = quantity;
     if (product.stockQuantity === 0) {
       product.inStock = false;
     }
     await product.save();
+
+    req.flash("success_msg", `Stock quantity updated to ${quantity}`);
     res.redirect("/admin/products");
   } catch (e) {
     console.error("Update stock failed:", e);
+    req.flash("error_msg", "Failed to update stock quantity");
     res.redirect("/admin/products");
   }
 });

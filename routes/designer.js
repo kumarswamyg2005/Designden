@@ -269,9 +269,23 @@ router.post("/order/:orderId/update-progress", isDesigner, async (req, res) => {
       meta: { orderId: order._id, progress: progressPercentage },
     });
 
+    // Notify manager of progress update
+    const User = require("../models/user");
+    const managers = await User.find({ role: "manager" }).select("_id");
+    for (const manager of managers) {
+      await Notification.create({
+        userId: manager._id,
+        title: `${progressEmoji} Designer Progress Update`,
+        message: `Order #${order._id
+          .toString()
+          .slice(-6)}: ${progressPercentage}% complete - ${progressNote}`,
+        meta: { orderId: order._id, progress: progressPercentage },
+      });
+    }
+
     req.flash(
       "success_msg",
-      `✅ Progress updated successfully! (${progressPercentage}% complete)`
+      `✅ Progress updated successfully! (${progressPercentage}% complete) - Customer and Manager notified!`
     );
     res.json({
       success: true,
@@ -288,6 +302,105 @@ router.post("/order/:orderId/update-progress", isDesigner, async (req, res) => {
     });
   }
 });
+
+// ============ SUBMIT TO MANAGER (Designer→Manager Handoff) ============
+router.post(
+  "/order/:orderId/submit-to-manager",
+  isDesigner,
+  async (req, res) => {
+    try {
+      const Notification = require("../models/notification");
+      const User = require("../models/user");
+      const { completionNote } = req.body;
+
+      const order = await Order.findById(req.params.orderId).populate(
+        "customerId",
+        "username email"
+      );
+
+      if (!order || order.designerId.toString() !== req.session.user.id) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      // Only allow submission from in_production status
+      if (order.status !== "in_production") {
+        req.flash(
+          "error_msg",
+          `❌ Cannot submit. Order status is: ${order.status}`
+        );
+        return res.status(400).json({
+          error: `Order must be in production to submit. Current status: ${order.status}`,
+          redirect: "/designer/dashboard",
+        });
+      }
+
+      // Change status to ready_for_review
+      order.status = "ready_for_review";
+      order.timeline = order.timeline || [];
+      order.timeline.push({
+        status: "ready_for_review",
+        note: `Designer completed work: ${
+          completionNote || "Work finished, ready for manager review"
+        }`,
+        at: new Date(),
+      });
+      await order.save();
+
+      // Notify all managers of submission
+      const managers = await User.find({ role: "manager" }).select(
+        "_id username"
+      );
+      for (const manager of managers) {
+        await Notification.create({
+          userId: manager._id,
+          title: "📦 Designer Submitted Order for Review",
+          message: `Order #${order._id
+            .toString()
+            .slice(
+              -6
+            )} has been completed by designer and is ready for your review and packing. Note: ${
+            completionNote || "Ready for review"
+          }`,
+          meta: { orderId: order._id },
+        });
+      }
+
+      // Notify customer of progress
+      await Notification.create({
+        userId: order.customerId._id,
+        title: "🎉 Design Work Completed!",
+        message: `Great news! Order #${order._id
+          .toString()
+          .slice(
+            -6
+          )} design work is complete and has been submitted to our manager for quality review and packing.`,
+        meta: { orderId: order._id },
+      });
+
+      console.log(
+        `[DESIGNER-HANDOFF] ✅ Order ${order._id} → READY_FOR_REVIEW (submitted by designer)`
+      );
+
+      req.flash(
+        "success_msg",
+        "✅ Work submitted to manager successfully! Manager will review and pack the order."
+      );
+      res.json({
+        success: true,
+        order,
+        message: "Order submitted to manager for review!",
+        redirect: `/designer/order/${order._id}`,
+      });
+    } catch (error) {
+      console.error("Submit to manager error:", error);
+      req.flash("error_msg", `❌ Failed to submit: ${error.message}`);
+      res.status(500).json({
+        error: "Failed to submit to manager",
+        redirect: "/designer/dashboard",
+      });
+    }
+  }
+);
 
 // Mark order ready for production/shipping
 router.post("/order/:orderId/mark-ready", isDesigner, async (req, res) => {
@@ -343,113 +456,6 @@ router.post("/order/:orderId/mark-ready", isDesigner, async (req, res) => {
   }
 });
 
-// Mark order as shipped (new route for clarity)
-router.post("/order/:orderId/mark-shipped", isDesigner, async (req, res) => {
-  try {
-    const Notification = require("../models/notification");
-    const { trackingInfo } = req.body;
-
-    const order = await Order.findById(req.params.orderId).populate(
-      "customerId",
-      "username email"
-    );
-
-    if (!order || order.designerId.toString() !== req.session.user.id) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    order.status = "shipped";
-    order.shippedAt = new Date();
-    order.timeline = order.timeline || [];
-    order.timeline.push({
-      status: "shipped",
-      note: trackingInfo
-        ? `Order shipped: ${trackingInfo}`
-        : "Order has been shipped and is on its way!",
-      at: new Date(),
-    });
-    await order.save();
-
-    // Notify customer about shipping
-    await Notification.create({
-      userId: order.customerId._id,
-      title: "📦 Your Order Has Been Shipped!",
-      message: `Order #${order._id
-        .toString()
-        .slice(-6)} is on its way to you! ${
-        trackingInfo || "You will receive it soon."
-      }`,
-      meta: { orderId: order._id },
-    });
-
-    // Auto-deliver after 5 seconds (simulating delivery)
-    console.log(
-      `[AUTO-DELIVERY] Order ${order._id} will be auto-delivered in 5 seconds...`
-    );
-    setTimeout(async () => {
-      try {
-        const orderToDeliver = await Order.findById(order._id).populate(
-          "customerId",
-          "username email"
-        );
-
-        if (orderToDeliver && orderToDeliver.status === "shipped") {
-          orderToDeliver.status = "delivered";
-          orderToDeliver.deliveredAt = new Date();
-          orderToDeliver.paymentStatus = "paid"; // Mark as paid when delivered
-          orderToDeliver.timeline = orderToDeliver.timeline || [];
-          orderToDeliver.timeline.push({
-            status: "delivered",
-            note: "Order successfully delivered to customer - Payment confirmed",
-            at: new Date(),
-          });
-          await orderToDeliver.save();
-
-          // Notify customer about delivery
-          await Notification.create({
-            userId: orderToDeliver.customerId._id,
-            title: "✅ Order Delivered Successfully!",
-            message: `Great news! Order #${orderToDeliver._id
-              .toString()
-              .slice(
-                -6
-              )} has been delivered to your address. Enjoy your custom design!`,
-            meta: { orderId: orderToDeliver._id },
-          });
-
-          console.log(
-            `[AUTO-DELIVERY] ✅ Order ${orderToDeliver._id} automatically marked as delivered`
-          );
-        }
-      } catch (error) {
-        console.error(
-          `[AUTO-DELIVERY] Error auto-delivering order ${order._id}:`,
-          error
-        );
-      }
-    }, 5000); // 5 seconds delay
-
-    req.flash(
-      "success_msg",
-      "✅ Order marked as shipped! Customer has been notified."
-    );
-    res.json({
-      success: true,
-      order,
-      message:
-        "Order marked as shipped and customer notified! Order will be auto-delivered in 5 seconds.",
-      redirect: `/designer/order/${order._id}`,
-    });
-  } catch (error) {
-    console.error("Mark shipped error:", error);
-    req.flash("error_msg", "❌ Failed to mark order as shipped");
-    res.status(500).json({
-      error: "Failed to mark order shipped",
-      redirect: "/designer/dashboard",
-    });
-  }
-});
-
 // Stock management routes for tailor
 router.get("/products", isDesigner, async (req, res) => {
   try {
@@ -490,17 +496,34 @@ router.post(
   async (req, res) => {
     try {
       const { stockQuantity } = req.body;
-      const product = await Product.findById(req.params.productId);
-      if (!product) return res.redirect("/designer/products");
 
-      product.stockQuantity = parseInt(stockQuantity) || 0;
+      // Validation
+      const quantity = parseInt(stockQuantity);
+      if (isNaN(quantity) || quantity < 0 || quantity > 10000) {
+        req.flash(
+          "error_msg",
+          "Stock quantity must be a number between 0 and 10000"
+        );
+        return res.redirect("/designer/products");
+      }
+
+      const product = await Product.findById(req.params.productId);
+      if (!product) {
+        req.flash("error_msg", "Product not found");
+        return res.redirect("/designer/products");
+      }
+
+      product.stockQuantity = quantity;
       if (product.stockQuantity === 0) {
         product.inStock = false;
       }
       await product.save();
+
+      req.flash("success_msg", `Stock quantity updated to ${quantity}`);
       res.redirect("/designer/products");
     } catch (e) {
       console.error("Update stock failed:", e);
+      req.flash("error_msg", "Failed to update stock quantity");
       res.redirect("/designer/products");
     }
   }
