@@ -104,6 +104,37 @@ router.get("/", async (req, res) => {
     const maxPriceValue =
       priceRange.length > 0 ? Math.ceil(priceRange[0].maxPrice) : 1000;
 
+    // If request is XHR (AJAX) return JSON so client can update via Fetch
+    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('application/json') !== -1)) {
+      const productsJson = products.map((p) => ({
+        id: p._id.toString(),
+        name: p.name,
+        price: p.price || 0,
+        image: p.images && p.images.length > 0 ? p.images[0] : '/placeholder.svg?height=300&width=300',
+        category: p.category,
+        gender: p.gender,
+        inStock: !!p.inStock,
+        stockQuantity: p.stockQuantity || 0,
+        customizable: !!p.customizable,
+      }));
+
+      return res.json({
+        products: productsJson,
+        categories,
+        genders,
+        sizes,
+        filters: {
+          category,
+          gender,
+          minPrice: minPrice || minPriceValue,
+          maxPrice: maxPrice || maxPriceValue,
+          size,
+          sort: sort || 'newest',
+        },
+        count: productsJson.length,
+      });
+    }
+
     res.render("shop/index", {
       title: "Shop",
       user: req.session.user,
