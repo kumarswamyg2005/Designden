@@ -412,6 +412,11 @@ This is a college project implementing a simplified e-commerce platform for cust
 6. ⏳ Update seed scripts
 7. ⏳ Test complete workflows
 
+## 🤝 Contributors
+
+See `CONTRIBUTORS.md` for a detailed list of notable contributions and credits. Special thanks to:
+
+- G. Chetan Krishna — Technical Lead: led integration across frontend, backend, and database; contributed to the Manager and Admin dashboards; coordinated deployments and documentation.
 **See [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for detailed implementation guide.**
 
 ---
