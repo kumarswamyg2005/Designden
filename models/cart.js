@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Modified by Harsha Vardhan - small reliability improvements for cart timestamps
 const cartSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -34,6 +35,12 @@ const cartSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Ensure updatedAt is refreshed on each save (keeps timestamps consistent)
+cartSchema.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
 });
 
 // Export as both Cart and CartItem for backwards compatibility

@@ -618,6 +618,11 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
       req.body;
     const userId = req.session.user.id;
 
+    // Harsha improvements: normalize quantity and defaults to avoid NaN/undefined issues
+    const qty = Number.isFinite(Number(quantity)) && Number(quantity) > 0 ? Number(quantity) : 1;
+    const sizeNormalized = size || "M";
+    const colorNormalized = color || "Default";
+
     console.log("[ADD-TO-CART] Request data:", {
       designId,
       productId,
@@ -790,7 +795,9 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
 
     console.log(
       "[ADD-TO-CART] Adding to cart, customizationId:",
-      finalCustomizationId
+      finalCustomizationId,
+      "qty:",
+      qty
     );
 
     // Find or create cart for this user
@@ -804,7 +811,7 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
         items: [
           {
             customizationId: finalCustomizationId,
-            quantity: Number(quantity || 1),
+            quantity: qty,
           },
         ],
       });
@@ -817,12 +824,12 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
 
       if (existingItemIndex >= 0) {
         // Update quantity
-        cart.items[existingItemIndex].quantity += Number(quantity || 1);
+        cart.items[existingItemIndex].quantity += qty;
       } else {
         // Add new item
         cart.items.push({
           customizationId: finalCustomizationId,
-          quantity: Number(quantity || 1),
+          quantity: qty,
         });
       }
     }
