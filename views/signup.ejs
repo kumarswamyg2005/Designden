@@ -37,4 +37,69 @@
     </div>
   </div>
 
+  <script>
+    // Signup Form Validation (improved, lightweight)
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('signupForm');
+      if (!form) return;
+
+      const usernameInput = document.getElementById('username');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const contactInput = document.getElementById('contactNumber');
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // simple, effective
+      const phonePattern = /^\d{10}$/;
+
+      function setValidity(el, valid) {
+        if (!el) return;
+        el.classList.toggle('is-invalid', !valid);
+        el.classList.toggle('is-valid', valid);
+      }
+
+      if (usernameInput) {
+        usernameInput.addEventListener('blur', () => {
+          const v = (usernameInput.value || '').trim();
+          setValidity(usernameInput, v.length >= 3 && v.length <= 50);
+        });
+      }
+
+      if (emailInput) {
+        emailInput.addEventListener('blur', () => {
+          setValidity(emailInput, emailPattern.test(emailInput.value || ''));
+        });
+      }
+
+      if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+          setValidity(passwordInput, (passwordInput.value || '').length >= 6);
+        });
+      }
+
+      if (contactInput) {
+        contactInput.addEventListener('input', () => {
+          // keep digits only
+          contactInput.value = (contactInput.value || '').replace(/\D/g, '');
+          setValidity(contactInput, phonePattern.test(contactInput.value));
+        });
+      }
+
+      form.addEventListener('submit', function (e) {
+        let ok = true;
+        if (usernameInput && ((usernameInput.value || '').trim().length < 3 || (usernameInput.value || '').trim().length > 50)) ok = false;
+        if (emailInput && !emailPattern.test(emailInput.value || '')) ok = false;
+        if (passwordInput && (passwordInput.value || '').length < 6) ok = false;
+        if (contactInput && !phonePattern.test(contactInput.value || '')) ok = false;
+
+        if (!ok) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
+
   <%- include('partials/footer') %>
