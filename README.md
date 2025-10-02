@@ -414,7 +414,12 @@ This is a college project implementing a simplified e-commerce platform for cust
 
 ---
 
-## 🚀 **Next Steps**
+## � Contributors
+
+M. Manoj Kumar played a crucial role as the Frontend Developer, implementing a sophisticated form validation system using JavaScript event listeners and regex. His contributions provided real-time feedback, significantly enhancing the user experience and ensuring seamless interaction with the application interface.
+
+
+## �🚀 **Next Steps**
 
 1. ⏳ Update authentication with bcrypt
 2. ⏳ Implement customer fabric workflow
