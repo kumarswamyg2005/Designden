@@ -26,4 +26,48 @@
   </div>
 </div>
 
+  <script>
+    // Login Form Validation (improved)
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('loginForm') || document.querySelector('form[action="/login"]');
+      if (!form) return;
+
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function setValidity(el, valid) {
+        if (!el) return;
+        el.classList.toggle('is-invalid', !valid);
+        el.classList.toggle('is-valid', valid);
+      }
+
+      if (emailInput) {
+        emailInput.addEventListener('blur', () => {
+          setValidity(emailInput, emailPattern.test(emailInput.value || ''));
+        });
+      }
+
+      if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+          setValidity(passwordInput, (passwordInput.value || '').length >= 6);
+        });
+      }
+
+      form.addEventListener('submit', function (event) {
+        let ok = true;
+        if (emailInput && !emailPattern.test(emailInput.value || '')) ok = false;
+        if (passwordInput && (passwordInput.value || '').length < 6) ok = false;
+
+        if (!ok) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
+
 <%- include('partials/footer') %>
