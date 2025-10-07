@@ -8,3 +8,5 @@ Changes:
 - views/customer/cart.ejs: added a small comment noting backend updates.
 
 These are minor reliability and observability improvements attributed to Harsha Vardhan.
+
+Additional note: comments were added to routes and views to improve traceability.

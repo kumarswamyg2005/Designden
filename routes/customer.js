@@ -622,6 +622,7 @@ router.post("/add-to-cart", isCustomer, async (req, res) => {
     const qty = Number.isFinite(Number(quantity)) && Number(quantity) > 0 ? Number(quantity) : 1;
     const sizeNormalized = size || "M";
     const colorNormalized = color || "Default";
+  // [Harsha] Note: quantity normalization applied above to ensure safe arithmetic later
 
     console.log("[ADD-TO-CART] Request data:", {
       designId,
