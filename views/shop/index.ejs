@@ -187,44 +187,53 @@
     </div>
     
     <!-- Products -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <% if (typeof products !== 'undefined' && products.length > 0) { %>
-        <% products.forEach(product => { %>
-          <div class="col">
-            <div class="card h-100 product-card">
-              <div class="position-relative">
-                <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg?height=300&width=300' %>" 
-                  class="card-img-top" alt="<%= product.name %>">
-                <% if (!product.inStock) { %>
-                  <div class="position-absolute top-0 end-0 bg-danger text-white m-2 px-2 py-1 rounded">Out of Stock</div>
-                <% } %>
-                <% if (product.customizable) { %>
-                  <div class="position-absolute top-0 start-0 bg-success text-white m-2 px-2 py-1 rounded">Customizable</div>
-                <% } %>
-              </div>
-              <div class="card-body">
-                <h5 class="card-title"><%= product.name %></h5>
-                <p class="card-text text-muted"><%= product.category %> | <%= product.gender %></p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
-                    <% if (product.inStock && product.stockQuantity && product.stockQuantity > 0) { %>
-                      <br><small class="text-success"><%= product.stockQuantity %> available</small>
-                    <% } %>
+    <!-- Products container updated by client-side JS when filters change -->
+    <div id="productsContainer">
+      <div class="d-flex justify-content-center my-4" id="productsSpinner" style="display:none;">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="productsGrid">
+        <% if (typeof products !== 'undefined' && products.length > 0) { %>
+          <% products.forEach(product => { %>
+            <div class="col">
+              <div class="card h-100 product-card">
+                <div class="position-relative">
+                  <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg?height=300&width=300' %>" 
+                    class="card-img-top" alt="<%= product.name %>">
+                  <% if (!product.inStock) { %>
+                    <div class="position-absolute top-0 end-0 bg-danger text-white m-2 px-2 py-1 rounded">Out of Stock</div>
+                  <% } %>
+                  <% if (product.customizable) { %>
+                    <div class="position-absolute top-0 start-0 bg-success text-white m-2 px-2 py-1 rounded">Customizable</div>
+                  <% } %>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <p class="card-text text-muted"><%= product.category %> | <%= product.gender %></p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
+                      <% if (product.inStock && product.stockQuantity && product.stockQuantity > 0) { %>
+                        <br><small class="text-success"><%= product.stockQuantity %> available</small>
+                      <% } %>
+                    </div>
+                    <a href="/shop/product/<%= product._id %>" class="btn btn-sm btn-primary">View Details</a>
                   </div>
-                  <a href="/shop/product/<%= product._id %>" class="btn btn-sm btn-primary">View Details</a>
                 </div>
               </div>
             </div>
+          <% }) %>
+        <% } else { %>
+          <div class="col-12">
+            <div class="alert alert-info">
+              No products found matching your filters. <a href="/shop">Clear all filters</a> to see all products.
+            </div>
           </div>
-        <% }) %>
-      <% } else { %>
-        <div class="col-12">
-          <div class="alert alert-info">
-            No products found matching your filters. <a href="/shop">Clear all filters</a> to see all products.
-          </div>
-        </div>
-      <% } %>
+        <% } %>
+      </div>
     </div>
   </div>
 </div>
