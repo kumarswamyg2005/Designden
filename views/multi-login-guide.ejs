@@ -1,0 +1,225 @@
+<%- include('partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title">
+          <i class="fas fa-users me-2 text-primary"></i>
+          Multi-Login Guide
+        </h2>
+        <p class="card-text">Learn how to use multiple user accounts simultaneously in DesignDen</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>How Multi-Login Works</h3>
+      </div>
+      <div class="card-body">
+        <p class="lead">DesignDen supports simultaneous login for different user roles in the same browser using separate session cookies.</p>
+        
+        <h5 class="mt-4">🎯 Available User Roles</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="card h-100 border-primary">
+              <div class="card-body text-center">
+                <i class="fas fa-user fa-2x text-primary mb-2"></i>
+                <h6>Customer</h6>
+                <small class="text-muted">Design, shop, place orders</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-success">
+              <div class="card-body text-center">
+                <i class="fas fa-cut fa-2x text-success mb-2"></i>
+                <h6>Tailor/Designer</h6>
+                <small class="text-muted">Manage orders, update stock</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-warning">
+              <div class="card-body text-center">
+                <i class="fas fa-crown fa-2x text-warning mb-2"></i>
+                <h6>Admin</h6>
+                <small class="text-muted">Full system management</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h5>📋 Step-by-Step Instructions</h5>
+        <div class="accordion" id="multiLoginAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                <i class="fas fa-user me-2"></i>Step 1: Login as Customer
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#multiLoginAccordion">
+              <div class="accordion-body">
+                <ol>
+                  <li>Go to <a href="/login" target="_blank">Login Page</a></li>
+                  <li>Use any customer account or create a new one</li>
+                  <li>You'll be redirected to the customer dashboard</li>
+                  <li>Notice the customer navigation with Cart and Design Studio</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                <i class="fas fa-cut me-2"></i>Step 2: Login as Tailor (New Tab)
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#multiLoginAccordion">
+              <div class="accordion-body">
+                <ol>
+                  <li><strong>Open a new tab</strong> (important!)</li>
+                  <li>Go to <a href="/designer/login" target="_blank">Designer Login</a></li>
+                  <li>Use: <code>tailor@designden.com</code> / <code>tailor123</code></li>
+                  <li>You'll see the tailor dashboard with order management</li>
+                  <li>Both customer and tailor sessions are now active!</li>
+                </ol>
+                <div class="alert alert-info mt-2">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <strong>Pro Tip:</strong> Use different browser tabs to easily switch between roles.
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                <i class="fas fa-crown me-2"></i>Step 3: Login as Admin (Another Tab)
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#multiLoginAccordion">
+              <div class="accordion-body">
+                <ol>
+                  <li><strong>Open another new tab</strong></li>
+                  <li>Go to <a href="/admin/login" target="_blank">Admin Login</a></li>
+                  <li>Use: <code>admin@designden.com</code> / <code>admin123</code></li>
+                  <li>Access admin dashboard with full system controls</li>
+                  <li>Now you have all three roles active simultaneously!</li>
+                </ol>
+                <div class="alert alert-success mt-2">
+                  <i class="fas fa-check-circle me-2"></i>
+                  <strong>Success:</strong> You can now switch between Customer, Tailor, and Admin roles by changing browser tabs.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h5 class="mt-4">🔧 Testing Workflow Example</h5>
+        <div class="bg-light p-3 rounded">
+          <ol>
+            <li><strong>Tab 1 (Customer):</strong> Create a design and add to cart</li>
+            <li><strong>Tab 1 (Customer):</strong> Place an order</li>
+            <li><strong>Tab 2 (Admin):</strong> View pending orders and assign to tailor</li>
+            <li><strong>Tab 3 (Tailor):</strong> View assigned orders and update status</li>
+            <li><strong>Tab 1 (Customer):</strong> Check order updates in dashboard</li>
+          </ol>
+        </div>
+
+        <h5 class="mt-4">⚠️ Important Notes</h5>
+        <div class="alert alert-warning">
+          <ul class="mb-0">
+            <li>Each role uses a separate session cookie (designden.sid, admin.sid, designer.sid)</li>
+            <li>You must use different browser <strong>tabs</strong>, not windows</li>
+            <li>Private/Incognito mode will create isolated sessions</li>
+            <li>Session cookies expire after 24 hours</li>
+            <li>Logging out of one role doesn't affect others</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>Quick Login Links</h3>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="/login" class="btn btn-primary" target="_blank">
+            <i class="fas fa-user me-2"></i>Customer Login
+          </a>
+          <a href="/designer/login" class="btn btn-success" target="_blank">
+            <i class="fas fa-cut me-2"></i>Tailor Login
+          </a>
+          <a href="/admin/login" class="btn btn-warning" target="_blank">
+            <i class="fas fa-crown me-2"></i>Admin Login
+          </a>
+        </div>
+        
+        <hr>
+        
+        <h5>Demo Accounts</h5>
+        <div class="small">
+          <div class="mb-2">
+            <strong>Tailor:</strong><br>
+            Email: <code>tailor@designden.com</code><br>
+            Password: <code>tailor123</code>
+          </div>
+          <div class="mb-2">
+            <strong>Admin:</strong><br>
+            Email: <code>admin@designden.com</code><br>
+            Password: <code>admin123</code>
+          </div>
+          <div>
+            <strong>Customer:</strong><br>
+            Create your own or use existing accounts
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+      <div class="card-header">
+        <h3>System Features</h3>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Stock Management
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            3D Design Studio
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Order Tracking
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Real-time Updates
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Multi-role Access
+          </li>
+          <li>
+            <i class="fas fa-check text-success me-2"></i>
+            Responsive Design
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer')%>

@@ -1,0 +1,169 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title mb-0">Order Details</h2>
+          <a href="/admin/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>Order #<%= order._id.toString().substring(0, 8) %>...</h3>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5>Order Information</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Order Date:</span>
+                <span><%= new Date(order.orderDate).toLocaleDateString() %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Status:</span>
+                <span class="badge <%= 
+                  order.status === 'Pending' ? 'bg-warning' : 
+                  order.status === 'Assigned' ? 'bg-info' : 
+                  order.status === 'In Progress' ? 'bg-primary' : 
+                  order.status === 'Completed' ? 'bg-success' : 
+                  'bg-danger' 
+                %>">
+                  <%= order.status %>
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Quantity:</span>
+                <span><%= order.quantity %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Total Price:</span>
+                <span>₹<%= order.totalPrice.toFixed(2) %></span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h5>Customer Information</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Name:</span>
+                <span><%= order.customerId.username %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Email:</span>
+                <span><%= order.customerId.email %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Contact:</span>
+                <span><%= order.customerId.contactNumber %></span>
+              </li>
+              <li class="list-group-item">
+                <span>Delivery Address:</span>
+                <p class="mb-0 mt-1"><%= order.deliveryAddress %></p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <% if (order.status === 'Pending') { %>
+          <div class="mb-4">
+            <h5>Assign to Designer</h5>
+            <form action="/admin/assign-order/<%= order._id %>" method="POST">
+              <div class="mb-3">
+                <select class="form-select" name="designerId" required>
+                  <option value="" selected disabled>Choose a designer</option>
+                  <% designers.filter(d => d.email === 'tailor@designden.com').forEach(designer => { %>
+                    <option value="<%= designer._id %>"><%= designer.username %> (<%= designer.email %>)</option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Assign Order</button>
+              </div>
+            </form>
+          </div>
+        <% } else if (order.designerId) { %>
+          <div class="mb-4">
+            <h5>Assigned Designer</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Name:</span>
+                <span><%= order.designerId.username %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Email:</span>
+                <span><%= order.designerId.email %></span>
+              </li>
+            </ul>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>Design Details</h3>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <% /* Display product image based on category for admin/tailor reference */ %>
+          <% if (order.designId.category === 'Hoodie') { %>
+            <img src="/images/winter-hoodie.webp" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else if (order.designId.category === 'T-Shirt') { %>
+            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else if (order.designId.category === 'Kurthi') { %>
+            <img src="/images/kurthi.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else if (order.designId.category === 'Jeans') { %>
+            <img src="/images/denim-jeans.webp" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else if (order.designId.category === 'Dress') { %>
+            <img src="/images/women-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else if (order.designId.category === 'Shirt') { %>
+            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } else { %>
+            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
+          <% } %>
+          <div class="mt-2">
+            <small class="text-muted">Product Category: <strong><%= order.designId.category %></strong></small>
+          </div>
+        </div>
+        <h4><%= order.designId.name %></h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Fabric:</span>
+            <span><%= order.designId.fabric %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Color:</span>
+            <span><%= order.designId.color %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Pattern:</span>
+            <span><%= order.designId.pattern %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Size:</span>
+            <span><%= order.designId.size %></span>
+          </li>
+        </ul>
+        <% if (order.designId.additionalNotes) { %>
+          <div class="mt-3">
+            <h5>Additional Notes:</h5>
+            <p><%= order.designId.additionalNotes %></p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

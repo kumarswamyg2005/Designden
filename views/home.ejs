@@ -1,0 +1,197 @@
+<%- include('partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+
+<div class="hero-section text-center py-5 mb-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Design Your Dream Clothing</h1>
+    <p class="lead mb-4">Create custom designs, choose your fabrics, colors, and patterns. We'll bring your vision to life.</p>
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+      <a href="/signup" class="btn btn-primary btn-lg px-4 gap-3">Get Started</a>
+      <a href="#features" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+    </div>
+  </div>
+</div>
+
+<div id="features" class="features-section py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-pencil-ruler fa-3x text-primary mb-3"></i>
+            <h3 class="card-title">Design</h3>
+            <p class="card-text">Use our interactive design studio to create your perfect clothing item. Choose fabrics, colors, and patterns.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-tshirt fa-3x text-primary mb-3"></i>
+            <h3 class="card-title">Order</h3>
+            <p class="card-text">Place your order with just a few clicks. Our system will assign your design to one of our skilled tailors.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-truck fa-3x text-primary mb-3"></i>
+            <h3 class="card-title">Receive</h3>
+            <p class="card-text">Track your order as it's being made. Once completed, your custom clothing will be delivered to your doorstep.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Shop Section -->
+<div class="shop-section py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2>Shop Ready-Made Designs</h2>
+      <p class="lead">Browse our collection of pre-designed clothing for men and women</p>
+    </div>
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card h-100 overflow-hidden">
+          <div class="position-relative">
+            <img src="/images/mens-collection-banner.webp" class="img-fluid w-100" alt="Men's Collection">
+            <div class="position-absolute bottom-0 start-0 p-4">
+              <a href="/shop?gender=Men" class="btn btn-light btn-lg">Shop Men</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100 overflow-hidden">
+          <div class="position-relative">
+            <img src="/images/womens-collection-banner.webp" class="img-fluid w-100" alt="Women's Collection">
+            <div class="position-absolute bottom-0 start-0 p-4">
+              <a href="/shop?gender=Women" class="btn btn-light btn-lg">Shop Women</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="trending-section py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Latest Trends</h2>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="/images/sustainable fabric.webp" class="card-img-top" alt="Sustainable Fabrics">
+          <div class="card-body">
+            <h5 class="card-title">Sustainable Fabrics</h5>
+            <p class="card-text">Eco-friendly materials that look good and feel great.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="https://cdn.vectorstock.com/i/1000v/63/42/graphic-geometric-bold-lines-seamless-pattern-vector-46396342.jpg" class="card-img-top" alt="Trend 2">
+          <div class="card-body">
+            <h5 class="card-title">Bold Patterns</h5>
+            <p class="card-text">Stand out with eye-catching geometric designs.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="https://www.trendstop.com/wp-content/uploads/2021/05/13macrotheme1-920x600-c-default.jpg" class="card-img-top" alt="Trend 3">
+          <div class="card-body">
+            <h5 class="card-title">Vintage Revival</h5>
+            <p class="card-text">Classic styles reimagined for the modern wardrobe.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="/images/Custom Embroidery.jpg" class="card-img-top" alt="Custom Embroidery">
+          <div class="card-body">
+            <h5 class="card-title">Custom Embroidery</h5>
+            <p class="card-text">Personalized details that make your clothing unique.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="testimonials-section py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">What Our Customers Say</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+            <p class="card-text">"The quality of my custom shirt exceeded my expectations. The fabric is premium and the fit is perfect!"</p>
+            <div class="d-flex align-items-center">
+              <div class="ms-3">
+                <h6 class="mb-0">John D.</h6>
+                <small class="text-muted">Customer since 2022</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+            <p class="card-text">"The design studio is so intuitive! I created a dress exactly how I imagined it, and the final product was stunning."</p>
+            <div class="d-flex align-items-center">
+              <div class="ms-3">
+                <h6 class="mb-0">Sarah M.</h6>
+                <small class="text-muted">Customer since 2023</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+            <p class="card-text">"I ordered custom shirts for my entire team. The process was smooth, and everyone loves their personalized clothing!"</p>
+            <div class="d-flex align-items-center">
+              <div class="ms-3">
+                <h6 class="mb-0">Michael T.</h6>
+                <small class="text-muted">Customer since 2021</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,45 @@
+<%- include('partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="text-center mb-4">Create an Account</h2>
+        <form action="/signup" method="POST">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="<%= typeof formData !== 'undefined' ? formData.username : '' %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <div class="mb-3">
+            <label for="contactNumber" class="form-label">Contact Number</label>
+            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<%= typeof formData !== 'undefined' ? formData.contactNumber : '' %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" id="role" name="role">
+              <option value="customer" <%= typeof formData !== 'undefined' && formData.role === 'customer' ? 'selected' : '' %>>Customer</option>
+              <option value="designer" <%= typeof formData !== 'undefined' && formData.role === 'designer' ? 'selected' : '' %>>Designer</option>
+              <option value="admin" <%= typeof formData !== 'undefined' && formData.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+          </div>
+        </form>
+        <div class="text-center mt-3">
+          <p>Already have an account? <a href="/login">Login</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
