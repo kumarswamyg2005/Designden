@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title">Welcome, <%= user.username %></h2>
+        <p class="card-text">Manage your designs and orders from your personal dashboard.</p>
+        <div class="d-flex gap-2">
+          <a href="/customer/design-studio" class="btn btn-primary">Create New Design</a>
+          <a href="/shop" class="btn btn-success">Shop Ready-Made Designs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>Your Orders</h3>
+      </div>
+      <div class="card-body">
+        <div id="ordersContainer">
+          <div class="text-center py-5 text-muted">Loading your orders...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('ordersContainer')
+    try {
+      const data = await window.api.get('/customer/dashboard')
+      const orders = data.orders || []
+      if (!orders.length) {
+        container.innerHTML = '<div class="alert alert-info">You\'t have any orders yet. <a href="/customer/design-studio">Create your first design</a> or <a href="/shop">shop ready-made designs</a> to get started!</div>'
+        return
+      }
+      const rows = orders.map(o => {
+        const idShort = (o._id || '').toString().substring(0,8) + '...'
+        const date = new Date(o.orderDate).toLocaleDateString()
+        const statusClass = o.status === 'Pending' ? 'bg-warning' : o.status === 'Assigned' ? 'bg-info' : o.status === 'In Progress' ? 'bg-primary' : o.status === 'Completed' ? 'bg-success' : 'bg-danger'
+        const designName = o.designId && o.designId.name ? o.designId.name : 'Custom Design'
+        const total = typeof o.totalPrice === 'number' ? `₹${o.totalPrice.toFixed(2)}` : '-'
+        const feedbackBtn = o.status === 'Completed' ? `<a href="/feedback/submit/${o._id}" class="btn btn-sm btn-outline-success">Leave Feedback</a>` : ''
+        return `<tr>
+          <td>${idShort}</td>
+          <td>${designName}</td>
+          <td>${date}</td>
+          <td><span class="badge ${statusClass}">${o.status}</span></td>
+          <td>${total}</td>
+          <td>
+            <a href="/customer/order/${o._id}" class="btn btn-sm btn-outline-primary">View</a>
+            ${feedbackBtn}
+          </td>
+        </tr>`
+      }).join('')
+      container.innerHTML = `<div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Design</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`
+    } catch (e) {
+      console.error(e)
+      container.innerHTML = '<div class="alert alert-danger">Failed to load orders. Please refresh.</div>'
+    }
+  })
+</script>

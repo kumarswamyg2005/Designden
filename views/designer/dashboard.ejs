@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title">Designer Dashboard</h2>
+        <p class="card-text">Welcome, <%= user.username %>. Manage your assigned orders and update their status.</p>
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <a href="/designer/products" class="btn btn-outline-primary w-100">
+              <i class="fas fa-boxes"></i> Manage Products & Stock
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>Your Assigned Orders</h3>
+      </div>
+      <div class="card-body">
+        <% if (assignedOrders && assignedOrders.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Design</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% assignedOrders.forEach(order => { %>
+                  <tr>
+                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                    <td><%= order.customerId.username %></td>
+                    <td><%= order.designId.name %></td>
+                    <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                    <td>
+                      <span class="badge <%= 
+                        order.status === 'Pending' ? 'bg-warning' : 
+                        order.status === 'Assigned' ? 'bg-info' : 
+                        order.status === 'In Progress' ? 'bg-primary' : 
+                        order.status === 'Completed' ? 'bg-success' : 
+                        'bg-danger' 
+                      %>">
+                        <%= order.status %>
+                      </span>
+                    </td>
+                    <td>
+                      <a href="/designer/order/<%= order._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">No orders assigned yet.</div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

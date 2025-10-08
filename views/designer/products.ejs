@@ -1,0 +1,99 @@
+<%- include('../partials/header') %>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title mb-0">Product Stock Management - Tailor</h2>
+          <a href="/designer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+        </div>
+        <p class="card-text mt-2">Update product inventory and stock status as a tailor.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h3>All Products</h3>
+      </div>
+      <div class="card-body">
+        <% if (products && products.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Stock Qty</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% products.forEach(product => { %>
+                  <tr>
+                    <td>
+                      <div>
+                        <h6 class="mb-0"><%= product.name %></h6>
+                        <small class="text-muted"><%= product.gender %></small>
+                      </div>
+                    </td>
+                    <td><%= product.category %></td>
+                    <td>
+                      <form action="/designer/product/<%= product._id %>/update-stock" method="POST" class="d-inline">
+                        <div class="input-group input-group-sm" style="max-width: 120px;">
+                          <input type="number" class="form-control" name="stockQuantity" value="<%= product.stockQuantity || 0 %>" min="0">
+                          <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-check"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </td>
+                    <td>
+                      <span class="badge <%= product.inStock ? 'bg-success' : 'bg-danger' %>">
+                        <%= product.inStock ? 'In Stock' : 'Out of Stock' %>
+                      </span>
+                    </td>
+                    <td>
+                      <form action="/designer/product/<%= product._id %>/toggle-stock" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm <%= product.inStock ? 'btn-warning' : 'btn-success' %>">
+                          <%= product.inStock ? 'Mark Out of Stock' : 'Mark In Stock' %>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">
+            No products found. Contact admin to add products.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>Tailor Stock Management</h5>
+        <ul>
+          <li><strong>Stock Updates:</strong> Update quantities based on materials and capacity</li>
+          <li><strong>Availability Control:</strong> Mark products as "Out of Stock" when materials are unavailable</li>
+          <li><strong>Production Ready:</strong> Ensure accurate stock levels for smooth order fulfillment</li>
+          <li><strong>Quality Control:</strong> Only mark items "In Stock" when you can guarantee quality delivery</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
