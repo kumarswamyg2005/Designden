@@ -221,6 +221,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Form Validation
   const forms = document.querySelectorAll("form");
   forms.forEach((form) => {
+    // If a page-specific script already handles validation (adds was-validated), skip
+    if (form.classList.contains('skip-global-validation')) return;
+
     form.addEventListener(
       "submit",
       (event) => {
