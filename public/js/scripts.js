@@ -237,4 +237,118 @@ document.addEventListener("DOMContentLoaded", () => {
       false
     );
   });
+
+  // --- Client-side AJAX filtering for /shop ---
+  (function shopFiltering() {
+    const filterForm = document.getElementById('filterForm');
+    const productsGrid = document.getElementById('productsGrid');
+    const productsSpinner = document.getElementById('productsSpinner');
+    const sortSelect = document.getElementById('sortSelect');
+
+    if (!filterForm || !productsGrid) return;
+
+    // Debounce helper
+    function debounce(fn, wait) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // Show/hide spinner
+    function showSpinner(show) {
+      if (!productsSpinner) return;
+      productsSpinner.style.display = show ? 'flex' : 'none';
+    }
+
+    // Build query from the form
+    function buildQuery() {
+      const formData = new FormData(filterForm);
+      const params = new URLSearchParams();
+      for (const [k, v] of formData.entries()) {
+        if (v !== null && String(v).trim() !== '') params.set(k, v);
+      }
+      // include sort
+      if (sortSelect && sortSelect.value) params.set('sort', sortSelect.value);
+      return params.toString() ? ('/shop?' + params.toString()) : '/shop';
+    }
+
+    // Render products array into the grid
+    function renderProducts(products) {
+      // Efficiently replace innerHTML; keep layout classes intact
+      if (!productsGrid) return;
+      if (!products || products.length === 0) {
+        productsGrid.innerHTML = `<div class="col-12"><div class="alert alert-info">No products found matching your filters. <a href="/shop">Clear all filters</a> to see all products.</div></div>`;
+        return;
+      }
+
+      const html = products.map(p => `
+        <div class="col">
+          <div class="card h-100 product-card">
+            <div class="position-relative">
+              <img src="${p.image}" class="card-img-top" alt="${escapeHtml(p.name)}">
+              ${!p.inStock ? '<div class="position-absolute top-0 end-0 bg-danger text-white m-2 px-2 py-1 rounded">Out of Stock</div>' : ''}
+              ${p.customizable ? '<div class="position-absolute top-0 start-0 bg-success text-white m-2 px-2 py-1 rounded">Customizable</div>' : ''}
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">${escapeHtml(p.name)}</h5>
+              <p class="card-text text-muted">${escapeHtml(p.category)} | ${escapeHtml(p.gender)}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="fw-bold">₹${Number(p.price).toFixed(2)}</span>
+                  ${p.inStock && p.stockQuantity > 0 ? `<br><small class="text-success">${p.stockQuantity} available</small>` : ''}
+                </div>
+                <a href="/shop/product/${p.id}" class="btn btn-sm btn-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      productsGrid.innerHTML = html;
+    }
+
+    // Minimal HTML escaper
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(s) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
+      });
+    }
+
+    async function fetchAndRender() {
+      const url = buildQuery();
+      try {
+        showSpinner(true);
+        const data = await window.api.get(url + (url.indexOf('?') === -1 ? '?_ajax=1' : '&_ajax=1'));
+        if (data && Array.isArray(data.products)) {
+          renderProducts(data.products);
+        } else {
+          renderProducts([]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+        toast('Failed to load products. Try again.', 'danger');
+      } finally {
+        showSpinner(false);
+      }
+    }
+
+    const debouncedFetch = debounce(fetchAndRender, 300);
+
+    // Prevent form from doing a full-page submit and use AJAX
+    filterForm.addEventListener('change', (e) => {
+      e.preventDefault();
+      debouncedFetch();
+    });
+
+    // Also listen to price apply button and sort select
+    filterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      fetchAndRender();
+    });
+
+    if (sortSelect) sortSelect.addEventListener('change', () => fetchAndRender());
+  })();
 });
