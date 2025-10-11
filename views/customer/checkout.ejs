@@ -141,3 +141,23 @@
   </div>
 
   <%- include('../partials/footer') %>
+  <script>
+    // Small client-side validation for checkout pincode (improve UX)
+    (function(){
+      const form = document.getElementById('checkoutForm');
+      if (!form) return;
+      const pincode = document.getElementById('pincode');
+      if (!pincode) return;
+      pincode.addEventListener('input', ()=>{
+        pincode.value = pincode.value.replace(/\D/g,'').slice(0,6);
+        pincode.classList.toggle('is-invalid', pincode.value.length !== 6);
+      });
+      form.addEventListener('submit', function(e){
+        if (pincode.value.length !== 6) {
+          e.preventDefault();
+          e.stopPropagation();
+          pincode.classList.add('is-invalid');
+        }
+      }, false);
+    })();
+  </script>
