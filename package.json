@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "start": "node app.js",
+    "dev": "node app.js",
+    "build": "echo 'Build complete'",
     "e2e:test": "mocha --timeout 10000 test/place_now.test.js"
   },
   "dependencies": {
