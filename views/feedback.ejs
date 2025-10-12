@@ -1,115 +1,167 @@
-<%- include('partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+<%- include('partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <h2 class="card-title mb-0">Submit Feedback</h2>
-          <a href="/customer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">Submit Feedback</h2>
+            <a href="/customer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Your Feedback</h3>
-      </div>
-      <div class="card-body">
-        <form action="/feedback/submit" method="POST">
-          <input type="hidden" name="orderId" value="<%= order._id %>">
-          
-          <div class="mb-3">
-            <label class="form-label">Order Details</label>
-            <p><strong>Order ID:</strong> <%= order._id.toString().substring(0, 8) %>...</p>
-            <p><strong>Design:</strong> <%= order.designId.name %></p>
-            <p><strong>Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
-          </div>
-          
-          <div class="mb-3">
-            <label for="rating" class="form-label">Rating</label>
-            <div class="rating">
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="rating" id="rating1" value="1" required>
-                <label class="form-check-label" for="rating1">1 <i class="fas fa-star text-warning"></i></label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
-                <label class="form-check-label" for="rating2">2 <i class="fas fa-star text-warning"></i></label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
-                <label class="form-check-label" for="rating3">3 <i class="fas fa-star text-warning"></i></label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
-                <label class="form-check-label" for="rating4">4 <i class="fas fa-star text-warning"></i></label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
-                <label class="form-check-label" for="rating5">5 <i class="fas fa-star text-warning"></i></label>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Your Feedback</h3>
+        </div>
+        <div class="card-body">
+          <form action="/feedback/submit" method="POST">
+            <input type="hidden" name="orderId" value="<%= order._id %>">
+
+            <div class="mb-3">
+              <label class="form-label">Order Details</label>
+              <p><strong>Order ID:</strong>
+                <%= order._id.toString().substring(0, 8) %>...
+              </p>
+              <% if (order.items && order.items.length> 0) { %>
+                <% const firstItem=order.items[0]; %>
+                  <% if (firstItem.customizationId && firstItem.customizationId.designId) { %>
+                    <p><strong>Design:</strong>
+                      <%= firstItem.customizationId.designId.name %>
+                    </p>
+                    <% } else if (firstItem.customizationId && firstItem.customizationId.productId) { %>
+                      <p><strong>Product:</strong>
+                        <%= firstItem.customizationId.productId.name %>
+                      </p>
+                      <% } else { %>
+                        <p><strong>Item:</strong> Custom Order</p>
+                        <% } %>
+                          <% } %>
+                            <p><strong>Date:</strong>
+                              <%= new Date(order.orderDate).toLocaleDateString() %>
+                            </p>
+            </div>
+
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating</label>
+              <div class="rating">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating1" value="1" required>
+                  <label class="form-check-label" for="rating1">1 <i class="fas fa-star text-warning"></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
+                  <label class="form-check-label" for="rating2">2 <i class="fas fa-star text-warning"></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
+                  <label class="form-check-label" for="rating3">3 <i class="fas fa-star text-warning"></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
+                  <label class="form-check-label" for="rating4">4 <i class="fas fa-star text-warning"></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
+                  <label class="form-check-label" for="rating5">5 <i class="fas fa-star text-warning"></i></label>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="comments" class="form-label">Comments</label>
-            <textarea class="form-control" id="comments" name="comments" rows="5" required></textarea>
-          </div>
-          
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Submit Feedback</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Design Details</h3>
-      </div>
-      <div class="card-body">
-        <div class="text-center mb-3">
-          <% if (order.designId.category === 'Hoodie') { %>
-            <img src="/images/winter-hoodie.webp" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
-          <% } else if (order.designId.category === 'T-Shirt') { %>
-            <img src="/images/casual-tshirt.jpeg" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
-          <% } else if (order.designId.category === 'Kurthi') { %>
-            <img src="/images/kurthi.jpeg" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
-          <% } else if (order.designId.category === 'Jeans') { %>
-            <img src="/images/denim-jeans.webp" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
-          <% } else { %>
-            <img src="/placeholder.svg?height=200&width=150" alt="Design Preview" class="img-fluid">
-          <% } %>
-        </div>
-        <h4><%= order.designId.name %></h4>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Fabric:</span>
-            <span><%= order.designId.fabric %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Color:</span>
-            <span><%= order.designId.color %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Pattern:</span>
-            <span><%= order.designId.pattern %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Size:</span>
-            <span><%= order.designId.size %></span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
 
-<%- include('partials/footer') %>
+            <div class="mb-3">
+              <label for="comments" class="form-label">Comments</label>
+              <textarea class="form-control" id="comments" name="comments" rows="5" required></textarea>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Design Details</h3>
+        </div>
+        <div class="card-body">
+          <% if (order.items && order.items.length> 0) { %>
+            <% const firstItem=order.items[0]; %>
+              <% if (firstItem.customizationId) { %>
+                <div class="text-center mb-3">
+                  <% if (firstItem.customizationId.customImage && !firstItem.customizationId.productId) { %>
+                    <img src="<%= firstItem.customizationId.customImage %>" alt="Custom Design" class="img-fluid"
+                      style="max-height: 200px; border: 2px solid #0d6efd; border-radius: 8px;">
+                    <% } else if (firstItem.customizationId.productId && firstItem.customizationId.productId.image) { %>
+                      <img src="<%= firstItem.customizationId.productId.image %>" alt="Product" class="img-fluid"
+                        style="max-height: 200px; border-radius: 8px;">
+                      <% } else { %>
+                        <img src="/images/casual-tshirt.jpeg" alt="Product" class="img-fluid"
+                          style="max-height: 200px;">
+                        <% } %>
+                </div>
+
+                <% if (firstItem.customizationId.designId) { %>
+                  <h4>
+                    <%= firstItem.customizationId.designId.name %>
+                  </h4>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Category:</span>
+                      <span>
+                        <%= firstItem.customizationId.designId.category || 'N/A' %>
+                      </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Size:</span>
+                      <span>
+                        <%= firstItem.customizationId.size || 'N/A' %>
+                      </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Color:</span>
+                      <span>
+                        <%= firstItem.customizationId.color || 'N/A' %>
+                      </span>
+                    </li>
+                  </ul>
+                  <% } else if (firstItem.customizationId.productId) { %>
+                    <h4>
+                      <%= firstItem.customizationId.productId.name %>
+                    </h4>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span>Size:</span>
+                        <span>
+                          <%= firstItem.customizationId.size || 'N/A' %>
+                        </span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span>Color:</span>
+                        <span>
+                          <%= firstItem.customizationId.color || 'N/A' %>
+                        </span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span>Price:</span>
+                        <span>₹<%= firstItem.price.toFixed(2) %></span>
+                      </li>
+                    </ul>
+                    <% } %>
+                      <% } %>
+                        <% } else { %>
+                          <p class="text-muted">No item details available</p>
+                          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>

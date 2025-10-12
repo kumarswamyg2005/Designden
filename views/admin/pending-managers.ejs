@@ -1,0 +1,44 @@
+<%- include('../partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
+
+  <div class="container mt-4">
+    <h2>Pending Manager Approvals</h2>
+    <% if (pending && pending.length) { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Signed Up</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pending.forEach(p=> { %>
+            <tr>
+              <td>
+                <%= p.username %>
+              </td>
+              <td>
+                <%= p.email %>
+              </td>
+              <td>
+                <%= p.createdAt.toLocaleString() %>
+              </td>
+              <td>
+                <form method="POST" action="/admin/approve-manager/<%= p._id %>" style="display:inline">
+                  <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                </form>
+                <form method="POST" action="/admin/reject-manager/<%= p._id %>" style="display:inline">
+                  <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+        </tbody>
+      </table>
+      <% } else { %>
+        <div class="alert alert-secondary">No pending managers.</div>
+        <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>

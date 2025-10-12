@@ -1,153 +1,143 @@
 <%- include('../partials/header') %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <h2 class="card-title mb-0">Checkout</h2>
-          <a href="/customer/cart" class="btn btn-outline-primary">Back to Cart</a>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">Checkout</h2>
+            <a href="/customer/cart" class="btn btn-outline-primary">Back to Cart</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card shadow-sm mb-4">
-      <div class="card-header">
-        <h3>Shipping Information</h3>
-      </div>
-      <div class="card-body">
-        <form action="/customer/process-checkout" method="POST" id="checkoutForm">
-          <div class="mb-3">
-            <label for="name" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="<%= user.username %>" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="phone" class="form-label">Phone Number</label>
-            <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.contactNumber %>" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="deliveryAddress" class="form-label">Delivery Address</label>
-            <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" required></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label for="city" class="form-label">City</label>
-            <input type="text" class="form-control" id="city" name="city" required>
-          </div>
-          
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="state" class="form-label">State</label>
-              <input type="text" class="form-control" id="state" name="state" required>
-            </div>
-            <div class="col-md-6">
-              <label for="pincode" class="form-label">Pincode</label>
-              <input type="text" class="form-control" id="pincode" name="pincode" required>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-    
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Payment Method</h3>
-      </div>
-      <div class="card-body">
-        <div class="mb-3">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
-            <label class="form-check-label" for="cod">
-              Cash on Delivery
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="online" value="online" disabled>
-            <label class="form-check-label" for="online">
-              Online Payment (Coming Soon)
-            </label>
-          </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h3>Shipping Information</h3>
         </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Order Summary</h3>
-      </div>
-      <div class="card-body">
-        <div class="mb-3">
-          <% if (cartItems && cartItems.length > 0) { %>
-            <% /* STRICT RULE 4: EXACT PRICE CONSISTENCY - NO EXCEPTIONS */ %>
-            <% cartItems.forEach(item => { %>
-              <% 
-                // VALIDATION: Ensure we have the actual price
-                const actualPrice = item.designId.price;
-                if (!actualPrice || actualPrice <= 0) {
-                  console.error('🚨 RULE 4 VIOLATION: Invalid price for item:', item.designId.name, 'Price:', actualPrice);
-                }
-                const validatedPrice = actualPrice && actualPrice > 0 ? actualPrice : 50;
-                const itemTotal = validatedPrice * item.quantity;
-              %>
-              <div class="d-flex justify-content-between mb-2">
-                <span><%= item.designId.name %> × <%= item.quantity %></span>
-                <span>₹<%= itemTotal.toFixed(2) %></span>
-                <% if (validatedPrice === 50 && !actualPrice) { %>
-                  <span class="text-warning small">(⚠️ Using fallback price)</span>
-                <% } %>
+        <div class="card-body">
+          <form action="/customer/process-checkout" method="POST" id="checkoutForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= user.username %>" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.contactNumber %>" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="deliveryAddress" class="form-label">Delivery Address</label>
+              <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" required>
               </div>
-            <% }) %>
-            <hr>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Subtotal:</span>
-              <span>
-                <% 
-                  let subtotal = 0;
-                  cartItems.forEach(item => {
-                    subtotal += (item.designId.price || 50) * item.quantity;
-                  });
-                %>
-                ₹<%= subtotal.toFixed(2) %>
-              </span>
+              <div class="col-md-6">
+                <label for="pincode" class="form-label">Pincode</label>
+                <input type="text" class="form-control" id="pincode" name="pincode" required>
+              </div>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Shipping:</span>
-              <span>₹50.00</span>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-between fw-bold">
-              <span>Total:</span>
-              <span>₹<%= (subtotal + 50).toFixed(2) %></span>
-            </div>
-          <% } else { %>
-            <div class="alert alert-warning">
-              Your cart is empty. Please add items to your cart before checkout.
-            </div>
-          <% } %>
+          </form>
         </div>
-        
-        <div class="d-grid gap-2">
-          <button type="submit" form="checkoutForm" class="btn btn-primary" <%= cartItems && cartItems.length > 0 ? '' : 'disabled' %>>
-            Place Order
-          </button>
-          <a href="/customer/cart" class="btn btn-outline-secondary">Back to Cart</a>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Payment Method</h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
+              <label class="form-check-label" for="cod">
+                Cash on Delivery
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="online" value="online" disabled>
+              <label class="form-check-label" for="online">
+                Online Payment (Coming Soon)
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Order Summary</h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <% if (cartItems && cartItems.length> 0) { %>
+              <% cartItems.forEach(function(item) { %>
+                <% var actualPrice=item.customizationId.price; var itemName=item.customizationId.customText
+                  || 'Custom Item' ; var validatedPrice=actualPrice && actualPrice> 0 ? actualPrice : 50;
+                  var itemTotal = validatedPrice * item.quantity;
+                  %>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>
+                      <%= itemName %> × <%= item.quantity %>
+                    </span>
+                    <span>₹<%= itemTotal.toFixed(2) %></span>
+                  </div>
+                  <% }); %>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Subtotal:</span>
+                      <span>
+                        <% var subtotal=0; cartItems.forEach(function(item) { subtotal +=(item.customizationId.price ||
+                          50) * item.quantity; }); %>
+                          ₹<%= subtotal.toFixed(2) %>
+                      </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Shipping:</span>
+                      <span>₹50.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                      <span>Total:</span>
+                      <span>₹<%= (subtotal + 50).toFixed(2) %></span>
+                    </div>
+                    <% } else { %>
+                      <div class="alert alert-warning">
+                        Your cart is empty. Please add items to your cart before checkout.
+                      </div>
+                      <% } %>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" form="checkoutForm" class="btn btn-primary" <%=(cartItems && cartItems.length> 0) ? ''
+              : 'disabled' %>>
+              Place Order
+            </button>
+            <a href="/customer/cart" class="btn btn-outline-secondary">Back to Cart</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<%- include('../partials/footer') %>
+  <%- include('../partials/footer') %>

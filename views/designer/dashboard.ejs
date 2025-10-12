@@ -1,75 +1,295 @@
 <%- include('../partials/header') %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title">Designer Dashboard</h2>
-        <p class="card-text">Welcome, <%= user.username %>. Manage your assigned orders and update their status.</p>
-        <div class="row mt-3">
-          <div class="col-md-4">
-            <a href="/designer/products" class="btn btn-outline-primary w-100">
-              <i class="fas fa-boxes"></i> Manage Products & Stock
-            </a>
+  <div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0 bg-gradient"
+          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="card-body text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h2 class="card-title mb-2">
+                  <i class="fas fa-paint-brush me-2"></i>Designer Workspace
+                </h2>
+                <p class="card-text mb-0">Welcome, <%= user.username %>. Manage your custom design orders and track work
+                    progress.</p>
+              </div>
+              <div class="text-end">
+                <div class="h3 mb-0">
+                  <%= stats.total %>
+                </div>
+                <small>Total Assigned</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Pending</h6>
+                <h3 class="mb-0">
+                  <%= stats.pending %>
+                </h3>
+                <small class="text-muted">Awaiting acceptance</small>
+              </div>
+              <div class="text-warning" style="font-size: 2rem;">
+                <i class="fas fa-clock"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">In Production</h6>
+                <h3 class="mb-0">
+                  <%= stats.inProduction %>
+                </h3>
+                <small class="text-muted">Currently working</small>
+              </div>
+              <div class="text-info" style="font-size: 2rem;">
+                <i class="fas fa-cogs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Shipped</h6>
+                <h3 class="mb-0">
+                  <%= stats.shipped %>
+                </h3>
+                <small class="text-muted">Ready/Shipped</small>
+              </div>
+              <div class="text-primary" style="font-size: 2rem;">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Completed</h6>
+                <h3 class="mb-0">
+                  <%= stats.completed %>
+                </h3>
+                <small class="text-muted">Delivered</small>
+              </div>
+              <div class="text-success" style="font-size: 2rem;">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Designer Note:</strong> You only work on <strong>custom 3D design orders</strong> created by customers
+          in the Design Studio.
+          Shop product orders are automatically processed and don't require designer work.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Your Custom Design Orders</h5>
+          </div>
+          <div class="card-body">
+            <% if (orders && orders.length> 0) { %>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Items</th>
+                      <th>Design Details</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% orders.forEach(order=> { %>
+                      <tr>
+                        <td>
+                          <small class="font-monospace">
+                            <%= order._id.toString().substring(0, 10) %>...
+                          </small>
+                        </td>
+                        <td>
+                          <strong>
+                            <%= order.customerId ? order.customerId.username : 'N/A' %>
+                          </strong><br>
+                          <small class="text-muted">
+                            <%= order.customerId ? order.customerId.email : '' %>
+                          </small>
+                        </td>
+                        <td>
+                          <span class="badge bg-secondary">
+                            <%= order.items ? order.items.filter(i=> i.customizationId &&
+                              !i.customizationId.productId).length : 0 %> custom items
+                          </span>
+                        </td>
+                        <td>
+                          <% const customItem=order.items.find(i=> i.customizationId && !i.customizationId.productId);
+                            if (customItem && customItem.customizationId) {
+                            %>
+                            <small>
+                              <i class="fas fa-palette"></i>
+                              <%= customItem.customizationId.color %><br>
+                                <i class="fas fa-ruler"></i>
+                                <%= customItem.customizationId.size %><br>
+                                  <% if (customItem.customizationId.customText) { %>
+                                    <i class="fas fa-font"></i>
+                                    <%= customItem.customizationId.customText.substring(0, 20) %>...
+                                      <% } %>
+                            </small>
+                            <% } %>
+                        </td>
+                        <td>
+                          <strong>₹<%= (order.totalPrice || 0).toFixed(2) %></strong>
+                        </td>
+                        <td>
+                          <% if (order.status==='pending' ) { %>
+                            <span class="badge bg-warning text-dark">
+                              <i class="fas fa-clock"></i> Pending
+                            </span>
+                            <% } else if (order.status==='assigned' ) { %>
+                              <span class="badge bg-info">
+                                <i class="fas fa-user-check"></i> Assigned
+                              </span>
+                              <% } else if (order.status==='in_production' ) { %>
+                                <span class="badge bg-primary">
+                                  <i class="fas fa-cogs"></i> In Production
+                                </span>
+                                <% } else if (order.status==='completed' ) { %>
+                                  <span class="badge bg-success">
+                                    <i class="fas fa-check-double"></i> Completed
+                                  </span>
+                                  <% } else if (order.status==='shipped' ) { %>
+                                    <span class="badge bg-dark">
+                                      <i class="fas fa-shipping-fast"></i> Shipped
+                                    </span>
+                                    <% } else if (order.status==='delivered' ) { %>
+                                      <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Delivered
+                                      </span>
+                                      <% } else { %>
+                                        <span class="badge bg-secondary">
+                                          <%= order.status %>
+                                        </span>
+                                        <% } %>
+                        </td>
+                        <td>
+                          <small>
+                            <%= new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short' , day: 'numeric'
+                              , year: 'numeric' }) %>
+                          </small>
+                        </td>
+                        <td>
+                          <a href="/designer/order/<%= order._id %>" class="btn btn-sm btn-primary">
+                            <i class="fas fa-eye"></i> View & Work
+                          </a>
+                        </td>
+                      </tr>
+                      <% }) %>
+                  </tbody>
+                </table>
+              </div>
+              <% } else { %>
+                <div class="text-center py-5">
+                  <i class="fas fa-inbox text-muted" style="font-size: 4rem;"></i>
+                  <p class="text-muted mt-3">No custom design orders assigned yet.</p>
+                  <small class="text-muted">When a manager assigns a custom order to you, it will appear here.</small>
+                </div>
+                <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Guidelines -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-tasks me-2"></i>Work Process Guidelines</h5>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="text-center p-3">
+                  <div class="mb-2" style="font-size: 2rem; color: #667eea;">
+                    <i class="fas fa-hand-pointer"></i>
+                  </div>
+                  <h6>1. Accept Order</h6>
+                  <small class="text-muted">Review customer requirements and accept the work</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-center p-3">
+                  <div class="mb-2" style="font-size: 2rem; color: #667eea;">
+                    <i class="fas fa-pencil-ruler"></i>
+                  </div>
+                  <h6>2. Start Design</h6>
+                  <small class="text-muted">Begin working on the 3D custom design</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-center p-3">
+                  <div class="mb-2" style="font-size: 2rem; color: #667eea;">
+                    <i class="fas fa-sync-alt"></i>
+                  </div>
+                  <h6>3. Update Progress</h6>
+                  <small class="text-muted">Keep customer informed with progress updates</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-center p-3">
+                  <div class="mb-2" style="font-size: 2rem; color: #667eea;">
+                    <i class="fas fa-check-double"></i>
+                  </div>
+                  <h6>4. Mark Ready</h6>
+                  <small class="text-muted">Complete design and mark ready for shipping</small>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Your Assigned Orders</h3>
-      </div>
-      <div class="card-body">
-        <% if (assignedOrders && assignedOrders.length > 0) { %>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Design</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% assignedOrders.forEach(order => { %>
-                  <tr>
-                    <td><%= order._id.toString().substring(0, 8) %>...</td>
-                    <td><%= order.customerId.username %></td>
-                    <td><%= order.designId.name %></td>
-                    <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
-                    <td>
-                      <span class="badge <%= 
-                        order.status === 'Pending' ? 'bg-warning' : 
-                        order.status === 'Assigned' ? 'bg-info' : 
-                        order.status === 'In Progress' ? 'bg-primary' : 
-                        order.status === 'Completed' ? 'bg-success' : 
-                        'bg-danger' 
-                      %>">
-                        <%= order.status %>
-                      </span>
-                    </td>
-                    <td>
-                      <a href="/designer/order/<%= order._id %>" class="btn btn-sm btn-outline-primary">View</a>
-                    </td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-        <% } else { %>
-          <div class="alert alert-info">No orders assigned yet.</div>
-        <% } %>
-      </div>
-    </div>
-  </div>
-</div>
-
-<%- include('../partials/footer') %>
+  <%- include('../partials/footer') %>

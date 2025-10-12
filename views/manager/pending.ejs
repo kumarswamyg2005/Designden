@@ -1,0 +1,9 @@
+<%- include('../partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
+
+  <div class="container mt-4">
+    <div class="alert alert-info">
+      Your manager account is pending approval by an administrator. You will be notified once approved.
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

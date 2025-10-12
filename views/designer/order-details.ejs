@@ -1,171 +1,830 @@
 <%- include('../partials/header') %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <h2 class="card-title mb-0">Order Details</h2>
-          <a href="/designer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
-        </div>
+  <div class="container-fluid">
+    <!-- Back Button -->
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="/designer/dashboard" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Order #<%= order._id.toString().substring(0, 8) %>...</h3>
-      </div>
-      <div class="card-body">
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <h5>Order Information</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Order Date:</span>
-                <span><%= new Date(order.orderDate).toLocaleDateString() %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Status:</span>
-                <span class="badge <%= 
-                  order.status === 'Pending' ? 'bg-warning' : 
-                  order.status === 'Assigned' ? 'bg-info' : 
-                  order.status === 'In Progress' ? 'bg-primary' : 
-                  order.status === 'Completed' ? 'bg-success' : 
-                  'bg-danger' 
-                %>">
-                  <%= order.status %>
-                </span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Quantity:</span>
-                <span><%= order.quantity %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Total Price:</span>
-                <span>₹<%= order.totalPrice.toFixed(2) %></span>
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-6">
-            <h5>Customer Information</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Name:</span>
-                <span><%= order.customerId.username %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Email:</span>
-                <span><%= order.customerId.email %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Contact:</span>
-                <span><%= order.customerId.contactNumber %></span>
-              </li>
-              <li class="list-group-item">
-                <span>Delivery Address:</span>
-                <p class="mb-0 mt-1"><%= order.deliveryAddress %></p>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="mb-4">
-          <h5>Update Order Status</h5>
-          <div class="row g-2 align-items-end">
-            <div class="col-md-6">
-              <select id="statusSelect" class="form-select" required>
-                <option value="Assigned" <%= order.status === 'Assigned' ? 'selected' : '' %>>Assigned</option>
-                <option value="In Progress" <%= order.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
-                <option value="Completed" <%= order.status === 'Completed' ? 'selected' : '' %>>Completed</option>
-              </select>
-            </div>
-            <div class="col-md-3 d-grid">
-              <button id="btnUpdate" class="btn btn-primary">Update Status</button>
+    <!-- Order Header -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0 bg-primary text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h3 class="mb-2">Custom Design Order</h3>
+                <p class="mb-0">
+                  <strong>Order ID:</strong>
+                  <%= order._id %><br>
+                    <strong>Customer:</strong>
+                    <%= order.customerId.username %> (<%= order.customerId.email %>)<br>
+                        <strong>Order Date:</strong>
+                        <%= new Date(order.orderDate).toLocaleDateString('en-US', { month: 'long' , day: 'numeric' ,
+                          year: 'numeric' }) %>
+                </p>
+              </div>
+              <div class="text-end">
+                <h2 class="mb-0">₹<%= (order.totalPrice || 0).toFixed(2) %>
+                </h2>
+                <% if (order.status==='pending' ) { %>
+                  <span class="badge bg-warning text-dark fs-6">
+                    <i class="fas fa-clock"></i> Pending
+                  </span>
+                  <% } else if (order.status==='assigned' ) { %>
+                    <span class="badge bg-info fs-6">
+                      <i class="fas fa-user-check"></i> Assigned to You
+                    </span>
+                    <% } else if (order.status==='in_production' ) { %>
+                      <span class="badge bg-primary fs-6">
+                        <i class="fas fa-cogs"></i> In Production
+                      </span>
+                      <% } else if (order.status==='completed' ) { %>
+                        <span class="badge bg-success fs-6">
+                          <i class="fas fa-check-double"></i> Completed
+                        </span>
+                        <% } else if (order.status==='shipped' ) { %>
+                          <span class="badge bg-dark fs-6">
+                            <i class="fas fa-shipping-fast"></i> Shipped
+                          </span>
+                          <% } else if (order.status==='delivered' ) { %>
+                            <span class="badge bg-success fs-6">
+                              <i class="fas fa-check-circle"></i> Delivered
+                            </span>
+                            <% } else { %>
+                              <span class="badge bg-secondary fs-6">
+                                <%= order.status %>
+                              </span>
+                              <% } %>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Design Details</h3>
-      </div>
-      <div class="card-body">
-        <div class="text-center mb-3">
-          <% /* Display product image based on category for tailor reference */ %>
-          <% if (order.designId.category === 'Hoodie') { %>
-            <img src="/images/winter-hoodie.webp" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else if (order.designId.category === 'T-Shirt') { %>
-            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else if (order.designId.category === 'Kurthi') { %>
-            <img src="/images/kurthi.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else if (order.designId.category === 'Jeans') { %>
-            <img src="/images/denim-jeans.webp" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else if (order.designId.category === 'Dress') { %>
-            <img src="/images/women-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else if (order.designId.category === 'Shirt') { %>
-            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } else { %>
-            <img src="/images/casual-tshirt.jpeg" alt="<%= order.designId.name %>" class="img-fluid border rounded" style="max-height: 220px; width: auto; object-fit: cover;">
-          <% } %>
-          <div class="mt-2">
-            <small class="text-muted">Product Category: <strong><%= order.designId.category %></strong></small>
+
+    <div class="row">
+      <!-- Left Column: Design Details -->
+      <div class="col-md-8 mb-4">
+        <!-- Custom Design Items -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-cube me-2"></i>Custom Design Details</h5>
+          </div>
+          <div class="card-body">
+            <% customItems.forEach((item, index)=> { %>
+              <div class="design-item <%= index > 0 ? 'mt-4 pt-4 border-top' : '' %>">
+                <div class="row">
+                  <div class="col-md-4">
+                    <% if (item.customizationId.customImage) { %>
+                      <div class="position-relative">
+                        <img src="<%= item.customizationId.customImage %>" alt="Custom 3D Design"
+                          class="img-fluid rounded"
+                          style="width: 100%; max-height: 250px; object-fit: contain; border: 3px solid #0d6efd;">
+                        <span class="badge bg-primary position-absolute top-0 start-0 m-2">
+                          <i class="fas fa-cube"></i> 3D Design
+                        </span>
+                      </div>
+                      <% } else { %>
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                          style="height: 250px; border: 2px dashed #ccc;">
+                          <div class="text-center">
+                            <i class="fas fa-cube fa-4x text-muted mb-2"></i>
+                            <p class="text-muted">No design preview</p>
+                          </div>
+                        </div>
+                        <% } %>
+                  </div>
+                  <div class="col-md-8">
+                    <h6 class="mb-3">Design Specifications</h6>
+                    <table class="table table-sm table-borderless">
+                      <tr>
+                        <td><i class="fas fa-palette text-primary me-2"></i><strong>Color:</strong></td>
+                        <td><span class="badge bg-secondary">
+                            <%= item.customizationId.color %>
+                          </span></td>
+                      </tr>
+                      <tr>
+                        <td><i class="fas fa-ruler text-primary me-2"></i><strong>Size:</strong></td>
+                        <td><span class="badge bg-secondary">
+                            <%= item.customizationId.size %>
+                          </span></td>
+                      </tr>
+                      <tr>
+                        <td><i class="fas fa-layer-group text-primary me-2"></i><strong>Fabric:</strong></td>
+                        <td>
+                          <% if (item.customizationId.fabricId) { %>
+                            <%= item.customizationId.fabricId.name %> (<%= item.customizationId.fabricId.type %>)
+                                <% } else { %>
+                                  Standard Fabric
+                                  <% } %>
+                        </td>
+                      </tr>
+                      <% if (item.customizationId.customText) { %>
+                        <tr>
+                          <td><i class="fas fa-font text-primary me-2"></i><strong>Custom Text:</strong></td>
+                          <td>
+                            <%= item.customizationId.customText %>
+                          </td>
+                        </tr>
+                        <% } %>
+                          <% if (item.customizationId.additionalNotes) { %>
+                            <tr>
+                              <td><i class="fas fa-sticky-note text-primary me-2"></i><strong>Notes:</strong></td>
+                              <td>
+                                <%= item.customizationId.additionalNotes %>
+                              </td>
+                            </tr>
+                            <% } %>
+                              <tr>
+                                <td><i class="fas fa-hashtag text-primary me-2"></i><strong>Quantity:</strong></td>
+                                <td>
+                                  <%= item.quantity %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td><i class="fas fa-rupee-sign text-primary me-2"></i><strong>Price:</strong></td>
+                                <td><strong>₹<%= (item.price * item.quantity).toFixed(2) %></strong></td>
+                              </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
           </div>
         </div>
-        <h4><%= order.designId.name %></h4>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Fabric:</span>
-            <span><%= order.designId.fabric %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Color:</span>
-            <span><%= order.designId.color %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Pattern:</span>
-            <span><%= order.designId.pattern %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Size:</span>
-            <span><%= order.designId.size %></span>
-          </li>
-        </ul>
-        <% if (order.designId.additionalNotes) { %>
-          <div class="mt-3">
-            <h5>Additional Notes:</h5>
-            <p><%= order.designId.additionalNotes %></p>
+
+        <!-- Delivery Address -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h5>
           </div>
-        <% } %>
+          <div class="card-body">
+            <p class="mb-0">
+              <%= order.deliveryAddress %>
+            </p>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Order Timeline</h5>
+          </div>
+          <div class="card-body">
+            <% if (order.timeline && order.timeline.length> 0) { %>
+              <div class="timeline">
+                <% order.timeline.reverse().forEach((event, index)=> { %>
+                  <div class="timeline-item <%= index === 0 ? 'active' : '' %>">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                      <div class="d-flex justify-content-between">
+                        <strong>
+                          <%= event.status %>
+                        </strong>
+                        <small class="text-muted">
+                          <%= new Date(event.at).toLocaleString('en-US', { month: 'short' , day: 'numeric' ,
+                            hour: '2-digit' , minute: '2-digit' }) %>
+                        </small>
+                      </div>
+                      <% if (event.note) { %>
+                        <p class="mb-0 text-muted">
+                          <%= event.note %>
+                        </p>
+                        <% } %>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+              <% } else { %>
+                <p class="text-muted mb-0">No timeline events yet</p>
+                <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Actions -->
+      <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Actions</h5>
+          </div>
+          <div class="card-body">
+            <% if (order.status==='pending' ) { %>
+              <button class="btn btn-success btn-lg w-100 mb-3" id="acceptOrderBtn">
+                <i class="fas fa-check-circle me-2"></i>Accept Order
+              </button>
+              <p class="text-muted small mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Review the design requirements and accept to start working.
+              </p>
+              <% } else if (order.status==='assigned' ) { %>
+                <button class="btn btn-success btn-lg w-100 mb-3" id="acceptOrderBtn">
+                  <i class="fas fa-check-circle me-2"></i>Accept Order
+                </button>
+                <p class="text-muted small mb-0">
+                  <i class="fas fa-info-circle me-1"></i>
+                  This order has been assigned to you. Accept to start working.
+                </p>
+                <% } else if (order.status==='in_production' ) { %>
+                  <button class="btn btn-info btn-lg w-100 mb-3" data-bs-toggle="modal" data-bs-target="#progressModal">
+                    <i class="fas fa-sync-alt me-2"></i>Update Progress
+                  </button>
+                  <button class="btn btn-primary btn-lg w-100 mb-3" data-bs-toggle="modal" data-bs-target="#readyModal">
+                    <i class="fas fa-check-double me-2"></i>Mark as Completed
+                  </button>
+                  <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Keep customer updated with progress or mark complete when done.
+                  </p>
+                  <% } else if (order.status==='completed' ) { %>
+                    <button class="btn btn-success btn-lg w-100 mb-3" data-bs-toggle="modal"
+                      data-bs-target="#shippedModal">
+                      <i class="fas fa-shipping-fast me-2"></i>Mark as Shipped
+                    </button>
+                    <p class="text-muted small mb-0">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Design work is complete. Ship the order to customer.
+                    </p>
+                    <% } else if (order.status==='shipped' ) { %>
+                      <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Order Shipped!</strong><br>
+                        <small>This order has been shipped and is on its way to the customer.</small>
+                      </div>
+                      <% } else if (order.status==='delivered' ) { %>
+                        <div class="alert alert-success mb-0">
+                          <i class="fas fa-check-circle me-2"></i>
+                          <strong>Order Delivered!</strong><br>
+                          <small>This order has been successfully delivered to the customer.</small>
+                        </div>
+                        <% } %>
+          </div>
+        </div>
+
+        <!-- Work Progress Tips -->
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body">
+            <h6 class="card-title"><i class="fas fa-lightbulb me-2"></i>Designer Tips</h6>
+            <ul class="small mb-0">
+              <li>Review all customization details carefully</li>
+              <li>Check fabric type and availability</li>
+              <li>Verify measurements and sizes</li>
+              <li>Update progress regularly for customer satisfaction</li>
+              <li>Mark ready only when design is 100% complete</li>
+              <li>Ensure quality before shipping</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<%- include('../partials/footer') %>
+  <!-- Progress Update Modal -->
+  <div class="modal fade" id="progressModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-sync-alt me-2"></i>Update Work Progress</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Progress Percentage</label>
+            <input type="range" class="form-range" id="progressPercentage" min="0" max="100" value="50" step="5">
+            <div class="text-center">
+              <span class="badge bg-info fs-5" id="progressDisplay">50%</span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Progress Note</label>
+            <textarea class="form-control" id="progressNote" rows="3"
+              placeholder="E.g., Completed pattern design, working on final touches..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-info" id="submitProgressBtn">
+            <i class="fas fa-paper-plane me-2"></i>Submit Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<script>
-  document.getElementById('btnUpdate')?.addEventListener('click', async () => {
-    const status = document.getElementById('statusSelect').value
-    try {
-      const res = await window.api.post('/designer/update-status/<%= order._id %>', { status })
-      window.toast('Status updated', 'success')
-      // Update badge text/color
-      const badge = document.querySelector('.list-group-item .badge')
-      if (badge) {
-        badge.textContent = res.order.status
-        badge.className = 'badge ' + (res.order.status === 'Pending' ? 'bg-warning' : res.order.status === 'Assigned' ? 'bg-info' : res.order.status === 'In Progress' ? 'bg-primary' : res.order.status === 'Completed' ? 'bg-success' : 'bg-danger')
-      }
-    } catch (e) {
-      console.error(e)
-      window.toast('Failed to update status', 'danger')
+  <!-- Mark Ready Modal -->
+  <div class="modal fade" id="readyModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="fas fa-check-double me-2"></i>Mark Order as Completed</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Confirm:</strong> Is the design 100% complete?
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Completion Note</label>
+            <textarea class="form-control" id="completionNote" rows="3"
+              placeholder="E.g., Design completed as per specifications, all quality checks passed..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="markReadyBtn">
+            <i class="fas fa-check-circle me-2"></i>Confirm & Mark Completed
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark Shipped Modal -->
+  <div class="modal fade" id="shippedModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="fas fa-shipping-fast me-2"></i>Mark Order as Shipped</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Note:</strong> The customer will be notified that their order is on the way.
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tracking/Shipping Information (Optional)</label>
+            <textarea class="form-control" id="trackingInfo" rows="2"
+              placeholder="E.g., Tracking number: ABC123456, Expected delivery: 3-5 days..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" id="markShippedBtn">
+            <i class="fas fa-shipping-fast me-2"></i>Confirm & Mark Shipped
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Timeline Styles */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
     }
-  })
-</script>
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -30px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #dee2e6;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #dee2e6;
+    }
+
+    .timeline-item.active .timeline-marker {
+      background: #0d6efd;
+      box-shadow: 0 0 0 2px #0d6efd;
+    }
+
+    .timeline-item:before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 12px;
+      bottom: -12px;
+      width: 2px;
+      background: #dee2e6;
+    }
+
+    .timeline-item:last-child:before {
+      display: none;
+    }
+
+    /* ===== ENHANCED MODAL STYLES ===== */
+
+    /* Modal Dialog Enhancements */
+    .modal-dialog {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Modal Content */
+    .modal-content {
+      border: none;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal Header Styles */
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-bottom: none;
+      padding: 1.5rem;
+    }
+
+    .modal-header .modal-title {
+      font-weight: 600;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .modal-header .modal-title i {
+      font-size: 1.5rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Progress Modal Header */
+    #progressModal .modal-header {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+
+    /* Ready Modal Header */
+    #readyModal .modal-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    }
+
+    /* Shipped Modal Header */
+    #shippedModal .modal-header {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    }
+
+    .modal-header .btn-close {
+      opacity: 1;
+      filter: brightness(0) invert(1);
+    }
+
+    .modal-header .btn-close:hover {
+      transform: rotate(90deg);
+      transition: transform 0.3s ease;
+    }
+
+    /* Modal Body Styles */
+    .modal-body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+
+    .modal-body .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-body .form-control,
+    .modal-body .form-range {
+      border-radius: 8px;
+      border: 2px solid #dee2e6;
+      transition: all 0.3s ease;
+    }
+
+    .modal-body .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .modal-body textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Range Slider Styling */
+    .form-range {
+      height: 8px;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .form-range::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    /* Progress Badge */
+    #progressDisplay {
+      font-size: 2rem !important;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 1rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    /* Alert Boxes in Modals */
+    .modal-body .alert {
+      border-radius: 10px;
+      border: none;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-body .alert i {
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+    }
+
+    .modal-body .alert-warning {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffe5a1 100%);
+      color: #856404;
+    }
+
+    .modal-body .alert-info {
+      background: linear-gradient(135deg, #d1ecf1 0%, #b8daff 100%);
+      color: #0c5460;
+    }
+
+    /* Modal Footer Styles */
+    .modal-footer {
+      background: white;
+      border-top: 2px solid #e9ecef;
+      padding: 1.25rem 2rem;
+      gap: 1rem;
+    }
+
+    .modal-footer button {
+      border-radius: 8px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-footer button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-footer .btn-secondary {
+      background: #6c757d;
+    }
+
+    .modal-footer .btn-info {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      color: white;
+    }
+
+    .modal-footer .btn-primary {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: white;
+    }
+
+    .modal-footer .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+      color: white;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop.show {
+      opacity: 0.7;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%);
+    }
+
+    /* Input Focus Glow */
+    .modal-body input:focus,
+    .modal-body textarea:focus {
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Icon Animations */
+    .modal-title i {
+      animation: iconRotate 3s ease-in-out infinite;
+    }
+
+    @keyframes iconRotate {
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      50% {
+        transform: rotate(10deg);
+      }
+    }
+
+    /* Responsive Modal */
+    @media (max-width: 576px) {
+      .modal-dialog {
+        margin: 0.5rem;
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+      }
+
+      .modal-footer button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    const orderId = '<%= order._id %>';
+
+    // Progress range slider
+    const progressRange = document.getElementById('progressPercentage');
+    const progressDisplay = document.getElementById('progressDisplay');
+
+    if (progressRange) {
+      progressRange.addEventListener('input', function () {
+        progressDisplay.textContent = this.value + '%';
+      });
+    }
+
+    // Accept order
+    const acceptBtn = document.getElementById('acceptOrderBtn');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', async function () {
+        if (!confirm('Accept this order and start working on it?')) return;
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Accepting...';
+
+        try {
+          const res = await fetch(`/designer/order/${orderId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          const data = await res.json();
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            location.reload();
+          }
+        } catch (e) {
+          console.error(e);
+          location.reload();
+        }
+      });
+    }
+
+    // Submit progress update
+    const submitProgressBtn = document.getElementById('submitProgressBtn');
+    if (submitProgressBtn) {
+      submitProgressBtn.addEventListener('click', async function () {
+        const percentage = document.getElementById('progressPercentage').value;
+        const note = document.getElementById('progressNote').value.trim();
+
+        if (!note) {
+          return;
+        }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+        try {
+          const res = await fetch(`/designer/order/${orderId}/update-progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              progressPercentage: percentage,
+              progressNote: note
+            })
+          });
+
+          const data = await res.json();
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            location.reload();
+          }
+        } catch (e) {
+          console.error(e);
+          location.reload();
+        }
+      });
+    }
+
+    // Mark ready
+    const markReadyBtn = document.getElementById('markReadyBtn');
+    if (markReadyBtn) {
+      markReadyBtn.addEventListener('click', async function () {
+        const note = document.getElementById('completionNote').value.trim();
+
+        if (!note) {
+          return;
+        }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+        try {
+          const res = await fetch(`/designer/order/${orderId}/mark-ready`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ completionNote: note })
+          });
+
+          const data = await res.json();
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            location.reload();
+          }
+        } catch (e) {
+          console.error(e);
+          location.reload();
+        }
+      });
+    }
+
+    // Mark shipped
+    const markShippedBtn = document.getElementById('markShippedBtn');
+    if (markShippedBtn) {
+      markShippedBtn.addEventListener('click', async function () {
+        const trackingInfo = document.getElementById('trackingInfo').value.trim();
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+        try {
+          const res = await fetch(`/designer/order/${orderId}/mark-shipped`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trackingInfo: trackingInfo })
+          });
+
+          const data = await res.json();
+          if (data.redirect) {
+            window.location.href = data.redirect;
+          } else {
+            location.reload();
+          }
+        } catch (e) {
+          console.error(e);
+          location.reload();
+        }
+      });
+    }
+  </script>
+
+  <%- include('../partials/footer') %>

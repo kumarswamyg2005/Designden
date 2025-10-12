@@ -1,0 +1,186 @@
+<%- include('../partials/header') %>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Admin Dashboard</h2>
+          <p class="card-text">Welcome, <%= user.username %>. Manage orders and assign them to designers.</p>
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <a href="/admin/products" class="btn btn-outline-primary w-100">
+                <i class="fas fa-boxes"></i> Manage Products & Stock
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Pending Orders</h3>
+        </div>
+        <div class="card-body">
+          <% if (pendingOrders && pendingOrders.length> 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Design</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% pendingOrders.forEach(order=> { %>
+                    <tr>
+                      <td>
+                        <%= order._id.toString().substring(0, 8) %>...
+                      </td>
+                      <td>
+                        <%= order.customerId && order.customerId.username ? order.customerId.username : 'N/A' %>
+                      </td>
+                      <td>
+                        <%= order.designId && order.designId.name ? order.designId.name : 'N/A' %>
+                      </td>
+                      <td>
+                        <%= order.orderDate ? new Date(order.orderDate).toLocaleDateString() : '-' %>
+                      </td>
+                      <td>₹<%= order.totalPrice.toFixed(2) %>
+                      </td>
+                      <td>
+                        <a href="/admin/order/<%= order._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                          data-bs-target="#assignModal<%= order._id %>">
+                          Assign
+                        </button>
+
+                        <!-- Assign Modal -->
+                        <div class="modal fade" id="assignModal<%= order._id %>" tabindex="-1"
+                          aria-labelledby="assignModalLabel<%= order._id %>" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="assignModalLabel<%= order._id %>">Assign Order to Designer
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <form action="/admin/assign-order/<%= order._id %>" method="POST"
+                                  id="assignForm<%= order._id %>">
+                                  <div class="mb-3">
+                                    <label for="designerId<%= order._id %>" class="form-label">Select Designer</label>
+                                    <select class="form-select" id="designerId<%= order._id %>" name="designerId"
+                                      required>
+                                      <option value="" selected disabled>Choose a designer</option>
+                                      <% designers.filter(d=> d.email === 'tailor@designden.com').forEach(designer => {
+                                        %>
+                                        <option value="<%= designer._id %>">
+                                          <%= designer.username %> (<%= designer.email %>)
+                                        </option>
+                                        <% }) %>
+                                    </select>
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" form="assignForm<%= order._id %>"
+                                  class="btn btn-primary">Assign</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <% } else { %>
+              <div class="alert alert-info">
+                There are no pending orders at the moment.
+              </div>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Assigned Orders</h3>
+        </div>
+        <div class="card-body">
+          <% if (assignedOrders && assignedOrders.length> 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Designer</th>
+                    <th>Design</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% assignedOrders.forEach(order=> { %>
+                    <tr>
+                      <td>
+                        <%= order._id.toString().substring(0, 8) %>...
+                      </td>
+                      <td>
+                        <%= order.customerId && order.customerId.username ? order.customerId.username : 'N/A' %>
+                      </td>
+                      <td>
+                        <%= order.designerId && order.designerId.username ? order.designerId.username : 'Unassigned' %>
+                      </td>
+                      <td>
+                        <%= order.designId && order.designId.name ? order.designId.name : 'N/A' %>
+                      </td>
+                      <td>
+                        <%= order.orderDate ? new Date(order.orderDate).toLocaleDateString() : '-' %>
+                      </td>
+                      <td>
+                        <span class="badge <%= 
+                        order.status === 'Pending' ? 'bg-warning' : 
+                        order.status === 'Assigned' ? 'bg-info' : 
+                        order.status === 'In Progress' ? 'bg-primary' : 
+                        order.status === 'Completed' ? 'bg-success' : 
+                        'bg-danger' 
+                      %>">
+                          <%= order.status %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/admin/order/<%= order._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <% } else { %>
+              <div class="alert alert-info">
+                There are no assigned orders at the moment.
+              </div>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

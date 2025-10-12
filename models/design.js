@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const designSchema = new mongoose.Schema({
   customerId: {
@@ -48,10 +48,24 @@ const designSchema = new mongoose.Schema({
     default: 50,
     min: 0,
   },
+  sustainabilityScore: {
+    type: Number,
+    min: 0,
+    max: 100,
+    default: 50,
+  },
+  wishlist: {
+    type: Boolean,
+    default: false,
+  },
+  variantGroupId: {
+    type: String,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
-})
+});
 
-module.exports = mongoose.model("Design", designSchema)
+module.exports = mongoose.model("Design", designSchema);
