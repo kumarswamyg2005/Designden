@@ -5,25 +5,52 @@
       <div class="card shadow-sm">
         <div class="card-body p-4">
           <h2 class="text-center mb-4">Create an Account</h2>
-          <form action="/signup" method="POST">
+          <form action="/signup" method="POST" id="signupForm" novalidate>
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
               <input type="text" class="form-control" id="username" name="username"
-                value="<%= typeof formData !== 'undefined' ? formData.username : '' %>" required>
+                value="<%= typeof formData !== 'undefined' ? formData.username : '' %>" required minlength="3"
+                maxlength="50" placeholder="Enter username (3-50 characters)">
+              <div class="invalid-feedback">
+                Username must be between 3 and 50 characters.
+              </div>
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <input type="email" class="form-control" id="email" name="email"
-                value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" required>
+                value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" required
+                placeholder="Enter valid email address">
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required>
+              <input type="password" class="form-control" id="password" name="password" required minlength="6"
+                placeholder="Enter password (min 6 characters)">
+              <div class="invalid-feedback">
+                Password must be at least 6 characters long.
+              </div>
+              <div class="form-text">
+                Password should be at least 6 characters long.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required
+                placeholder="Re-enter your password">
+              <div class="invalid-feedback">
+                Passwords do not match.
+              </div>
             </div>
             <div class="mb-3">
               <label for="contactNumber" class="form-label">Contact Number</label>
               <input type="tel" class="form-control" id="contactNumber" name="contactNumber"
-                value="<%= typeof formData !== 'undefined' ? formData.contactNumber : '' %>" required>
+                value="<%= typeof formData !== 'undefined' ? formData.contactNumber : '' %>" required
+                pattern="[0-9]{10}" placeholder="Enter 10-digit phone number">
+              <div class="invalid-feedback">
+                Please enter a valid 10-digit phone number.
+              </div>
             </div>
             <div class="d-grid">
               <button type="submit" class="btn btn-primary">Sign Up</button>
@@ -36,5 +63,131 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Signup Form Validation
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('signupForm');
+      const usernameInput = document.getElementById('username');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const contactInput = document.getElementById('contactNumber');
+
+      // Validation patterns
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phonePattern = /^[0-9]{10}$/;
+
+      // Real-time validation for username
+      usernameInput.addEventListener('blur', function () {
+        const value = this.value.trim();
+        if (value.length < 3 || value.length > 50) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for email
+      emailInput.addEventListener('blur', function () {
+        if (!emailPattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for password
+      passwordInput.addEventListener('input', function () {
+        if (this.value.length < 6) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+
+        // Also validate confirm password if it has a value
+        if (confirmPasswordInput.value) {
+          validatePasswordMatch();
+        }
+      });
+
+      // Real-time validation for confirm password
+      confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+
+      function validatePasswordMatch() {
+        if (confirmPasswordInput.value !== passwordInput.value) {
+          confirmPasswordInput.classList.add('is-invalid');
+          confirmPasswordInput.classList.remove('is-valid');
+        } else {
+          confirmPasswordInput.classList.remove('is-invalid');
+          confirmPasswordInput.classList.add('is-valid');
+        }
+      }
+
+      // Real-time validation for contact number
+      contactInput.addEventListener('input', function () {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        if (!phonePattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Form submission validation
+      form.addEventListener('submit', function (event) {
+        let isValid = true;
+
+        // Validate username
+        if (usernameInput.value.trim().length < 3 || usernameInput.value.trim().length > 50) {
+          usernameInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        // Validate email
+        if (!emailPattern.test(emailInput.value)) {
+          emailInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        // Validate password
+        if (passwordInput.value.length < 6) {
+          passwordInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        // Validate password match
+        if (confirmPasswordInput.value !== passwordInput.value) {
+          confirmPasswordInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        // Validate contact number
+        if (!phonePattern.test(contactInput.value)) {
+          contactInput.classList.add('is-invalid');
+          isValid = false;
+        }
+
+        if (!isValid || !form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
 
   <%- include('partials/footer') %>

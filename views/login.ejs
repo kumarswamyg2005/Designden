@@ -1,29 +1,95 @@
-<%- include('partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+<%- include('partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
 
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <h2 class="text-center mb-4">Login to Your Account</h2>
-        <form action="<%= typeof action !== 'undefined' ? action : '/login' %>" method="POST">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Login to Your Account</h2>
+          <form action="<%= typeof action !== 'undefined' ? action : '/login' %>" method="POST" id="loginForm"
+            novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required minlength="6"
+                placeholder="Enter your password">
+              <div class="invalid-feedback">
+                Password must be at least 6 characters long.
+              </div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+          <div class="text-center mt-3">
+            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
           </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-          </div>
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Login</button>
-          </div>
-        </form>
-        <div class="text-center mt-3">
-          <p>Don't have an account? <a href="/signup">Sign Up</a></p>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<%- include('partials/footer') %>
+  <script>
+    // Login Form Validation
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+
+      // Email validation pattern
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Real-time validation for email
+      emailInput.addEventListener('blur', function () {
+        if (!emailPattern.test(this.value)) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Real-time validation for password
+      passwordInput.addEventListener('input', function () {
+        if (this.value.length < 6) {
+          this.classList.add('is-invalid');
+          this.classList.remove('is-valid');
+        } else {
+          this.classList.remove('is-invalid');
+          this.classList.add('is-valid');
+        }
+      });
+
+      // Form submission validation
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        // Additional email validation
+        if (!emailPattern.test(emailInput.value)) {
+          event.preventDefault();
+          emailInput.classList.add('is-invalid');
+        }
+
+        // Additional password validation
+        if (passwordInput.value.length < 6) {
+          event.preventDefault();
+          passwordInput.classList.add('is-invalid');
+        }
+
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
+
+  <%- include('partials/footer') %>
