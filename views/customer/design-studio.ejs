@@ -1,951 +1,1250 @@
 <%- include('../partials/header') %>
 
-<style>
-.graphic-preview {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #dee2e6;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: block;
-}
+  <style>
+    .graphic-preview {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #dee2e6;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: block;
+    }
 
-.graphic-option {
-  cursor: pointer;
-}
+    .graphic-option {
+      cursor: pointer;
+    }
 
-input[type="radio"]:checked ~ label .graphic-preview {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-  transform: scale(1.05);
-}
+    input[type="radio"]:checked~label .graphic-preview {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+      transform: scale(1.05);
+    }
 
-.graphic-preview:hover {
-  border-color: #0d6efd;
-  transform: scale(1.02);
-}
-</style>
+    .graphic-preview:hover {
+      border-color: #0d6efd;
+      transform: scale(1.02);
+    }
+  </style>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title">Design Studio</h2>
-        <p class="card-text">Create your custom clothing design by selecting fabric, colors, and patterns.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Design Your Clothing</h3>
-      </div>
-      <div class="card-body">
-        <form action="<% if (user) { %>/customer/save-design<% } else { %>/login<% } %>" method="<% if (user) { %>POST<% } else { %>GET<% } %>" id="designForm">
-          <div class="mb-3">
-            <label for="name" class="form-label">Design Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-          </div>
-          
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="category" class="form-label">Category</label>
-              <select class="form-select" id="category" name="category" required>
-                <option value="" disabled>Select Category</option>
-                <option value="Shirt">Shirt</option>
-                <option value="T-Shirt" selected>T-Shirt</option>
-                <option value="Hoodie">Hoodie</option>
-                <option value="Kurthi">Kurthi</option>
-                <option value="Dress">Dress</option>
-                <option value="Jeans">Jeans</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="gender" class="form-label">Gender</label>
-              <select class="form-select" id="gender" name="gender" required>
-                <option value="" disabled>Select Gender</option>
-                <option value="Men" selected>Men</option>
-                <option value="Women">Women</option>
-                <option value="Unisex">Unisex</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="fabric" class="form-label">Fabric</label>
-              <select class="form-select" id="fabric" name="fabric" required>
-                <option value="" selected disabled>Select Fabric</option>
-                <option value="Cotton">Cotton</option>
-                <option value="Linen">Linen</option>
-                <option value="Silk">Silk</option>
-                <option value="Polyester">Polyester</option>
-                <option value="Wool">Wool</option>
-                <option value="Denim">Denim</option>
-                <option value="Fleece">Fleece</option>
-                <option value="Jersey">Jersey</option>
-                <option value="Twill">Twill</option>
-                <option value="Chiffon">Chiffon</option>
-                <option value="Rayon">Rayon</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="size" class="form-label">Size</label>
-              <select class="form-select" id="size" name="size" required>
-                <option value="" selected disabled>Select Size</option>
-                <option value="XS">XS</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="pattern" class="form-label">Pattern</label>
-            <select class="form-select" id="pattern" name="pattern" required>
-              <option value="" selected disabled>Select Pattern</option>
-              <option value="Solid">Solid</option>
-              <option value="Checkered">Checkered</option>
-              <option value="Striped">Striped</option>
-              <option value="Polka Dot">Polka Dot</option>
-              <option value="Floral">Floral</option>
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Color</label>
-            <div class="d-flex flex-wrap gap-2">
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorRed" value="Red" required>
-                <label class="form-check-label" for="colorRed">
-                  <span class="color-swatch bg-danger"></span> Red
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorBlue" value="Blue">
-                <label class="form-check-label" for="colorBlue">
-                  <span class="color-swatch bg-primary"></span> Blue
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorGreen" value="Green">
-                <label class="form-check-label" for="colorGreen">
-                  <span class="color-swatch bg-success"></span> Green
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorBlack" value="Black">
-                <label class="form-check-label" for="colorBlack">
-                  <span class="color-swatch bg-dark"></span> Black
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorWhite" value="White">
-                <label class="form-check-label" for="colorWhite">
-                  <span class="color-swatch bg-white border"></span> White
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorYellow" value="Yellow">
-                <label class="form-check-label" for="colorYellow">
-                  <span class="color-swatch bg-warning"></span> Yellow
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorPink" value="Pink">
-                <label class="form-check-label" for="colorPink">
-                  <span class="color-swatch" style="background-color: pink;"></span> Pink
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorPurple" value="Purple">
-                <label class="form-check-label" for="colorPurple">
-                  <span class="color-swatch" style="background-color: purple;"></span> Purple
-                </label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="color" id="colorMaroon" value="Maroon">
-                <label class="form-check-label" for="colorMaroon">
-                  <span class="color-swatch" style="background-color: maroon;"></span> Maroon
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label">Graphic Design</label>
-            <div class="row row-cols-4 g-2">
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicNone" value="None">
-                  <label class="form-check-label graphic-option" for="graphicNone">
-                    <div class="graphic-preview" style="background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">
-                      No Graphic
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon1" value="dragon_1.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon1">
-                    <img src="/images/graphics/dragon_1.jpg" class="graphic-preview" alt="Dragon 1">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon2" value="dragon_2.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon2">
-                    <img src="/images/graphics/dragon_2.jpg" class="graphic-preview" alt="Dragon 2">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon3" value="dragon_3.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon3">
-                    <img src="/images/graphics/dragon_3.jpg" class="graphic-preview" alt="Dragon 3">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon4" value="dragon_4.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon4">
-                    <img src="/images/graphics/dragon_4.jpg" class="graphic-preview" alt="Dragon 4">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon5" value="dragon_5.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon5">
-                    <img src="/images/graphics/dragon_5.jpg" class="graphic-preview" alt="Dragon 5">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon6" value="dragon_6.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon6">
-                    <img src="/images/graphics/dragon_6.jpg" class="graphic-preview" alt="Dragon 6">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon7" value="dragon_7.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon7">
-                    <img src="/images/graphics/dragon_7.jpg" class="graphic-preview" alt="Dragon 7">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon8" value="dragon_8.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon8">
-                    <img src="/images/graphics/dragon_8.jpg" class="graphic-preview" alt="Dragon 8">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon9" value="dragon_9.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon9">
-                    <img src="/images/graphics/dragon_9.jpg" class="graphic-preview" alt="Dragon 9">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon10" value="dragon_10.jpg">
-                  <label class="form-check-label graphic-option" for="graphicDragon10">
-                    <img src="/images/graphics/dragon_10.jpg" class="graphic-preview" alt="Dragon 10">
-                  </label>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-check">
-                  <input class="form-check-input d-none" type="radio" name="graphic" id="graphicModel" value="model.png">
-                  <label class="form-check-label graphic-option" for="graphicModel">
-                    <img src="/images/graphics/model.png" class="graphic-preview" alt="Model Design">
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="additionalNotes" class="form-label">Additional Notes</label>
-            <textarea class="form-control" id="additionalNotes" name="additionalNotes" rows="3"></textarea>
-          </div>
-          
-          <!-- Update the form buttons to properly handle the cart functionality -->
-          <div class="d-grid gap-2">
-            <% if (user) { %>
-              <button type="submit" name="formAction" value="save" class="btn btn-primary">Save Design & Place Order</button>
-              <button type="submit" name="formAction" value="addToCart" class="btn btn-success">
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-              </button>
-            <% } else { %>
-              <button type="submit" class="btn btn-primary">Login to Save & Order</button>
-              <button type="submit" class="btn btn-success">
-                <i class="fas fa-shopping-cart"></i> Login to Add to Cart
-              </button>
-            <% } %>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>3D Preview</h3>
-      </div>
-      <div class="card-body">
-        <div class="design-preview text-center">
-          <div id="modelContainer" class="mb-3" style="height: 500px; width: 100%; position: relative; cursor: grab; border-radius: 8px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-            <!-- 3D model will be rendered here -->
-            <div id="loading" class="position-absolute top-50 start-50 translate-middle">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center mb-3">
-            <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="rotateLeft">
-              <i class="fas fa-undo"></i> Rotate Left
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="rotateRight">
-              <i class="fas fa-redo"></i> Rotate Right
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-primary" id="resetModel">
-              <i class="fas fa-sync-alt"></i> Reset
-            </button>
-          </div>
-          <div id="previewDetails">
-  <h5 class="mt-3">Selected Options:</h5>
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Category:</span>
-      <span id="previewCategory" class="fw-bold">-</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Fabric:</span>
-      <span id="previewFabric" class="fw-bold">-</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Color:</span>
-      <span id="previewColor" class="fw-bold">-</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Pattern:</span>
-      <span id="previewPattern" class="fw-bold">-</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Graphic:</span>
-      <span id="previewGraphic" class="fw-bold">-</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between">
-      <span>Size:</span>
-      <span id="previewSize" class="fw-bold">-</span>
-    </li>
-  </ul>
-</div>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Design Studio</h2>
+          <p class="card-text">Create your custom clothing design by selecting fabric, colors, and patterns.</p>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Include Three.js -->
-<script src="https://unpkg.com/three@0.139.0/build/three.min.js"></script>
-<script src="/js/OrbitControls.js"></script>
-<script src="/js/GLTFLoader.js"></script>
-<script src="/js/MTLLoader.js"></script>
-<script src="/js/OBJLoader.js"></script>
-<!-- Include our custom 3D models -->
-<script src="/js/3d-models.js"></script>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Design Your Clothing</h3>
+        </div>
+        <div class="card-body">
+          <form action="<% if (user) { %>/customer/save-design<% } else { %>/login<% } %>"
+            method="<% if (user) { %>POST<% } else { %>GET<% } %>" id="designForm">
+            <!-- Hidden field to reliably carry which submit button was used (helps when Enter key submits) -->
+            <input type="hidden" name="formAction" id="formActionHidden" value="save" />
+            <div class="mb-3">
+              <label for="name" class="form-label">Design Name</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
 
-<script>
-  // FORCE HARD RELOAD - Clear any cache
-  console.clear();
-  console.log('=== DESIGN STUDIO 3D VIEWER STARTING ===');
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log('THREE available:', typeof THREE);
-    console.log('OrbitControls available:', typeof THREE.OrbitControls);
-    console.log('GLTFLoader available:', typeof THREE.GLTFLoader);
-    
-    // 3D Model Viewer
-    let scene, camera, renderer, model, controls;
-    let originalCameraPosition, originalCameraTarget, originalModelRotation;
-    const modelContainer = document.getElementById('modelContainer');
-    const loading = document.getElementById('loading');
-    const rotateLeft = document.getElementById('rotateLeft');
-    const rotateRight = document.getElementById('rotateRight');
-    const resetModel = document.getElementById('resetModel');
-    
-    // Function to load 3D models (GLB and OBJ)
-    function loadGLBModel(category, gender) {
-      // Check if loaders are available
-      if (typeof THREE.GLTFLoader === 'undefined') {
-        console.error('GLTFLoader not available! Cannot load GLB models.');
-        return null;
-      }
-      
-      const modelPaths = {
-        'T-Shirt': {
-          'Men': '/models/tshirt_men.glb',
-          'Women': '/models/tshirt_women.glb',
-          'Unisex': '/models/tshirt_men.glb'
-        },
-        'Shirt': {
-          'Men': '/models/obj/Men\'s Shirt.obj',
-          'Women': '/models/dress_women.glb', // Use dress as formal shirt for women
-          'Unisex': '/models/obj/Men\'s Shirt.obj'
-        },
-        'Hoodie': {
-          'Men': '/models/hoodie_men.glb',
-          'Women': '/models/hoodie_women.glb',
-          'Unisex': '/models/hoodie_men.glb'
-        },
-        'Dress': {
-          'Women': '/models/free_model--bow_knot_dress.glb',
-          'Unisex': '/models/free_model--bow_knot_dress.glb'
-        },
-        'Kurthi': {
-          'Women': '/models/shalwar-kameez.glb',
-          'Unisex': '/models/shalwar-kameez.glb',
-          'Men': '/models/shalwar-kameez.glb'
-        },
-        'Jeans': {
-          'Men': '/models/jeans.glb',
-          'Women': '/models/jeans.glb',
-          'Unisex': '/models/jeans.glb'
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" name="category" required>
+                  <option value="" disabled>Select Category</option>
+                  <option value="Shirt">Shirt</option>
+                  <option value="T-Shirt" selected>T-Shirt</option>
+                  <option value="Hoodie">Hoodie</option>
+                  <option value="Kurthi">Kurthi</option>
+                  <option value="Dress">Dress</option>
+                  <option value="Jeans">Jeans</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="gender" class="form-label">Gender</label>
+                <select class="form-select" id="gender" name="gender" required>
+                  <option value="" disabled>Select Gender</option>
+                  <option value="Men" selected>Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Unisex">Unisex</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="fabric" class="form-label">Fabric</label>
+                <select class="form-select" id="fabric" name="fabric" required>
+                  <option value="" selected disabled>Select Fabric</option>
+                  <option value="Cotton">Cotton</option>
+                  <option value="Linen">Linen</option>
+                  <option value="Silk">Silk</option>
+                  <option value="Polyester">Polyester</option>
+                  <option value="Wool">Wool</option>
+                  <option value="Denim">Denim</option>
+                  <option value="Fleece">Fleece</option>
+                  <option value="Jersey">Jersey</option>
+                  <option value="Twill">Twill</option>
+                  <option value="Chiffon">Chiffon</option>
+                  <option value="Rayon">Rayon</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="size" class="form-label">Size</label>
+                <select class="form-select" id="size" name="size" required>
+                  <option value="" selected disabled>Select Size</option>
+                  <option value="XS">XS</option>
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                  <option value="XXL">XXL</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="pattern" class="form-label">Pattern</label>
+              <select class="form-select" id="pattern" name="pattern" required>
+                <option value="" selected disabled>Select Pattern</option>
+                <option value="Solid">Solid</option>
+                <option value="Checkered">Checkered</option>
+                <option value="Striped">Striped</option>
+                <option value="Polka Dot">Polka Dot</option>
+                <option value="Floral">Floral</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Color</label>
+              <div class="d-flex flex-wrap gap-2">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorRed" value="Red" required>
+                  <label class="form-check-label" for="colorRed">
+                    <span class="color-swatch bg-danger"></span> Red
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorBlue" value="Blue">
+                  <label class="form-check-label" for="colorBlue">
+                    <span class="color-swatch bg-primary"></span> Blue
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorGreen" value="Green">
+                  <label class="form-check-label" for="colorGreen">
+                    <span class="color-swatch bg-success"></span> Green
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorBlack" value="Black">
+                  <label class="form-check-label" for="colorBlack">
+                    <span class="color-swatch bg-dark"></span> Black
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorWhite" value="White">
+                  <label class="form-check-label" for="colorWhite">
+                    <span class="color-swatch bg-white border"></span> White
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorYellow" value="Yellow">
+                  <label class="form-check-label" for="colorYellow">
+                    <span class="color-swatch bg-warning"></span> Yellow
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorPink" value="Pink">
+                  <label class="form-check-label" for="colorPink">
+                    <span class="color-swatch" style="background-color: pink;"></span> Pink
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorPurple" value="Purple">
+                  <label class="form-check-label" for="colorPurple">
+                    <span class="color-swatch" style="background-color: purple;"></span> Purple
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="color" id="colorMaroon" value="Maroon">
+                  <label class="form-check-label" for="colorMaroon">
+                    <span class="color-swatch" style="background-color: maroon;"></span> Maroon
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Graphic Design</label>
+              <div class="row row-cols-4 g-2">
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicNone" value="None">
+                    <label class="form-check-label graphic-option" for="graphicNone">
+                      <div class="graphic-preview"
+                        style="background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">
+                        No Graphic
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon1"
+                      value="dragon_1.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon1">
+                      <img src="/images/graphics/dragon_1.jpg" class="graphic-preview" alt="Dragon 1">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon2"
+                      value="dragon_2.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon2">
+                      <img src="/images/graphics/dragon_2.jpg" class="graphic-preview" alt="Dragon 2">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon3"
+                      value="dragon_3.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon3">
+                      <img src="/images/graphics/dragon_3.jpg" class="graphic-preview" alt="Dragon 3">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon4"
+                      value="dragon_4.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon4">
+                      <img src="/images/graphics/dragon_4.jpg" class="graphic-preview" alt="Dragon 4">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon5"
+                      value="dragon_5.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon5">
+                      <img src="/images/graphics/dragon_5.jpg" class="graphic-preview" alt="Dragon 5">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon6"
+                      value="dragon_6.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon6">
+                      <img src="/images/graphics/dragon_6.jpg" class="graphic-preview" alt="Dragon 6">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon7"
+                      value="dragon_7.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon7">
+                      <img src="/images/graphics/dragon_7.jpg" class="graphic-preview" alt="Dragon 7">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon8"
+                      value="dragon_8.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon8">
+                      <img src="/images/graphics/dragon_8.jpg" class="graphic-preview" alt="Dragon 8">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon9"
+                      value="dragon_9.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon9">
+                      <img src="/images/graphics/dragon_9.jpg" class="graphic-preview" alt="Dragon 9">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicDragon10"
+                      value="dragon_10.jpg">
+                    <label class="form-check-label graphic-option" for="graphicDragon10">
+                      <img src="/images/graphics/dragon_10.jpg" class="graphic-preview" alt="Dragon 10">
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input d-none" type="radio" name="graphic" id="graphicModel"
+                      value="model.png">
+                    <label class="form-check-label graphic-option" for="graphicModel">
+                      <img src="/images/graphics/model.png" class="graphic-preview" alt="Model Design">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="additionalNotes" class="form-label">Additional Notes</label>
+              <textarea class="form-control" id="additionalNotes" name="additionalNotes" rows="3"></textarea>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Urgency</label>
+                <select class="form-select" id="urgency" name="urgency">
+                  <option value="standard" selected>Standard (no extra charge)</option>
+                  <option value="express">Express (+20%)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Sustainability Score</label>
+                <div class="form-control" id="sustainabilityScore" aria-readonly="true">-</div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Estimated Price</label>
+                <div class="form-control" id="estimatedPrice" aria-readonly="true">₹0.00</div>
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <button type="button" id="saveWishlist" class="btn btn-outline-secondary w-100">Save to
+                  Wishlist</button>
+              </div>
+            </div>
+
+            <!-- Preserve disabled values when a graphic is selected by mirroring to hidden fields -->
+            <input type="hidden" name="_color_mirror" id="colorMirror" />
+            <input type="hidden" name="_pattern_mirror" id="patternMirror" />
+            <input type="hidden" name="_fabric_mirror" id="fabricMirror" />
+
+            <!-- Update the form buttons to properly handle the cart functionality -->
+            <div class="d-grid gap-2">
+              <% if (user) { %>
+                <button type="submit" name="formAction" value="save" class="btn btn-primary">Save Design & Place
+                  Order</button>
+                <button type="submit" name="formAction" value="addToCart" class="btn btn-success">
+                  <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+                <% } else { %>
+                  <button type="submit" class="btn btn-primary">Login to Save & Order</button>
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-shopping-cart"></i> Login to Add to Cart
+                  </button>
+                  <% } %>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>3D Preview</h3>
+        </div>
+        <div class="card-body">
+          <div class="design-preview text-center">
+            <div id="modelContainer" class="mb-3"
+              style="height: 500px; width: 100%; position: relative; cursor: grab; border-radius: 8px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+              <!-- 3D model will be rendered here -->
+              <div id="loading" class="position-absolute top-50 start-50 translate-middle">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="rotateLeft">
+                <i class="fas fa-undo"></i> Rotate Left
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="rotateRight">
+                <i class="fas fa-redo"></i> Rotate Right
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="resetModel">
+                <i class="fas fa-sync-alt"></i> Reset
+              </button>
+            </div>
+            <div id="previewDetails">
+              <h5 class="mt-3">Selected Options:</h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Category:</span>
+                  <span id="previewCategory" class="fw-bold">-</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Fabric:</span>
+                  <span id="previewFabric" class="fw-bold">-</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Color:</span>
+                  <span id="previewColor" class="fw-bold">-</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Pattern:</span>
+                  <span id="previewPattern" class="fw-bold">-</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Graphic:</span>
+                  <span id="previewGraphic" class="fw-bold">-</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Size:</span>
+                  <span id="previewSize" class="fw-bold">-</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Three.js -->
+  <script src="https://unpkg.com/three@0.139.0/build/three.min.js"></script>
+  <script src="/js/OrbitControls.js"></script>
+  <script src="/js/GLTFLoader.js"></script>
+  <script src="/js/MTLLoader.js"></script>
+  <script src="/js/OBJLoader.js"></script>
+  <!-- Include our custom 3D models -->
+  <script src="/js/3d-models.js"></script>
+
+  <script>
+    // FORCE HARD RELOAD - Clear any cache
+    console.clear();
+    console.log('=== DESIGN STUDIO 3D VIEWER STARTING ===');
+
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log('THREE available:', typeof THREE);
+      console.log('OrbitControls available:', typeof THREE.OrbitControls);
+      console.log('GLTFLoader available:', typeof THREE.GLTFLoader);
+
+      // 3D Model Viewer
+      let scene, camera, renderer, model, controls;
+      let originalCameraPosition, originalCameraTarget, originalModelRotation;
+      const modelContainer = document.getElementById('modelContainer');
+      const loading = document.getElementById('loading');
+      const rotateLeft = document.getElementById('rotateLeft');
+      const rotateRight = document.getElementById('rotateRight');
+      const resetModel = document.getElementById('resetModel');
+
+      // Function to load 3D models (GLB and OBJ)
+      function loadGLBModel(category, gender) {
+        // Check if loaders are available
+        if (typeof THREE.GLTFLoader === 'undefined') {
+          console.error('GLTFLoader not available! Cannot load GLB models.');
+          return null;
         }
-      };
-      
-      const modelPath = modelPaths[category] && modelPaths[category][gender];
-      
-      if (!modelPath) {
-        console.log('No GLB model available for', category, gender, '- using procedural model');
-        return null;
+
+        const modelPaths = {
+          'T-Shirt': {
+            'Men': '/models/tshirt_men.glb',
+            'Women': '/models/tshirt_women.glb',
+            'Unisex': '/models/tshirt_men.glb'
+          },
+          'Shirt': {
+            'Men': '/models/obj/Men\'s Shirt.obj',
+            'Women': '/models/dress_women.glb', // Use dress as formal shirt for women
+            'Unisex': '/models/obj/Men\'s Shirt.obj'
+          },
+          'Hoodie': {
+            'Men': '/models/hoodie_men.glb',
+            'Women': '/models/hoodie_women.glb',
+            'Unisex': '/models/hoodie_men.glb'
+          },
+          'Dress': {
+            'Women': '/models/free_model--bow_knot_dress.glb',
+            'Unisex': '/models/free_model--bow_knot_dress.glb'
+          },
+          'Kurthi': {
+            'Women': '/models/shalwar-kameez.glb',
+            'Unisex': '/models/shalwar-kameez.glb',
+            'Men': '/models/shalwar-kameez.glb'
+          },
+          'Jeans': {
+            'Men': '/models/jeans.glb',
+            'Women': '/models/jeans.glb',
+            'Unisex': '/models/jeans.glb'
+          }
+        };
+
+        const modelPath = modelPaths[category] && modelPaths[category][gender];
+
+        if (!modelPath) {
+          console.log('No GLB model available for', category, gender, '- using procedural model');
+          return null;
+        }
+
+        console.log('Loading 3D model:', modelPath);
+        loading.style.display = 'block';
+
+        // Determine file type and use appropriate loader
+        const isOBJ = modelPath.toLowerCase().endsWith('.obj');
+        const isGLB = modelPath.toLowerCase().endsWith('.glb');
+
+        if (isOBJ) {
+          return loadOBJModel(modelPath);
+        } else if (isGLB) {
+          return loadGLTFModel(modelPath);
+        } else {
+          console.error('Unsupported file format:', modelPath);
+          return null;
+        }
       }
-      
-      console.log('Loading 3D model:', modelPath);
-      loading.style.display = 'block';
-      
-      // Determine file type and use appropriate loader
-      const isOBJ = modelPath.toLowerCase().endsWith('.obj');
-      const isGLB = modelPath.toLowerCase().endsWith('.glb');
-      
-      if (isOBJ) {
-        return loadOBJModel(modelPath);
-      } else if (isGLB) {
-        return loadGLTFModel(modelPath);
-      } else {
-        console.error('Unsupported file format:', modelPath);
-        return null;
-      }
-    }
-    
-    // Function to load GLTF/GLB models
-    function loadGLTFModel(modelPath) {
-      const loader = new THREE.GLTFLoader();
-      
-      return new Promise((resolve, reject) => {
-        loader.load(
-          modelPath,
-          function (gltf) {
-            console.log('GLTF/GLB model loaded successfully:', gltf);
-            
-            const glbModel = {
-              group: gltf.scene,
-              materials: [],
-              update: function(options) {
-                this.group.traverse((child) => {
-                  if (child.isMesh && child.material) {
-                    // Apply color
-                    if (options.color && child.material.color) {
-                      child.material.color.set(options.color);
-                    }
-                    
-                    // Apply graphic texture
-                    if (options.graphic && options.graphic !== 'None') {
-                      const textureLoader = new THREE.TextureLoader();
-                      const graphicTexture = textureLoader.load(
-                        '/images/graphics/' + options.graphic,
-                        function() {
-                          console.log('Graphic texture loaded:', options.graphic);
-                        },
-                        undefined,
-                        function(error) {
-                          console.error('Failed to load graphic texture:', error);
-                        }
-                      );
-                      
-                      // Apply texture to material
-                      if (child.material.map) {
-                        child.material.map = graphicTexture;
-                      } else {
-                        // Create new material with texture if none exists
-                        child.material = new THREE.MeshPhongMaterial({
-                          map: graphicTexture,
-                          color: options.color || 0xffffff
-                        });
+
+      // Function to load GLTF/GLB models
+      function loadGLTFModel(modelPath) {
+        const loader = new THREE.GLTFLoader();
+
+        return new Promise((resolve, reject) => {
+          loader.load(
+            modelPath,
+            function (gltf) {
+              console.log('GLTF/GLB model loaded successfully:', gltf);
+
+              const glbModel = {
+                group: gltf.scene,
+                materials: [],
+                update: function (options) {
+                  this.group.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                      // Apply color
+                      if (options.color && child.material.color) {
+                        child.material.color.set(options.color);
                       }
-                      
-                      // Ensure texture updates
-                      child.material.needsUpdate = true;
-                    } else {
-                      // Remove texture if 'None' is selected
-                      if (child.material.map) {
+
+                      // Apply graphic texture
+                      if (options.graphic && options.graphic !== 'None') {
+                        const textureLoader = new THREE.TextureLoader();
+                        const graphicTexture = textureLoader.load(
+                          '/images/graphics/' + options.graphic,
+                          function () {
+                            console.log('Graphic texture loaded:', options.graphic);
+                          },
+                          undefined,
+                          function (error) {
+                            console.error('Failed to load graphic texture:', error);
+                          }
+                        );
+
+                        // Apply texture to material
+                        if (child.material.map) {
+                          child.material.map = graphicTexture;
+                        } else {
+                          // Create new material with texture if none exists
+                          child.material = new THREE.MeshPhongMaterial({
+                            map: graphicTexture,
+                            color: options.color || 0xffffff
+                          });
+                        }
+
+                        // Ensure texture updates
+                        child.material.needsUpdate = true;
+                      } else {
+                        // Remove texture if 'None' is selected
+                        if (child.material.map) {
+                          child.material.map = null;
+                          child.material.needsUpdate = true;
+                        }
+                      }
+                    }
+                  });
+                }
+              };
+
+              // Perfect centering logic
+              const box = new THREE.Box3().setFromObject(glbModel.group);
+              const center = box.getCenter(new THREE.Vector3());
+              const size = box.getSize(new THREE.Vector3());
+
+              console.log('Model bounds - Center:', center, 'Size:', size);
+
+              // Reset position to origin first
+              glbModel.group.position.set(0, 0, 0);
+
+              // Scale the model to fit nicely
+              const maxSize = Math.max(size.x, size.y, size.z);
+              const scale = 1.8 / maxSize; // Optimal scale for t-shirt
+              glbModel.group.scale.setScalar(scale);
+
+              // Now center it properly after scaling
+              const scaledBox = new THREE.Box3().setFromObject(glbModel.group);
+              const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+
+              // Move to perfect center
+              glbModel.group.position.x = -scaledCenter.x;
+              glbModel.group.position.y = -scaledCenter.y + 0.1; // Slight offset for better view
+              glbModel.group.position.z = -scaledCenter.z;
+
+              console.log('Final model position:', glbModel.group.position);
+
+              // Add to scene
+              scene.add(glbModel.group);
+
+              // Store original positions for reset functionality
+              originalModelRotation = {
+                x: glbModel.group.rotation.x,
+                y: glbModel.group.rotation.y,
+                z: glbModel.group.rotation.z
+              };
+
+              loading.style.display = 'none';
+              resolve(glbModel);
+            },
+            function (progress) {
+              if (progress.total > 0) {
+                const percent = Math.round((progress.loaded / progress.total) * 100);
+                console.log('Loading progress:', percent + '%');
+              }
+            },
+            function (error) {
+              console.error('Failed to load GLB model:', error);
+              loading.style.display = 'none';
+              reject(error);
+            }
+          );
+        });
+      }
+
+      // Function to load OBJ models with MTL materials
+      function loadOBJModel(modelPath) {
+        // Check if OBJ loader is available
+        if (typeof THREE.OBJLoader === 'undefined' || typeof THREE.MTLLoader === 'undefined') {
+          console.error('OBJ/MTL Loaders not available!');
+          return null;
+        }
+
+        const mtlPath = modelPath.replace('.obj', '.mtl');
+
+        return new Promise((resolve, reject) => {
+          // First load materials
+          const mtlLoader = new THREE.MTLLoader();
+          mtlLoader.setPath('/models/obj/');
+
+          mtlLoader.load('Men\'s Shirt.mtl', function (materials) {
+            materials.preload();
+            console.log('MTL materials loaded:', materials);
+
+            // Then load OBJ with materials
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.setPath('/models/obj/');
+
+            objLoader.load('Men\'s Shirt.obj', function (object) {
+              console.log('OBJ model loaded successfully:', object);
+
+              const objModel = {
+                group: object,
+                materials: [],
+                update: function (options) {
+                  this.group.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                      // Apply color
+                      if (options.color && child.material.color) {
+                        child.material.color.set(options.color);
+                      }
+
+                      // Apply graphic texture (similar to GLB)
+                      if (options.graphic && options.graphic !== 'None') {
+                        const textureLoader = new THREE.TextureLoader();
+                        const graphicTexture = textureLoader.load('/images/graphics/' + options.graphic);
+                        child.material.map = graphicTexture;
+                        child.material.needsUpdate = true;
+                      } else if (child.material.map) {
                         child.material.map = null;
                         child.material.needsUpdate = true;
                       }
                     }
-                  }
-                });
-              }
-            };
-            
-            // Perfect centering logic
-            const box = new THREE.Box3().setFromObject(glbModel.group);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            
-            console.log('Model bounds - Center:', center, 'Size:', size);
-            
-            // Reset position to origin first
-            glbModel.group.position.set(0, 0, 0);
-            
-            // Scale the model to fit nicely
-            const maxSize = Math.max(size.x, size.y, size.z);
-            const scale = 1.8 / maxSize; // Optimal scale for t-shirt
-            glbModel.group.scale.setScalar(scale);
-            
-            // Now center it properly after scaling
-            const scaledBox = new THREE.Box3().setFromObject(glbModel.group);
-            const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
-            
-            // Move to perfect center
-            glbModel.group.position.x = -scaledCenter.x;
-            glbModel.group.position.y = -scaledCenter.y + 0.1; // Slight offset for better view
-            glbModel.group.position.z = -scaledCenter.z;
-            
-            console.log('Final model position:', glbModel.group.position);
-            
-            // Add to scene
-            scene.add(glbModel.group);
-            
-            // Store original positions for reset functionality
-            originalModelRotation = {
-              x: glbModel.group.rotation.x,
-              y: glbModel.group.rotation.y,
-              z: glbModel.group.rotation.z
-            };
-            
-            loading.style.display = 'none';
-            resolve(glbModel);
-          },
-          function (progress) {
-            if (progress.total > 0) {
-              const percent = Math.round((progress.loaded / progress.total) * 100);
-              console.log('Loading progress:', percent + '%');
-            }
-          },
-          function (error) {
-            console.error('Failed to load GLB model:', error);
-            loading.style.display = 'none';
-            reject(error);
-          }
-        );
-      });
-    }
-    
-    // Function to load OBJ models with MTL materials
-    function loadOBJModel(modelPath) {
-      // Check if OBJ loader is available
-      if (typeof THREE.OBJLoader === 'undefined' || typeof THREE.MTLLoader === 'undefined') {
-        console.error('OBJ/MTL Loaders not available!');
-        return null;
-      }
-      
-      const mtlPath = modelPath.replace('.obj', '.mtl');
-      
-      return new Promise((resolve, reject) => {
-        // First load materials
-        const mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath('/models/obj/');
-        
-        mtlLoader.load('Men\'s Shirt.mtl', function (materials) {
-          materials.preload();
-          console.log('MTL materials loaded:', materials);
-          
-          // Then load OBJ with materials
-          const objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials(materials);
-          objLoader.setPath('/models/obj/');
-          
-          objLoader.load('Men\'s Shirt.obj', function (object) {
-            console.log('OBJ model loaded successfully:', object);
-            
-            const objModel = {
-              group: object,
-              materials: [],
-              update: function(options) {
-                this.group.traverse((child) => {
-                  if (child.isMesh && child.material) {
-                    // Apply color
-                    if (options.color && child.material.color) {
-                      child.material.color.set(options.color);
-                    }
-                    
-                    // Apply graphic texture (similar to GLB)
-                    if (options.graphic && options.graphic !== 'None') {
-                      const textureLoader = new THREE.TextureLoader();
-                      const graphicTexture = textureLoader.load('/images/graphics/' + options.graphic);
-                      child.material.map = graphicTexture;
-                      child.material.needsUpdate = true;
-                    } else if (child.material.map) {
-                      child.material.map = null;
-                      child.material.needsUpdate = true;
-                    }
-                  }
-                });
-              }
-            };
-            
-            // Scale and position OBJ model
-            const box = new THREE.Box3().setFromObject(objModel.group);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            
-            console.log('OBJ Model bounds - Center:', center, 'Size:', size);
-            
-            // Reset position and scale
-            objModel.group.position.set(0, 0, 0);
-            const maxSize = Math.max(size.x, size.y, size.z);
-            const scale = 1.5 / maxSize; // Scale for shirt
-            objModel.group.scale.setScalar(scale);
-            
-            // Center the model
-            const scaledBox = new THREE.Box3().setFromObject(objModel.group);
-            const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
-            objModel.group.position.x = -scaledCenter.x;
-            objModel.group.position.y = -scaledCenter.y + 0.1;
-            objModel.group.position.z = -scaledCenter.z;
-            
-            // Add to scene
-            scene.add(objModel.group);
-            
-            // Store original rotation
-            originalModelRotation = {
-              x: objModel.group.rotation.x,
-              y: objModel.group.rotation.y,
-              z: objModel.group.rotation.z
-            };
-            
-            loading.style.display = 'none';
-            resolve(objModel);
+                  });
+                }
+              };
+
+              // Scale and position OBJ model
+              const box = new THREE.Box3().setFromObject(objModel.group);
+              const center = box.getCenter(new THREE.Vector3());
+              const size = box.getSize(new THREE.Vector3());
+
+              console.log('OBJ Model bounds - Center:', center, 'Size:', size);
+
+              // Reset position and scale
+              objModel.group.position.set(0, 0, 0);
+              const maxSize = Math.max(size.x, size.y, size.z);
+              const scale = 1.5 / maxSize; // Scale for shirt
+              objModel.group.scale.setScalar(scale);
+
+              // Center the model
+              const scaledBox = new THREE.Box3().setFromObject(objModel.group);
+              const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+              objModel.group.position.x = -scaledCenter.x;
+              objModel.group.position.y = -scaledCenter.y + 0.1;
+              objModel.group.position.z = -scaledCenter.z;
+
+              // Add to scene
+              scene.add(objModel.group);
+
+              // Store original rotation
+              originalModelRotation = {
+                x: objModel.group.rotation.x,
+                y: objModel.group.rotation.y,
+                z: objModel.group.rotation.z
+              };
+
+              loading.style.display = 'none';
+              resolve(objModel);
+            }, function (progress) {
+              console.log('OBJ Loading progress:', progress);
+            }, function (error) {
+              console.error('Failed to load OBJ model:', error);
+              loading.style.display = 'none';
+              reject(error);
+            });
           }, function (progress) {
-            console.log('OBJ Loading progress:', progress);
+            console.log('MTL Loading progress:', progress);
           }, function (error) {
-            console.error('Failed to load OBJ model:', error);
+            console.error('Failed to load MTL materials:', error);
             loading.style.display = 'none';
             reject(error);
           });
-        }, function (progress) {
-          console.log('MTL Loading progress:', progress);
-        }, function (error) {
-          console.error('Failed to load MTL materials:', error);
-          loading.style.display = 'none';
-          reject(error);
         });
-      });
-    }
-    
-    // Initialize the 3D scene
-    function initScene() {
-      // Create scene
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf8f9fa);
-      
-      // Create camera with better positioning
-      camera = new THREE.PerspectiveCamera(60, modelContainer.clientWidth / modelContainer.clientHeight, 0.1, 1000);
-      camera.position.set(0, 0.5, 3); // Better angle and distance
-      camera.lookAt(0, 0, 0);
-      
-      // Create renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(modelContainer.clientWidth, modelContainer.clientHeight);
-      renderer.outputEncoding = THREE.sRGBEncoding;
-      modelContainer.appendChild(renderer.domElement);
-      
-      // Add lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      scene.add(ambientLight);
-      
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-      
-      // Add controls with better settings
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-      controls.enableZoom = true;
-      controls.minDistance = 2;
-      controls.maxDistance = 10;
-      controls.target.set(0, 0, 0);
-      
-      // Add cursor changes for better UX
-      controls.addEventListener('start', () => {
-        modelContainer.style.cursor = 'grabbing';
-      });
-      controls.addEventListener('end', () => {
-        modelContainer.style.cursor = 'grab';
-      });
-      
-      // Store original camera position for reset
-      originalCameraPosition = camera.position.clone();
-      originalCameraTarget = controls.target.clone();
-      
-      // Try to load GLB model immediately for T-shirts
-      console.log('Initializing with T-shirt GLB model...');
-      loadGLBModel('T-Shirt', 'Men').then(glbModel => {
-        if (glbModel) {
-          model = glbModel;
-          console.log('✅ Initial GLB model loaded successfully!');
-        } else {
-          console.log('❌ GLB model failed, using procedural fallback');
-          model = ClothingModels.createTShirtModel(scene);
-        }
-        loading.style.display = 'none';
-      }).catch(error => {
-        console.error('❌ GLB loading error:', error);
-        model = ClothingModels.createTShirtModel(scene);
-        loading.style.display = 'none';
-      });
-      
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
       }
-      
-      animate();
-      
-      // Handle window resize
-      window.addEventListener('resize', () => {
-        camera.aspect = modelContainer.clientWidth / modelContainer.clientHeight;
-        camera.updateProjectionMatrix();
+
+      // Initialize the 3D scene
+      function initScene() {
+        // Create scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf8f9fa);
+
+        // Create camera with better positioning
+        camera = new THREE.PerspectiveCamera(60, modelContainer.clientWidth / modelContainer.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0.5, 3); // Better angle and distance
+        camera.lookAt(0, 0, 0);
+
+        // Create renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(modelContainer.clientWidth, modelContainer.clientHeight);
-      });
-      
-      // Rotation buttons
-      rotateLeft.addEventListener('click', () => {
-        if (model && model.group) {
-          model.group.rotation.y -= Math.PI / 4;
-        }
-      });
-      
-      rotateRight.addEventListener('click', () => {
-        if (model && model.group) {
-          model.group.rotation.y += Math.PI / 4;
-        }
-      });
-      
-      // Reset button functionality
-      resetModel.addEventListener('click', () => {
-        console.log('Resetting 3D model and camera...');
-        
-        // Reset camera position and target
-        if (originalCameraPosition && originalCameraTarget) {
-          camera.position.copy(originalCameraPosition);
-          controls.target.copy(originalCameraTarget);
-          controls.update();
-        }
-        
-        // Reset model rotation
-        if (model && model.group && originalModelRotation) {
-          model.group.rotation.x = originalModelRotation.x;
-          model.group.rotation.y = originalModelRotation.y;
-          model.group.rotation.z = originalModelRotation.z;
-        }
-        
-        // Reset only camera position and model rotation, keep form values
-        // The model and form selections remain as they are
-        console.log('Reset complete - model and form maintained, only view reset');
-        
-        console.log('Reset complete!');
-      });
-    }
-    
-    // Initialize the scene
-    initScene();
-    
-    // Update model based on form selections
-    async function updateModel() {
-      const category = document.getElementById('category').value;
-      const gender = document.getElementById('gender').value;
-      const color = document.querySelector('input[name="color"]:checked')?.value;
-      const graphic = document.querySelector('input[name="graphic"]:checked')?.value;
-      const fabric = document.getElementById('fabric').value;
-      const pattern = document.getElementById('pattern').value;
-      
-      // Only create a new model if category or gender changes
-      if (category && gender && (currentCategory !== category || currentGender !== gender)) {
-        // Remove old model
-        if (model && model.group) {
-          scene.remove(model.group);
-        }
-        
-        // Try to load GLB model first
-        try {
-          const glbModel = await loadGLBModel(category, gender);
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        modelContainer.appendChild(renderer.domElement);
+
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+
+        // Add controls with better settings
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.minDistance = 2;
+        controls.maxDistance = 10;
+        controls.target.set(0, 0, 0);
+
+        // Add cursor changes for better UX
+        controls.addEventListener('start', () => {
+          modelContainer.style.cursor = 'grabbing';
+        });
+        controls.addEventListener('end', () => {
+          modelContainer.style.cursor = 'grab';
+        });
+
+        // Store original camera position for reset
+        originalCameraPosition = camera.position.clone();
+        originalCameraTarget = controls.target.clone();
+
+        // Try to load GLB model immediately for T-shirts
+        console.log('Initializing with T-shirt GLB model...');
+        loadGLBModel('T-Shirt', 'Men').then(glbModel => {
           if (glbModel) {
             model = glbModel;
-            console.log('Using GLB model for', category, gender);
+            console.log('✅ Initial GLB model loaded successfully!');
           } else {
-            // Fallback to procedural model
-            model = ClothingModels.getModel(scene, category, gender);
-            console.log('Using procedural model for', category, gender);
+            console.log('❌ GLB model failed, using procedural fallback');
+            model = ClothingModels.createTShirtModel(scene);
           }
-        } catch (error) {
-          console.warn('GLB model loading failed, using procedural model:', error);
-          model = ClothingModels.getModel(scene, category, gender);
+          loading.style.display = 'none';
+        }).catch(error => {
+          console.error('❌ GLB loading error:', error);
+          model = ClothingModels.createTShirtModel(scene);
+          loading.style.display = 'none';
+        });
+
+        // Animation loop
+        function animate() {
+          requestAnimationFrame(animate);
+          controls.update();
+          renderer.render(scene, camera);
         }
-        
-        currentCategory = category;
-        currentGender = gender;
-      }
-      
-      if (model && model.update) {
-        // Convert color name to hex
-        const colorMap = {
-          'Red': 0xff0000,
-          'Blue': 0x0000ff,
-          'Green': 0x00ff00,
-          'Black': 0x000000,
-          'White': 0xffffff,
-          'Gray': 0x808080,
-          'Yellow': 0xffff00,
-          'Purple': 0x800080,
-          'Pink': 0xffc0cb,
-          'Orange': 0xffa500,
-          'Brown': 0x8b4513,
-          'Navy Blue': 0x000080,
-          'Maroon': 0x800000,
-          'Forest Green': 0x228b22,
-          'Teal': 0x008080,
-          'Lavender': 0xe6e6fa,
-          'Gold': 0xffd700,
-          'Silver': 0xc0c0c0,
-          'Burgundy': 0x800020,
-          'Emerald': 0x50c878,
-          'Royal Blue': 0x4169e1,
-          'Light Blue': 0xadd8e6
-        };
-        
-        const colorHex = colorMap[color] || 0xcccccc;
-        
-        // Update the model
-        model.update({
-          color: colorHex,
-          graphic: graphic,
-          fabric: fabric,
-          pattern: pattern
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+          camera.aspect = modelContainer.clientWidth / modelContainer.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(modelContainer.clientWidth, modelContainer.clientHeight);
+        });
+
+        // Rotation buttons
+        rotateLeft.addEventListener('click', () => {
+          if (model && model.group) {
+            model.group.rotation.y -= Math.PI / 4;
+          }
+        });
+
+        rotateRight.addEventListener('click', () => {
+          if (model && model.group) {
+            model.group.rotation.y += Math.PI / 4;
+          }
+        });
+
+        // Reset button functionality
+        resetModel.addEventListener('click', () => {
+          console.log('Resetting 3D model and camera...');
+
+          // Reset camera position and target
+          if (originalCameraPosition && originalCameraTarget) {
+            camera.position.copy(originalCameraPosition);
+            controls.target.copy(originalCameraTarget);
+            controls.update();
+          }
+
+          // Reset model rotation
+          if (model && model.group && originalModelRotation) {
+            model.group.rotation.x = originalModelRotation.x;
+            model.group.rotation.y = originalModelRotation.y;
+            model.group.rotation.z = originalModelRotation.z;
+          }
+
+          // Reset only camera position and model rotation, keep form values
+          // The model and form selections remain as they are
+          console.log('Reset complete - model and form maintained, only view reset');
+
+          // Also reset form selections to defaults (white color, default category/gender/size/pattern)
+          try {
+            // Set default values
+            categorySelect.value = 'T-Shirt';
+            genderSelect.value = 'Men';
+            fabricSelect.value = '';
+            patternSelect.value = 'Solid';
+            sizeSelect.value = '';
+
+            // Select White color radio if present
+            const whiteRadio = document.getElementById('colorWhite');
+            if (whiteRadio) whiteRadio.checked = true;
+
+            // Clear graphic selection
+            const graphicNone = document.getElementById('graphicNone');
+            if (graphicNone) graphicNone.checked = true;
+
+            // Update preview texts
+            previewCategory.textContent = categorySelect.value;
+            previewFabric.textContent = '-';
+            previewPattern.textContent = patternSelect.value;
+            previewColor.textContent = 'White';
+            previewGraphic.textContent = 'None';
+            previewSize.textContent = '-';
+
+            // Force update model to white color and clear textures
+            if (model && model.update) {
+              model.update({ color: 0xffffff, graphic: 'None', fabric: '', pattern: 'Solid' });
+            }
+          } catch (e) {
+            console.warn('Reset: failed to reset form defaults', e);
+          }
+
+          console.log('Reset complete!');
         });
       }
-    }
-    
-    // Track current category and gender to know when to create a new model
-    let currentCategory = '';
-    let currentGender = '';
-    
-    const categorySelect = document.getElementById("category");
-    const sizeSelect = document.getElementById("size");
-    const genderSelect = document.getElementById("gender");
-    const fabricSelect = document.getElementById("fabric");
-    const patternSelect = document.getElementById("pattern");
-    const colorInputs = document.querySelectorAll('input[name="color"]');
-    const graphicInputs = document.querySelectorAll('input[name="graphic"]');
 
-    const previewCategory = document.getElementById("previewCategory");
-    const previewFabric = document.getElementById("previewFabric");
-    const previewColor = document.getElementById("previewColor");
-    const previewGraphic = document.getElementById("previewGraphic");
-    const previewPattern = document.getElementById("previewPattern");
-    const previewSize = document.getElementById("previewSize");
+      // Initialize the scene
+      initScene();
 
-    sizeSelect.addEventListener("change", updatePreview);
-    categorySelect.addEventListener("change", () => {
-      // Auto-select Women for feminine categories
-      const category = categorySelect.value;
-      if (category === 'Kurthi' || category === 'Dress') {
-        genderSelect.value = 'Women';
+      // Update model based on form selections
+      async function updateModel() {
+        const category = document.getElementById('category').value;
+        const gender = document.getElementById('gender').value;
+        const color = document.querySelector('input[name="color"]:checked')?.value;
+        const graphic = document.querySelector('input[name="graphic"]:checked')?.value;
+        const fabric = document.getElementById('fabric').value;
+        const pattern = document.getElementById('pattern').value;
+
+        // Only create a new model if category or gender changes
+        if (category && gender && (currentCategory !== category || currentGender !== gender)) {
+          // Remove old model
+          if (model && model.group) {
+            scene.remove(model.group);
+          }
+
+          // Try to load GLB model first
+          try {
+            const glbModel = await loadGLBModel(category, gender);
+            if (glbModel) {
+              model = glbModel;
+              console.log('Using GLB model for', category, gender);
+            } else {
+              // Fallback to procedural model
+              model = ClothingModels.getModel(scene, category, gender);
+              console.log('Using procedural model for', category, gender);
+            }
+          } catch (error) {
+            console.warn('GLB model loading failed, using procedural model:', error);
+            model = ClothingModels.getModel(scene, category, gender);
+          }
+
+          currentCategory = category;
+          currentGender = gender;
+        }
+
+        if (model && model.update) {
+          // Convert color name to hex
+          const colorMap = {
+            'Red': 0xff0000,
+            'Blue': 0x0000ff,
+            'Green': 0x00ff00,
+            'Black': 0x000000,
+            'White': 0xffffff,
+            'Gray': 0x808080,
+            'Yellow': 0xffff00,
+            'Purple': 0x800080,
+            'Pink': 0xffc0cb,
+            'Orange': 0xffa500,
+            'Brown': 0x8b4513,
+            'Navy Blue': 0x000080,
+            'Maroon': 0x800000,
+            'Forest Green': 0x228b22,
+            'Teal': 0x008080,
+            'Lavender': 0xe6e6fa,
+            'Gold': 0xffd700,
+            'Silver': 0xc0c0c0,
+            'Burgundy': 0x800020,
+            'Emerald': 0x50c878,
+            'Royal Blue': 0x4169e1,
+            'Light Blue': 0xadd8e6
+          };
+
+          const colorHex = colorMap[color] || 0xcccccc;
+
+          // Update the model
+          model.update({
+            color: colorHex,
+            graphic: graphic,
+            fabric: fabric,
+            pattern: pattern
+          });
+        }
       }
-      updatePreview();
+
+      // Track current category and gender to know when to create a new model
+      let currentCategory = '';
+      let currentGender = '';
+
+      const categorySelect = document.getElementById("category");
+      const sizeSelect = document.getElementById("size");
+      const genderSelect = document.getElementById("gender");
+      const fabricSelect = document.getElementById("fabric");
+      const patternSelect = document.getElementById("pattern");
+      const colorInputs = document.querySelectorAll('input[name="color"]');
+      const graphicInputs = document.querySelectorAll('input[name="graphic"]');
+
+      const previewCategory = document.getElementById("previewCategory");
+      const previewFabric = document.getElementById("previewFabric");
+      const urgencySelect = document.getElementById('urgency');
+      const sustainabilityScoreEl = document.getElementById('sustainabilityScore');
+      const estimatedPriceEl = document.getElementById('estimatedPrice');
+
+      function computeSustainabilityScore(fabric) {
+        const baseline = {
+          'Cotton': 70,
+          'Linen': 85,
+          'Silk': 60,
+          'Polyester': 35,
+          'Wool': 65,
+          'Denim': 50,
+          'Fleece': 40,
+          'Jersey': 55,
+          'Twill': 55,
+          'Chiffon': 45,
+          'Rayon': 50
+        };
+        return baseline[fabric] || 50;
+      }
+
+      function computeEstimatedPrice({ base = 50, fabric, urgency }) {
+        const fabricMultiplier = {
+          'Cotton': 1.0,
+          'Linen': 1.2,
+          'Silk': 1.6,
+          'Polyester': 0.9,
+          'Wool': 1.4,
+          'Denim': 1.1,
+          'Fleece': 1.0,
+          'Jersey': 1.0,
+          'Twill': 1.05,
+          'Chiffon': 1.3,
+          'Rayon': 1.0
+        };
+        const u = urgency === 'express' ? 1.2 : 1.0;
+        const f = fabricMultiplier[fabric] || 1.0;
+        return Math.round(base * f * u);
+      }
+      const previewColor = document.getElementById("previewColor");
+      const previewGraphic = document.getElementById("previewGraphic");
+      const previewPattern = document.getElementById("previewPattern");
+      const previewSize = document.getElementById("previewSize");
+
+      // Hidden mirrors for disabled submission safety
+      const colorMirror = document.getElementById('colorMirror');
+      const patternMirror = document.getElementById('patternMirror');
+      const fabricMirror = document.getElementById('fabricMirror');
+
+      function syncMirrors() {
+        const colorChecked = document.querySelector('input[name="color"]:checked');
+        if (colorMirror) colorMirror.value = colorChecked ? colorChecked.value : '';
+        if (patternMirror) patternMirror.value = patternSelect.value || '';
+        if (fabricMirror) fabricMirror.value = fabricSelect.value || '';
+      }
+
+      sizeSelect.addEventListener("change", updatePreview);
+      categorySelect.addEventListener("change", () => {
+        // Auto-select Women for feminine categories
+        const category = categorySelect.value;
+        if (category === 'Kurthi' || category === 'Dress') {
+          genderSelect.value = 'Women';
+        }
+        updatePreview();
+      });
+
+      // Auto-hide any server-rendered alerts after a short delay
+      document.querySelectorAll('.alert').forEach(a => {
+        setTimeout(() => {
+          try { a.remove(); } catch (e) { }
+        }, 3000);
+      });
+
+      // Client-side validation for design form
+      const designForm = document.getElementById('designForm');
+      if (designForm) {
+        designForm.addEventListener('submit', (e) => {
+          // Basic required checks
+          const name = document.getElementById('name').value.trim();
+          const category = categorySelect.value;
+          const gender = genderSelect.value;
+          const size = sizeSelect.value;
+          const colorChecked = document.querySelector('input[name="color"]:checked');
+
+          if (!name || !category || !gender || !size || !colorChecked) {
+            e.preventDefault();
+            window.toast('Please complete all required fields before saving.', 'warning');
+            return false;
+          }
+
+          // If graphic selected and controls are disabled, ensure mirrors carry values
+          const selectedGraphic = document.querySelector('input[name="graphic"]:checked');
+          const hasGraphic = selectedGraphic && selectedGraphic.value !== 'None';
+          if (hasGraphic) {
+            syncMirrors();
+          }
+          return true;
+        });
+      }
+      colorInputs.forEach((input) => input.addEventListener("change", updatePreview));
+      graphicInputs.forEach((input) => input.addEventListener("change", updatePreview));
+      genderSelect.addEventListener("change", updatePreview);
+      fabricSelect.addEventListener("change", updatePreview);
+      urgencySelect?.addEventListener('change', updatePreview);
+      patternSelect.addEventListener("change", updatePreview);
+      // If a graphic is selected, disable color/pattern/fabric, else enable
+      graphicInputs.forEach((input) => input.addEventListener('change', () => {
+        const selectedGraphic = document.querySelector('input[name="graphic"]:checked');
+        const hasGraphic = selectedGraphic && selectedGraphic.value !== 'None';
+
+        // When graphic is selected: remove 'required' and disable fields
+        // When no graphic: restore 'required' and enable fields
+        const colorInputs = document.querySelectorAll('input[name="color"]');
+        colorInputs.forEach(el => {
+          el.disabled = !!hasGraphic;
+          if (hasGraphic) {
+            el.removeAttribute('required');
+          } else {
+            // Restore required on first radio only
+            if (el === colorInputs[0]) {
+              el.setAttribute('required', 'required');
+            }
+          }
+        });
+
+        patternSelect.disabled = !!hasGraphic;
+        fabricSelect.disabled = !!hasGraphic;
+
+        if (hasGraphic) {
+          patternSelect.removeAttribute('required');
+          fabricSelect.removeAttribute('required');
+        } else {
+          patternSelect.setAttribute('required', 'required');
+          fabricSelect.setAttribute('required', 'required');
+        }
+
+        // Keep mirrors in sync so values are still submitted
+        syncMirrors();
+        updatePreview();
+      }))
+
+      async function updatePreview() {
+        if (categorySelect.value) {
+          previewCategory.textContent = categorySelect.value;
+        }
+
+        if (fabricSelect.value) {
+          previewFabric.textContent = fabricSelect.value;
+          // Update sustainability score
+          const score = computeSustainabilityScore(fabricSelect.value);
+          if (sustainabilityScoreEl) sustainabilityScoreEl.textContent = score + '/100';
+        }
+        if (patternSelect.value) {
+          previewPattern.textContent = patternSelect.value;
+        }
+
+        const selectedColor = document.querySelector('input[name="color"]:checked');
+        if (selectedColor) {
+          previewColor.textContent = selectedColor.value;
+        }
+
+        const selectedGraphic = document.querySelector('input[name="graphic"]:checked');
+        if (selectedGraphic) {
+          const graphicValue = selectedGraphic.value;
+          previewGraphic.textContent = graphicValue === 'None' ? 'None' : graphicValue.replace('.jpg', '').replace('.png', '').replace('_', ' ');
+        }
+
+        if (sizeSelect.value) {
+          previewSize.textContent = sizeSelect.value;
+        }
+
+        // Estimated price calculation
+        try {
+          const price = computeEstimatedPrice({ fabric: fabricSelect.value, urgency: urgencySelect?.value });
+          if (estimatedPriceEl) estimatedPriceEl.textContent = '₹' + Number(price).toFixed(2);
+        } catch (e) { }
+
+        // Keep hidden mirrors fresh before model update
+        syncMirrors();
+        // Update 3D model
+        await updateModel();
+      }
+      // Wishlist save (simple POST)
+      document.getElementById('saveWishlist')?.addEventListener('click', async () => {
+        try {
+          const fd = new FormData(document.getElementById('designForm'));
+          const body = {};
+          fd.forEach((v, k) => body[k] = v);
+          const resp = await fetch('/customer/wishlist/add', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify(body)
+          });
+          if (resp.redirected && resp.url.includes('/login')) {
+            window.location.href = '/login';
+            return;
+          }
+          if (!resp.ok) throw new Error('Save failed');
+          window.toast('Saved to wishlist', 'success')
+        } catch (e) {
+          window.toast('Failed to save wishlist', 'danger')
+        }
+      })
     });
-    colorInputs.forEach((input) => input.addEventListener("change", updatePreview));
-    graphicInputs.forEach((input) => input.addEventListener("change", updatePreview));
-    genderSelect.addEventListener("change", updatePreview);
-    fabricSelect.addEventListener("change", updatePreview);
-    patternSelect.addEventListener("change", updatePreview);
-    // If a graphic is selected, disable color/pattern/fabric, else enable
-    graphicInputs.forEach((input) => input.addEventListener('change', () => {
-      const hasGraphic = document.querySelector('input[name="graphic"]:checked')?.value && document.querySelector('input[name="graphic"]:checked')?.value !== 'None'
-      ;[...document.querySelectorAll('input[name="color"]')].forEach(el => el.disabled = !!hasGraphic)
-      patternSelect.disabled = !!hasGraphic
-      fabricSelect.disabled = !!hasGraphic
-      updatePreview()
-    }))
+  </script>
 
-    async function updatePreview() {
-      if (categorySelect.value) {
-        previewCategory.textContent = categorySelect.value;
-      }
-      
-      if (fabricSelect.value) {
-        previewFabric.textContent = fabricSelect.value;
-      }
-      if (patternSelect.value) {
-        previewPattern.textContent = patternSelect.value;
-      }
+  <script>
+    // Ensure the formAction hidden field and intercept submit to POST reliably via fetch
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('designForm');
+      const hidden = document.getElementById('formActionHidden');
+      if (!form || !hidden) return;
 
-      const selectedColor = document.querySelector('input[name="color"]:checked');
-      if (selectedColor) {
-        previewColor.textContent = selectedColor.value;
-      }
+      // Attach click handlers to submit buttons to set hidden value (best-effort)
+      form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (btn.name === 'formAction' && btn.value) {
+            hidden.value = btn.value;
+          }
+          // For debugging
+          console.log('Design Studio submit button clicked, formAction=', hidden.value);
+        });
+      });
 
-      const selectedGraphic = document.querySelector('input[name="graphic"]:checked');
-      if (selectedGraphic) {
-        const graphicValue = selectedGraphic.value;
-        previewGraphic.textContent = graphicValue === 'None' ? 'None' : graphicValue.replace('.jpg', '').replace('.png', '').replace('_', ' ');
-      }
+      // Intercept submit and send as application/x-www-form-urlencoded via fetch
+      form.addEventListener('submit', async function (e) {
+        // If the form method is GET (user not logged in), let it proceed
+        if (!form.method || form.method.toUpperCase() !== 'POST') return;
 
-      if (sizeSelect.value) {
-        previewSize.textContent = sizeSelect.value;
-      }
-      
-      // Update 3D model
-      await updateModel();
-    }
-  });
-</script>
+        e.preventDefault();
 
-<%- include('../partials/footer') %>
+        try {
+          const fd = new FormData(form);
+          const params = new URLSearchParams();
+          for (const pair of fd.entries()) {
+            // Ensure we only append strings
+            params.append(pair[0], pair[1]);
+          }
+
+          console.log('Submitting design form via fetch, payload keys:', Array.from(fd.keys()));
+
+          const resp = await fetch(form.action, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: params.toString(),
+            redirect: 'follow'
+          });
+
+          console.log('Design save fetch response status=', resp.status, 'url=', resp.url);
+
+          if (resp.status === 404) {
+            const bodyText = await resp.text();
+            console.error('Design save returned 404, body:', bodyText.slice(0, 400));
+            window.toast('Save failed (404). Check server logs for details.', 'danger');
+            return;
+          }
+
+          // If server redirected, navigate to that URL
+          if (resp.url && resp.url !== window.location.href) {
+            window.location.href = resp.url;
+            return;
+          }
+
+          // Otherwise, try to parse JSON or show text
+          const text = await resp.text();
+          console.log('Design save response (no redirect):', resp.status, text.slice(0, 200));
+          window.toast('Submission completed', 'success');
+        } catch (err) {
+          console.error('Design Studio submit error:', err);
+          window.toast('Failed to submit design. Try again.', 'danger');
+        }
+      });
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

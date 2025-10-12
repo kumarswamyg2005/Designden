@@ -1,0 +1,189 @@
+<%- include('../partials/header') %>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Place Your Order</h2>
+          <p class="card-text">Review your design and complete your order.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Order Details</h3>
+        </div>
+        <div class="card-body">
+          <form action="/customer/place-order" method="POST">
+            <input type="hidden" name="designId" value="<%= design._id %>">
+            <input type="hidden" name="basePrice" value="<%= design.price || 50 %>">
+
+            <div class="mb-3">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="urgency" class="form-label">Delivery Speed</label>
+              <select class="form-select" id="urgency" name="urgency">
+                <option value="standard" selected>Standard (no extra charge)</option>
+                <option value="express">Express (+20%)</option>
+              </select>
+              <small class="text-muted">Express increases price by 20% and prioritizes production.</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="deliveryAddress" class="form-label">Delivery Address</label>
+              <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" required></textarea>
+            </div>
+
+            <div class="card mb-3">
+              <div class="card-header">
+                <h4>Price Breakdown</h4>
+              </div>
+              <div class="card-body">
+                <% // STRICT RULE 4: EXACT PRICE CONSISTENCY - NO EXCEPTIONS // VALIDATION: Ensure we have the actual
+                  design price const actualDesignPrice=design.price; if (!actualDesignPrice || actualDesignPrice <=0) {
+                  console.error('🚨 RULE 4 VIOLATION: Invalid design price:', design.name, 'Price:' ,
+                  actualDesignPrice); } const validatedDesignPrice=actualDesignPrice && actualDesignPrice> 0 ?
+                  actualDesignPrice : 50;
+                  %>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Base Price:</span>
+                    <span>₹<%= validatedDesignPrice.toFixed(2) %></span>
+                    <% if (validatedDesignPrice===50 && !actualDesignPrice) { %>
+                      <span class="text-warning small">(⚠️ Using fallback price)</span>
+                      <% } %>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2" id="urgencyRow" style="display: none;">
+                    <span>Express Uplift (20%):</span>
+                    <span id="expressUplift">₹0.00</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Quantity:</span>
+                    <span id="quantityDisplay">1</span>
+                  </div>
+                  <hr>
+                  <div class="d-flex justify-content-between fw-bold">
+                    <span>Total:</span>
+                    <span id="totalPrice">₹<%= (design.price || 50).toFixed(2) %></span>
+                  </div>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Place Order</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Design Summary</h3>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            <% if (design.category==='Hoodie' ) { %>
+              <img src="/images/winter-hoodie.webp" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
+              <% } else if (design.category==='T-Shirt' ) { %>
+                <img src="/images/casual-tshirt.jpeg" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
+                <% } else if (design.category==='Kurthi' ) { %>
+                  <img src="/images/kurthi.jpeg" alt="Design Preview" class="img-fluid" style="max-height: 200px;">
+                  <% } else if (design.category==='Jeans' ) { %>
+                    <img src="/images/denim-jeans.webp" alt="Design Preview" class="img-fluid"
+                      style="max-height: 200px;">
+                    <% } else { %>
+                      <img src="/placeholder.svg?height=200&width=150" alt="Design Preview" class="img-fluid">
+                      <% } %>
+          </div>
+          <h4>
+            <%= design.name %>
+          </h4>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Fabric:</span>
+              <span>
+                <%= design.fabric %>
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Color:</span>
+              <span>
+                <%= design.color %>
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Pattern:</span>
+              <span>
+                <%= design.pattern %>
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Size:</span>
+              <span>
+                <%= design.size %>
+              </span>
+            </li>
+          </ul>
+          <% if (design.additionalNotes) { %>
+            <div class="mt-3">
+              <h5>Additional Notes:</h5>
+              <p>
+                <%= design.additionalNotes %>
+              </p>
+            </div>
+            <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Order Quantity and Price Calculator
+      const quantityInput = document.getElementById("quantity");
+      const urgencySelect = document.getElementById('urgency');
+      if (quantityInput) {
+        const quantityDisplay = document.getElementById("quantityDisplay");
+        const totalPrice = document.getElementById("totalPrice");
+        const upliftRow = document.getElementById('urgencyRow');
+        const upliftEl = document.getElementById('expressUplift');
+        // STRICT RULE 4: Validate base price from design
+        const actualDesignPrice = <%= design.price || 'null' %>;
+        if (!actualDesignPrice || actualDesignPrice <= 0) {
+          console.error('🚨 RULE 4 JS VIOLATION: Invalid design price:', actualDesignPrice);
+        }
+        const basePrice = actualDesignPrice && actualDesignPrice > 0 ? actualDesignPrice : 50;
+        console.log('🔒 RULE 4: Using validated base price:', basePrice);
+
+        quantityInput.addEventListener("input", updatePrice);
+        urgencySelect?.addEventListener('change', updatePrice);
+
+        function updatePrice() {
+          const quantity = Number.parseInt(quantityInput.value) || 1;
+          const express = urgencySelect && urgencySelect.value === 'express';
+          const unit = express ? Math.round(basePrice * 1.2) : basePrice;
+          const uplift = express ? (unit - basePrice) * quantity : 0;
+          const price = unit * quantity;
+
+          quantityDisplay.textContent = quantity;
+          totalPrice.textContent = "₹" + price.toFixed(2);
+          if (upliftRow && upliftEl) {
+            upliftRow.style.display = express ? '' : 'none';
+            upliftEl.textContent = '₹' + uplift.toFixed(2);
+          }
+        }
+        // initial
+        updatePrice();
+      }
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

@@ -1,0 +1,86 @@
+<%- include('../partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Manager Dashboard</h4>
+        </div>
+        <div class="card-body">
+          <% if (orders && orders.length> 0) { %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Design</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(order=> { %>
+                  <tr id="order-<%= order._id %>">
+                    <td><code><%= order._id %></code></td>
+                    <td>
+                      <%= order.customerId && order.customerId.username ? order.customerId.username : 'N/A' %>
+                    </td>
+                    <td>
+                      <%= order.designId ? order.designId.name : 'N/A' %>
+                    </td>
+                    <td>
+                      <%= order.quantity %>
+                    </td>
+                    <td class="order-status">
+                      <%= order.status %>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-success approve-btn" data-id="<%= order._id %>">Approve</button>
+                      <button class="btn btn-sm btn-danger reject-btn" data-id="<%= order._id %>">Reject</button>
+                    </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+            </table>
+            <% } else { %>
+              <div class="alert alert-info">No orders found.</div>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!confirm('Approve order ' + id + '?')) return;
+          const res = await fetch('/manager/orders/' + id + '/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          if (res.ok) {
+            btn.closest('tr').querySelector('.order-status').textContent = 'In Production';
+            btn.disabled = true;
+          } else {
+            alert('Failed to approve');
+          }
+        });
+      });
+
+      document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!confirm('Reject order ' + id + '?')) return;
+          const res = await fetch('/manager/orders/' + id + '/reject', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          if (res.ok) {
+            btn.closest('tr').querySelector('.order-status').textContent = 'Cancelled';
+            btn.disabled = true;
+          } else {
+            alert('Failed to reject');
+          }
+        });
+      });
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

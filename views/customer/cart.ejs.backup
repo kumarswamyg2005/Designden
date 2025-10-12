@@ -1,0 +1,143 @@
+<%- include('../partials/header') %>
+
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Your Cart</h2>
+          <p class="card-text">Review your saved designs and proceed to checkout.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Saved Designs</h3>
+        </div>
+        <div class="card-body">
+          <% if (cartItems && cartItems.length> 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Design</th>
+                    <th>Details</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% cartItems.forEach(item=> { %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <% // Show customization image or fallback let cartImageUrl='/images/casual-tshirt.jpeg' ; //
+                            Default fallback // Check if customization has an image if (item.customizationId &&
+                            item.customizationId.customImage) { cartImageUrl=item.customizationId.customImage; } // Get
+                            item name from customText or default let itemName='Custom Design' ; if (item.customizationId
+                            && item.customizationId.customText) { itemName=item.customizationId.customText.split(',')[0]
+                            || itemName; } %>
+                            <img src="<%= cartImageUrl %>" alt="<%= itemName %>" class="me-3"
+                              style="height: 72px; width: 72px; object-fit: cover; border-radius: 8px;">
+                            <div>
+                              <h6 class="mb-0">
+                                <%= itemName %>
+                              </h6>
+                            </div>
+                        </div>
+                      </td>
+                      <td>
+                        <% if (item.customizationId && item.customizationId.customText) { %>
+                          <small class="text-muted">
+                            <%= item.customizationId.customText %>
+                          </small>
+                          <% } else { %>
+                            <small class="text-muted">Custom item</small>
+                            <% } %>
+                      </td>
+                      <td>
+                        <form action="/customer/update-cart" method="POST" class="d-flex align-items-center">
+                          <input type="hidden" name="customizationId" value="<%= item.customizationId._id %>">
+                          <input type="number" class="form-control form-control-sm" name="quantity"
+                            value="<%= item.quantity %>" min="1" style="width: 60px;">
+                          <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">
+                            <i class="fas fa-sync-alt"></i>
+                          </button>
+                        </form>
+                      </td>
+                      <td>₹<%= ((item.customizationId.price || 50) * item.quantity).toFixed(2) %>
+                      </td>
+                      <td>
+                        <form action="/customer/remove-from-cart" method="POST">
+                          <input type="hidden" name="customizationId" value="<%= item.customizationId._id %>">
+                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Remove
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <% } else { %>
+              <div class="alert alert-info">
+                Your cart is empty. <a href="/customer/design-studio">Create a design</a> or <a href="/shop">shop
+                  ready-made designs</a> to add items to your cart.
+              </div>
+              <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Order Summary</h3>
+        </div>
+        <div class="card-body">
+          <% if (cartItems && cartItems.length> 0) { %>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Items (<%= cartItems.length %>):</span>
+                <span>
+                  <% let subtotal=0; cartItems.forEach(item=> {
+                    subtotal += (item.customizationId.price || 50) * item.quantity;
+                    });
+                    %>
+                    ₹<%= subtotal.toFixed(2) %>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Shipping:</span>
+                <span>₹50.00</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold">
+                <span>Total:</span>
+                <span>₹<%= (subtotal + 50).toFixed(2) %></span>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <a href="/customer/checkout" class="btn btn-primary">Proceed to Checkout</a>
+              <a href="/customer/design-studio" class="btn btn-outline-secondary">Continue Shopping</a>
+            </div>
+            <% } else { %>
+              <div class="alert alert-info">
+                Add designs to your cart to see the order summary.
+              </div>
+              <div class="d-grid">
+                <a href="/customer/design-studio" class="btn btn-primary">Create a Design</a>
+              </div>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -21,13 +21,19 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["customer", "designer", "admin"],
+    enum: ["customer", "designer", "manager", "admin"],
     default: "customer",
+  },
+  // Deprecated: Use DesignerProfile.status instead for designers
+  // Kept for backward compatibility with manager approvals
+  approved: {
+    type: Boolean,
+    default: true,
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
-})
+});
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);

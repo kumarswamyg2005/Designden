@@ -1,0 +1,3364 @@
+(node:68358) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:68358) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+Server running on port 3000
+MongoDB Connected: localhost
+[2025-10-09T03:29:46.801Z] GET /signup
+Session ID: XilE5mk3rRbMN8-TpKIeikS8nHNHfdP2
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 9.209 ms - 8613[0m
+[2025-10-09T03:29:46.810Z] GET /login
+Session ID: HYDQkq4iMXP2kz7aJjKBqINV4WLFwywj
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 11.344 ms - 7323[0m
+[2025-10-09T03:29:47.810Z] GET /login
+Session ID: GU9PCqzQqAYCFpATUQAM-pPFqPODSt0b
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.781 ms - 7323[0m
+[0mGET /css/styles.css [32m200[0m 2.563 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 2.092 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.372 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.206 ms - 6697[0m
+[2025-10-09T03:29:48.283Z] GET /favicon.ico
+Session ID: QB9f58yaEC8If6FzyMNChca25_QqL3dG
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 6.216 ms - 6700[0m
+[2025-10-09T03:29:48.358Z] GET /login
+Session ID: clPDXWWeTFAvN6T-BW5ACH19fAH4hygq
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 2.343 ms - 7323[0m
+[2025-10-09T03:29:48.470Z] POST /login
+Session ID: QuQ-yFdZMtlauzqhR72HSu-Z7tY_rR6b
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:29:48.470Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 34.138 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:29:48.496Z] GET /customer/dashboard
+Session ID: QuQ-yFdZMtlauzqhR72HSu-Z7tY_rR6b
+Session user: autotest (customer)
+---
+[0mGET /js/currency-enforcer.js [32m200[0m 0.450 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.409 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.226 ms - 6697[0m
+[0mGET /customer/dashboard [32m200[0m 163.881 ms - 9806[0m
+[0mGET /css/styles.css [36m304[0m 0.512 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.231 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.580 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.545 ms - -[0m
+[2025-10-09T03:29:48.689Z] GET /customer/dashboard
+Session ID: QuQ-yFdZMtlauzqhR72HSu-Z7tY_rR6b
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.482 ms - 2370[0m
+[2025-10-09T03:29:49.202Z] GET /customer/design-studio
+Session ID: QuQ-yFdZMtlauzqhR72HSu-Z7tY_rR6b
+Session user: autotest (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 4.669 ms - 50026[0m
+[0mGET /css/styles.css [36m304[0m 0.229 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.201 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.210 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.476 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [32m200[0m 1.172 ms - 104638[0m
+[0mGET /js/OrbitControls.js [32m200[0m 1.273 ms - 26133[0m
+[0mGET /images/graphics/dragon_2.jpg [32m200[0m 1.605 ms - 206010[0m
+[0mGET /images/graphics/dragon_4.jpg [32m200[0m 1.192 ms - 194326[0m
+[0mGET /images/graphics/dragon_3.jpg [32m200[0m 1.711 ms - 238798[0m
+[0mGET /js/MTLLoader.js [32m200[0m 1.112 ms - 10752[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.993 ms - 104928[0m
+[0mGET /images/graphics/dragon_5.jpg [32m200[0m 1.153 ms - 262921[0m
+[0mGET /js/OBJLoader.js [32m200[0m 2.343 ms - 21591[0m
+[0mGET /js/3d-models.js [32m200[0m 2.373 ms - 23241[0m
+[0mGET /images/graphics/dragon_8.jpg [32m200[0m 2.254 ms - 168618[0m
+[0mGET /images/graphics/dragon_6.jpg [32m200[0m 2.594 ms - 262911[0m
+[0mGET /images/graphics/dragon_7.jpg [32m200[0m 2.293 ms - 269799[0m
+[0mGET /images/graphics/dragon_9.jpg [32m200[0m 2.079 ms - 251170[0m
+[0mGET /images/graphics/dragon_10.jpg [32m200[0m 1.714 ms - 250086[0m
+[0mGET /images/graphics/model.png [32m200[0m 1.571 ms - 1659058[0m
+[0mGET /models/tshirt_men.glb [32m200[0m 0.742 ms - 17714904[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.479 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.764 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.525 ms - 6697[0m
+[2025-10-09T03:29:50.887Z] GET /login
+Session ID: Iz--_Qo9CEwrB7bhCM1mUBzUS8iaf6Le
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.462 ms - 7323[0m
+[0mGET /css/styles.css [32m200[0m 0.357 ms - 5716[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.397 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.227 ms - 6697[0m
+[2025-10-09T03:29:52.998Z] GET /signup
+Session ID: sljDmhVwDAKiiTCbTJ5fHxzmK0sNUBGA
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 2.233 ms - 8613[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.524 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.253 ms - 6697[0m
+[2025-10-09T03:29:55.092Z] GET /signup
+Session ID: HdTmyJFGoJeOsgCUo3zy-0EsZNE9fOtc
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 3.858 ms - 8613[0m
+[0mGET /css/styles.css [32m200[0m 1.006 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.869 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.046 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.169 ms - 6697[0m
+[2025-10-09T03:29:55.564Z] GET /favicon.ico
+Session ID: KjavHDsczmcQiLDqe-UEtpvQJnteMmGr
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 4.723 ms - 6700[0m
+[2025-10-09T03:29:55.720Z] POST /signup
+Session ID: vbbgZ5Wmpgiuqd5FXlo0_qXOp5i6_tvc
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 44.613 ms - 45[0m
+[2025-10-09T03:29:55.767Z] GET /manager/pending
+Session ID: vbbgZ5Wmpgiuqd5FXlo0_qXOp5i6_tvc
+Session user: e2e_manager_1759980595055 (manager)
+---
+[0mGET /manager/pending [33m404[0m 1.771 ms - 6547[0m
+[0mGET /css/styles.css [36m304[0m 0.286 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.112 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.081 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.244 ms - -[0m
+[2025-10-09T03:29:55.888Z] GET /login
+Session ID: OkiPEQm0ze_05DG79V0kfeYns2Dy7ix7
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.343 ms - 7323[0m
+[0mGET /css/styles.css [32m200[0m 1.027 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.556 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.467 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.288 ms - 6697[0m
+[2025-10-09T03:29:56.161Z] GET /favicon.ico
+Session ID: wAZz72cBKEVevzpR_paNiNYqXXgW9vMP
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.017 ms - 6700[0m
+[2025-10-09T03:29:56.272Z] POST /login
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:29:56.272Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 4.590 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:29:56.277Z] GET /customer/dashboard
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 19.763 ms - 9806[0m
+[0mGET /css/styles.css [36m304[0m 0.286 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.145 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.080 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.074 ms - -[0m
+[2025-10-09T03:29:56.326Z] GET /customer/dashboard
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 12.255 ms - 2370[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.332 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.367 ms - 6697[0m
+[2025-10-09T03:29:56.844Z] GET /shop
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [32m200[0m 12.946 ms - 30808[0m
+[0mGET /css/styles.css [36m304[0m 0.182 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.134 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.057 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.144 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 1.106 ms - 28966[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 1.807 ms - 60306[0m
+[0mGET /images/women-tshirt.jpeg [32m200[0m 1.418 ms - 55961[0m
+[0mGET /images/women-hoodie.webp [32m200[0m 1.093 ms - 115248[0m
+[0mGET /images/women-jeans.jpeg [32m200[0m 1.864 ms - 65578[0m
+[0mGET /images/winter-hoodie.webp [32m200[0m 1.089 ms - 12006[0m
+[0mGET /images/casual-tshirt.jpeg [32m200[0m 1.316 ms - 45512[0m
+[0mGET /images/denim-jeans.webp [32m200[0m 1.094 ms - 121216[0m
+[0mGET /images/kurthi.jpeg [32m200[0m 1.904 ms - 91550[0m
+[0mGET /images/classic-hoodie.jpeg [32m200[0m 1.431 ms - 94710[0m
+[0mGET /images/polo%20t-shirt.jpg [32m200[0m 1.383 ms - 435344[0m
+[2025-10-09T03:29:56.988Z] GET /shop/product/68e69d041a0d6f73649f97e6
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mGET /shop/product/68e69d041a0d6f73649f97e6 [32m200[0m 5.346 ms - 14631[0m
+[0mGET /css/styles.css [36m304[0m 0.406 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.114 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.477 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.529 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.584 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.209 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.236 ms - -[0m
+[2025-10-09T03:29:57.569Z] GET /shop/customize/68e69d041a0d6f73649f97e6
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mGET /shop/customize/68e69d041a0d6f73649f97e6 [32m200[0m 4.440 ms - 27524[0m
+[0mGET /css/styles.css [36m304[0m 0.211 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.175 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.175 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.101 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 0.727 ms - 26133[0m
+[0mGET /js/3d-models.js [32m200[0m 0.720 ms - 23241[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.566 ms - 104928[0m
+[0mGET /models/hoodie_women.glb [32m200[0m 0.883 ms - 36836736[0m
+[2025-10-09T03:29:58.552Z] POST /shop/save-customization
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mPOST /shop/save-customization [36m302[0m 11.308 ms - 69[0m
+[2025-10-09T03:29:58.567Z] GET /customer/order/68e72c3696575186b4acbc34
+Session ID: i3Ww8nhX56QknsZKheV2-bkzWElohhRW
+Session user: autotest (customer)
+---
+[0mGET /customer/order/68e72c3696575186b4acbc34 [32m200[0m 43.503 ms - 21304[0m
+[0mGET /css/styles.css [36m304[0m 0.163 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.082 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.049 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.059 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.036 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.100 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [32m200[0m 0.395 ms - 2461185[0m
+[2025-10-09T03:31:13.297Z] GET /login
+Session ID: ehmmHNIpZ-856edYGra9u925GeVfHb-m
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 4.305 ms - 7323[0m
+[2025-10-09T03:31:13.343Z] GET /login
+Session ID: TFRajg79uifLqLAeKAzZtG49WUWTulbG
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.865 ms - 7323[0m
+[2025-10-09T03:31:13.345Z] GET /signup
+Session ID: K05Vz5oWJHcKbYNaVnK8jaQCqFBS6gDG
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 1.874 ms - 8613[0m
+[0mGET /css/styles.css [32m200[0m 4.213 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.641 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.655 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.703 ms - 6697[0m
+[0mGET /css/styles.css [32m200[0m 1.507 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.183 ms - 4148[0m
+[0mGET /js/scripts.js [32m200[0m 1.197 ms - 6697[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.036 ms - 6835[0m
+[0mGET /css/styles.css [32m200[0m 1.733 ms - 5716[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 3.060 ms - 4148[0m
+[0mGET /js/scripts.js [32m200[0m 0.724 ms - 6697[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.722 ms - 6835[0m
+[2025-10-09T03:31:13.734Z] GET /favicon.ico
+Session ID: Yo-pg2lKyuGQFmuhFMVGN4gXdoiQU4nG
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 2.036 ms - 6700[0m
+[2025-10-09T03:31:13.740Z] GET /favicon.ico
+Session ID: 6e7eLo18LkIIrzmXOmgkelDlP-V3H9Ht
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 0.801 ms - 6700[0m
+[2025-10-09T03:31:13.801Z] GET /favicon.ico
+Session ID: ioJrZ_XSb2_L_TT4Nme3cI_FSL3Hp9lB
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.146 ms - 6700[0m
+[2025-10-09T03:31:13.867Z] POST /login
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:31:13.867Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 9.937 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:31:13.875Z] GET /customer/dashboard
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.353 ms - 9806[0m
+[0mGET /css/styles.css [36m304[0m 0.131 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.144 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.223 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.259 ms - -[0m
+[2025-10-09T03:31:13.911Z] POST /signup
+Session ID: XndasV054zaAXL1dQzK-uSTDVgNMVJrk
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 2.713 ms - 45[0m
+[2025-10-09T03:31:13.916Z] GET /customer/dashboard
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[2025-10-09T03:31:13.923Z] GET /manager/pending
+Session ID: XndasV054zaAXL1dQzK-uSTDVgNMVJrk
+Session user: e2e_manager_1759980673303 (manager)
+---
+[0mGET /manager/pending [33m404[0m 3.410 ms - 6547[0m
+[0mGET /customer/dashboard [32m200[0m 12.749 ms - 3560[0m
+[0mGET /css/styles.css [36m304[0m 0.662 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.116 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.248 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.382 ms - -[0m
+[2025-10-09T03:31:13.970Z] POST /login
+Session ID: w6ITuC7Uyj9LYPx9T-z2jtH1qX72zUb9
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:31:13.970Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 6.821 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:31:13.979Z] GET /customer/dashboard
+Session ID: w6ITuC7Uyj9LYPx9T-z2jtH1qX72zUb9
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.731 ms - 9806[0m
+[0mGET /css/styles.css [36m304[0m 0.115 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.053 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.059 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.040 ms - -[0m
+[2025-10-09T03:31:14.009Z] GET /customer/dashboard
+Session ID: w6ITuC7Uyj9LYPx9T-z2jtH1qX72zUb9
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 4.302 ms - 3560[0m
+[2025-10-09T03:31:14.445Z] GET /shop
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [32m200[0m 14.349 ms - 30808[0m
+[0mGET /css/styles.css [36m304[0m 0.187 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.168 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.102 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.098 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 1.167 ms - 28966[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 1.566 ms - 60306[0m
+[0mGET /images/women-tshirt.jpeg [32m200[0m 1.524 ms - 55961[0m
+[0mGET /images/women-hoodie.webp [32m200[0m 1.600 ms - 115248[0m
+[0mGET /images/women-jeans.jpeg [32m200[0m 1.880 ms - 65578[0m
+[0mGET /images/denim-jeans.webp [32m200[0m 2.157 ms - 121216[0m
+[0mGET /images/casual-tshirt.jpeg [32m200[0m 1.474 ms - 45512[0m
+[0mGET /images/winter-hoodie.webp [32m200[0m 2.077 ms - 12006[0m
+[0mGET /images/kurthi.jpeg [32m200[0m 1.538 ms - 91550[0m
+[0mGET /images/classic-hoodie.jpeg [32m200[0m 2.519 ms - 94710[0m
+[0mGET /images/polo%20t-shirt.jpg [32m200[0m 1.346 ms - 435344[0m
+[2025-10-09T03:31:14.530Z] GET /customer/design-studio
+Session ID: w6ITuC7Uyj9LYPx9T-z2jtH1qX72zUb9
+Session user: autotest (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 18.257 ms - 50026[0m
+[0mGET /css/styles.css [36m304[0m 0.171 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.143 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.158 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.210 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [32m200[0m 0.800 ms - 104638[0m
+[0mGET /images/graphics/dragon_3.jpg [32m200[0m 0.929 ms - 238798[0m
+[0mGET /images/graphics/dragon_4.jpg [32m200[0m 1.054 ms - 194326[0m
+[0mGET /images/graphics/dragon_2.jpg [32m200[0m 1.195 ms - 206010[0m
+[0mGET /images/graphics/dragon_5.jpg [32m200[0m 0.462 ms - 262921[0m
+[0mGET /images/graphics/dragon_7.jpg [32m200[0m 0.614 ms - 269799[0m
+[0mGET /images/graphics/dragon_6.jpg [32m200[0m 0.797 ms - 262911[0m
+[0mGET /js/OrbitControls.js [32m200[0m 1.997 ms - 26133[0m
+[0mGET /js/MTLLoader.js [32m200[0m 2.994 ms - 10752[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 2.453 ms - 104928[0m
+[0mGET /js/OBJLoader.js [32m200[0m 6.073 ms - 21591[0m
+[0mGET /js/3d-models.js [32m200[0m 5.984 ms - 23241[0m
+[0mGET /images/graphics/dragon_8.jpg [32m200[0m 5.022 ms - 168618[0m
+[0mGET /images/graphics/dragon_9.jpg [32m200[0m 13.500 ms - 251170[0m
+[0mGET /images/graphics/dragon_10.jpg [32m200[0m 10.062 ms - 250086[0m
+[0mGET /images/graphics/model.png [32m200[0m 15.544 ms - 1659058[0m
+[2025-10-09T03:31:14.654Z] GET /shop/product/68e69d041a0d6f73649f97e6
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[0mGET /shop/product/68e69d041a0d6f73649f97e6 [32m200[0m 8.770 ms - 14631[0m
+[0mGET /css/styles.css [36m304[0m 0.449 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.149 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.124 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.096 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.064 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.076 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.093 ms - -[0m
+[0mGET /models/tshirt_men.glb [32m200[0m 0.779 ms - 17714904[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.185 ms - -[0m
+[2025-10-09T03:31:15.240Z] GET /shop/customize/68e69d041a0d6f73649f97e6
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[0mGET /shop/customize/68e69d041a0d6f73649f97e6 [32m200[0m 4.989 ms - 27524[0m
+[0mGET /css/styles.css [36m304[0m 0.321 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.113 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.099 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.142 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 0.372 ms - 26133[0m
+[0mGET /js/3d-models.js [32m200[0m 0.352 ms - 23241[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.314 ms - 104928[0m
+[0mGET /models/hoodie_women.glb [32m200[0m 0.860 ms - 36836736[0m
+[2025-10-09T03:31:16.323Z] POST /shop/save-customization
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[0mPOST /shop/save-customization [36m302[0m 9.586 ms - 69[0m
+[2025-10-09T03:31:16.337Z] GET /customer/order/68e72c8496575186b4acbc62
+Session ID: bATBGgtsOrON7pYHCVNiH4aRYHk6Ev-1
+Session user: autotest (customer)
+---
+[0mGET /customer/order/68e72c8496575186b4acbc62 [32m200[0m 13.721 ms - 21304[0m
+[0mGET /css/styles.css [36m304[0m 0.145 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.065 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.061 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.039 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.035 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.092 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [32m200[0m 0.514 ms - 2461185[0m
+[2025-10-09T03:32:51.370Z] GET /
+Session ID: j9la9RaBHGdYNhqc_79iYDnbPld-3Rsx
+Session user: Not logged in
+---
+Home page accessed, user: Not logged in
+[0mGET / [36m304[0m 5.271 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.388 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.391 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.352 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.415 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.441 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.226 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.320 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.293 ms - -[0m
+[2025-10-09T03:32:51.715Z] GET /favicon.ico
+Session ID: d_HfaskllgMnnC2rA4SPk8l6xRw_xW8-
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 2.264 ms - 6700[0m
+[2025-10-09T03:32:57.060Z] GET /login
+Session ID: zom1IZPEDi-4Fjq_vM4sTs03JdQhQg7m
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 3.514 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.788 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.945 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.956 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.188 ms - -[0m
+[2025-10-09T03:32:58.708Z] GET /signup
+Session ID: beYCp9sj4zRW_9r5pAh1hnTGnKuNcm-1
+Session user: Not logged in
+---
+[0mGET /signup [36m304[0m 3.514 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.236 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.220 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.235 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.129 ms - -[0m
+[2025-10-09T03:33:18.810Z] POST /signup
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 7.418 ms - 45[0m
+[2025-10-09T03:33:18.819Z] GET /manager/pending
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: gamin_12 (manager)
+---
+[0mGET /manager/pending [33m404[0m 2.135 ms - 6547[0m
+[0mGET /css/styles.css [36m304[0m 1.847 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.504 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.153 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.174 ms - -[0m
+[2025-10-09T03:33:20.205Z] GET /
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: gamin_12 (manager)
+---
+Home page accessed, user: gamin_12 (manager)
+[0mGET / [32m200[0m 4.059 ms - 14062[0m
+[0mGET /css/styles.css [36m304[0m 0.290 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.708 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.475 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.125 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.242 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.310 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.167 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.188 ms - -[0m
+[2025-10-09T03:33:21.771Z] GET /manager
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: gamin_12 (manager)
+---
+[0mGET /manager [33m403[0m 5.336 ms - 36[0m
+[2025-10-09T03:33:47.276Z] GET /
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: gamin_12 (manager)
+---
+Home page accessed, user: gamin_12 (manager)
+[0mGET / [36m304[0m 6.195 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.773 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.711 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 1.124 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.515 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.588 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.500 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.422 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.446 ms - -[0m
+[2025-10-09T03:33:48.590Z] GET /logout
+Session ID: NN9x3vAS-MuU61zVjcBRpGZH0LA_H9jq
+Session user: gamin_12 (manager)
+---
+Logout requested for user: gamin_12
+[0mGET /logout [36m302[0m 2.602 ms - 35[0m
+[2025-10-09T03:33:48.596Z] GET /login
+Session ID: oS_072iDMRbg_56oV2b625ManG7_UKvo
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 3.286 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 1.501 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.552 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 1.458 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 1.032 ms - -[0m
+[2025-10-09T03:33:53.707Z] POST /login
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: Not logged in
+---
+Login attempt with email: sai1@gmail.com
+User found: Yes
+User details: { username: 'gamin_123', email: 'sai1@gmail.com', role: 'customer' }
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:33:53.707Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a082847adae29fd378ae'),
+    username: 'gamin_123',
+    email: 'sai1@gmail.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a082847adae29fd378ae'),
+  username: 'gamin_123',
+  email: 'sai1@gmail.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 5.565 ms - 48[0m
+Session saved successfully for user: gamin_123
+[2025-10-09T03:33:53.715Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 15.809 ms - 9683[0m
+[0mGET /css/styles.css [36m304[0m 0.876 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.996 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 1.058 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 1.118 ms - -[0m
+[2025-10-09T03:33:53.758Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 13.587 ms - 1208[0m
+[2025-10-09T03:33:56.608Z] GET /customer/order/68e6a0c4847adae29fd378d7
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/order/68e6a0c4847adae29fd378d7 [36m304[0m 14.878 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.321 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.410 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [36m304[0m 0.334 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.203 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.228 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.197 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.217 ms - -[0m
+[2025-10-09T03:39:59.315Z] GET /manager
+Session ID: CjqOuSgYf9kfFCDl9v4zooSo9arDsI2i
+Session user: Not logged in
+---
+[0mGET /manager [33m403[0m 14.089 ms - 21[0m
+[2025-10-09T03:43:24.173Z] GET /signup
+Session ID: Y4DMFC0kgHxmZXPFbvu9vPmezl54FAIx
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 8.259 ms - 8973[0m
+[2025-10-09T03:43:24.179Z] GET /signup
+Session ID: -WkFd1hFC7bbO6Oe6XmV--5jIOSdH5S0
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 1.081 ms - 8973[0m
+[2025-10-09T03:43:24.221Z] GET /login
+Session ID: bc5YF0ioCWsIv4BjHLkaLe9hJAw3YwwJ
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.319 ms - 7683[0m
+[2025-10-09T03:43:24.253Z] GET /login
+Session ID: IrnKI8ezx_s1sPr-5T7od4LWO0KmqEu0
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.659 ms - 7683[0m
+[0mGET /css/styles.css [32m200[0m 2.693 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.566 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.256 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.186 ms - 7692[0m
+[0mGET /css/styles.css [32m200[0m 0.914 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.223 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.363 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.402 ms - 7692[0m
+[0mGET /css/styles.css [32m200[0m 1.381 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.967 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.149 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.296 ms - 7692[0m
+[0mGET /css/styles.css [32m200[0m 0.810 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.659 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.390 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.419 ms - 7692[0m
+[2025-10-09T03:43:24.514Z] GET /favicon.ico
+Session ID: PypfmO55W5nj_9n7dr8f1NNPR3z2RSDy
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 2.131 ms - 7060[0m
+[2025-10-09T03:43:24.643Z] GET /favicon.ico
+Session ID: zXcA8BB80uOxoh3v52P8xDHpfbVzr67d
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.688 ms - 7060[0m
+[2025-10-09T03:43:24.648Z] GET /favicon.ico
+Session ID: E8rC9LU2nVs5pEPu-R5RXh18I6shHctT
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.729 ms - 7060[0m
+[2025-10-09T03:43:24.686Z] GET /favicon.ico
+Session ID: NhZLBXhOO6_bNcDrY3iqNgVWb6m2kXNa
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.708 ms - 7060[0m
+[2025-10-09T03:43:24.890Z] POST /login
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+[2025-10-09T03:43:24.940Z] POST /login
+Session ID: LRo2WHli6AudARdnKTg7HbSFM3r-BB-C
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+[2025-10-09T03:43:24.972Z] POST /signup
+Session ID: 5T-t2li0GG-em_G0zXQGIy4mot1s9FdR
+Session user: Not logged in
+---
+[2025-10-09T03:43:24.990Z] POST /signup
+Session ID: a749rC9km9WUOJSxIQjo7xXJXZQVN2rB
+Session user: Not logged in
+---
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:43:24.939Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 72.326 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:43:25.017Z] GET /customer/dashboard
+Session ID: LRo2WHli6AudARdnKTg7HbSFM3r-BB-C
+Session user: autotest (customer)
+---
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:43:24.890Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 129.295 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:43:25.020Z] GET /customer/dashboard
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[0mPOST /signup [36m302[0m 55.869 ms - 45[0m
+[0mPOST /signup [36m302[0m 37.627 ms - 45[0m
+[2025-10-09T03:43:25.035Z] GET /manager/pending
+Session ID: a749rC9km9WUOJSxIQjo7xXJXZQVN2rB
+Session user: e2e_manager_1759981404155 (manager)
+---
+[0mGET /manager/pending [33m404[0m 0.965 ms - 6907[0m
+[2025-10-09T03:43:25.036Z] GET /manager/pending
+Session ID: 5T-t2li0GG-em_G0zXQGIy4mot1s9FdR
+Session user: e2e_manager_1759981404143 (manager)
+---
+[0mGET /manager/pending [33m404[0m 1.557 ms - 6907[0m
+[0mGET /css/styles.css [36m304[0m 0.240 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.353 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.372 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.377 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.388 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.388 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.393 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.781 ms - -[0m
+[0mGET /customer/dashboard [32m200[0m 64.595 ms - 10166[0m
+[0mGET /customer/dashboard [32m200[0m 63.049 ms - 10166[0m
+[0mGET /css/styles.css [36m304[0m 0.265 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.194 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.139 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.096 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.203 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.343 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.393 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.191 ms - -[0m
+[2025-10-09T03:43:25.129Z] GET /customer/dashboard
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[2025-10-09T03:43:25.130Z] GET /customer/dashboard
+Session ID: LRo2WHli6AudARdnKTg7HbSFM3r-BB-C
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.037 ms - 4750[0m
+[0mGET /customer/dashboard [32m200[0m 9.565 ms - 4750[0m
+[2025-10-09T03:43:25.582Z] GET /login
+Session ID: 5T-t2li0GG-em_G0zXQGIy4mot1s9FdR
+Session user: e2e_manager_1759981404143 (manager)
+---
+[0mGET /login [36m302[0m 0.767 ms - 30[0m
+[2025-10-09T03:43:25.585Z] GET /
+Session ID: 5T-t2li0GG-em_G0zXQGIy4mot1s9FdR
+Session user: e2e_manager_1759981404143 (manager)
+---
+Home page accessed, user: e2e_manager_1759981404143 (manager)
+[0mGET / [32m200[0m 1.630 ms - 14422[0m
+[0mGET /css/styles.css [36m304[0m 0.251 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.248 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.265 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.351 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [32m200[0m 0.863 ms - 29474[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 1.160 ms - 28966[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 1.555 ms - 60306[0m
+[0mGET /images/Custom%20Embroidery.jpg [32m200[0m 1.051 ms - 289091[0m
+[2025-10-09T03:43:25.648Z] GET /customer/design-studio
+Session ID: LRo2WHli6AudARdnKTg7HbSFM3r-BB-C
+Session user: autotest (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 18.789 ms - 50386[0m
+[2025-10-09T03:43:25.666Z] GET /shop
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /css/styles.css [36m304[0m 1.301 ms - -[0m
+[0mGET /shop [32m200[0m 47.549 ms - 31168[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.383 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.980 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 1.647 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [32m200[0m 1.518 ms - 104638[0m
+[0mGET /js/MTLLoader.js [32m200[0m 1.383 ms - 10752[0m
+[0mGET /js/OrbitControls.js [32m200[0m 1.677 ms - 26133[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 1.357 ms - 104928[0m
+[0mGET /images/graphics/dragon_2.jpg [32m200[0m 1.260 ms - 206010[0m
+[0mGET /images/graphics/dragon_3.jpg [32m200[0m 1.389 ms - 238798[0m
+[0mGET /js/3d-models.js [32m200[0m 2.584 ms - 23241[0m
+[0mGET /js/OBJLoader.js [32m200[0m 2.962 ms - 21591[0m
+[0mGET /images/graphics/dragon_4.jpg [32m200[0m 2.868 ms - 194326[0m
+[0mGET /images/graphics/dragon_8.jpg [32m200[0m 1.452 ms - 168618[0m
+[0mGET /images/graphics/dragon_5.jpg [32m200[0m 2.383 ms - 262921[0m
+[0mGET /images/graphics/dragon_6.jpg [32m200[0m 1.333 ms - 262911[0m
+[0mGET /images/graphics/dragon_7.jpg [32m200[0m 1.519 ms - 269799[0m
+[0mGET /images/graphics/dragon_9.jpg [32m200[0m 2.840 ms - 251170[0m
+[0mGET /images/graphics/dragon_10.jpg [32m200[0m 5.941 ms - 250086[0m
+[0mGET /css/styles.css [36m304[0m 3.366 ms - -[0m
+[0mGET /images/graphics/model.png [32m200[0m 3.544 ms - 1659058[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.140 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.171 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.114 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 0.179 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 0.241 ms - 28966[0m
+[0mGET /images/women-hoodie.webp [32m200[0m 0.955 ms - 115248[0m
+[0mGET /images/women-tshirt.jpeg [32m200[0m 1.268 ms - 55961[0m
+[0mGET /images/winter-hoodie.webp [32m200[0m 0.530 ms - 12006[0m
+[0mGET /images/women-jeans.jpeg [32m200[0m 1.151 ms - 65578[0m
+[0mGET /images/casual-tshirt.jpeg [32m200[0m 0.776 ms - 45512[0m
+[0mGET /images/denim-jeans.webp [32m200[0m 1.170 ms - 121216[0m
+[0mGET /images/kurthi.jpeg [32m200[0m 0.707 ms - 91550[0m
+[0mGET /images/classic-hoodie.jpeg [32m200[0m 0.529 ms - 94710[0m
+[0mGET /images/polo%20t-shirt.jpg [32m200[0m 0.822 ms - 435344[0m
+[2025-10-09T03:43:25.936Z] GET /shop/product/68e69d041a0d6f73649f97e6
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[0mGET /shop/product/68e69d041a0d6f73649f97e6 [32m200[0m 12.535 ms - 14991[0m
+[0mGET /css/styles.css [36m304[0m 0.238 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.117 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.083 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.055 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.055 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.142 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.551 ms - -[0m
+[0mGET /models/tshirt_men.glb [32m200[0m 0.852 ms - 17714904[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.280 ms - -[0m
+[2025-10-09T03:43:26.518Z] GET /shop/customize/68e69d041a0d6f73649f97e6
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[0mGET /shop/customize/68e69d041a0d6f73649f97e6 [32m200[0m 8.288 ms - 27884[0m
+[0mGET /css/styles.css [36m304[0m 0.152 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.085 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.079 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.103 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 0.373 ms - 26133[0m
+[0mGET /js/3d-models.js [32m200[0m 0.275 ms - 23241[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.274 ms - 104928[0m
+[0mGET /models/hoodie_women.glb [32m200[0m 0.806 ms - 36836736[0m
+[2025-10-09T03:43:27.685Z] POST /shop/save-customization
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[0mPOST /shop/save-customization [36m302[0m 16.136 ms - 69[0m
+[2025-10-09T03:43:27.702Z] GET /customer/order/68e72f5f96575186b4acbca5
+Session ID: _B9N8GPl3n8GYAdJY4bHNTNRdhBM0XNf
+Session user: autotest (customer)
+---
+[0mGET /customer/order/68e72f5f96575186b4acbca5 [32m200[0m 12.611 ms - 21664[0m
+[0mGET /css/styles.css [36m304[0m 0.144 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.082 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.125 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.055 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.061 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.115 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [32m200[0m 0.483 ms - 2461185[0m
+[2025-10-09T03:43:33.652Z] GET /signup
+Session ID: WV4P7t-io5SULIUuvl9wP64B-RInFWat
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 1.800 ms - 8973[0m
+[0mGET /css/styles.css [32m200[0m 0.502 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.247 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.281 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.288 ms - 7692[0m
+[2025-10-09T03:43:33.843Z] GET /favicon.ico
+Session ID: MUfITuC6sUhuAeuXS-YS7ShmgUZugkJS
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.543 ms - 7060[0m
+[2025-10-09T03:43:34.085Z] POST /signup
+Session ID: GHuEzHKWlDPUR6pr3PwlO7rJKFOalApn
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 3.776 ms - 45[0m
+[2025-10-09T03:43:34.090Z] GET /manager/pending
+Session ID: GHuEzHKWlDPUR6pr3PwlO7rJKFOalApn
+Session user: e2e_manager_1759981413630 (manager)
+---
+[0mGET /manager/pending [33m404[0m 0.810 ms - 6907[0m
+[0mGET /css/styles.css [36m304[0m 0.140 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.070 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.063 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.105 ms - -[0m
+[2025-10-09T03:43:34.628Z] GET /login
+Session ID: GHuEzHKWlDPUR6pr3PwlO7rJKFOalApn
+Session user: e2e_manager_1759981413630 (manager)
+---
+[0mGET /login [36m302[0m 1.137 ms - 30[0m
+[2025-10-09T03:43:34.631Z] GET /
+Session ID: GHuEzHKWlDPUR6pr3PwlO7rJKFOalApn
+Session user: e2e_manager_1759981413630 (manager)
+---
+Home page accessed, user: e2e_manager_1759981413630 (manager)
+[0mGET / [32m200[0m 3.075 ms - 14422[0m
+[0mGET /css/styles.css [36m304[0m 0.153 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.174 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.131 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.545 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 0.643 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 0.720 ms - 28966[0m
+[0mGET /images/sustainable%20fabric.webp [32m200[0m 0.790 ms - 29474[0m
+[0mGET /images/Custom%20Embroidery.jpg [32m200[0m 0.840 ms - 289091[0m
+[2025-10-09T03:43:59.788Z] GET /signup
+Session ID: eRwEBFeSsIIXjfNO0YINK0EVNH0XOLWL
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 4.061 ms - 8973[0m
+[2025-10-09T03:43:59.850Z] GET /login
+Session ID: XUhbwlIkLEJxrDtthBNx2GZyoSLSMpFr
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 2.395 ms - 7683[0m
+[2025-10-09T03:43:59.954Z] GET /signup
+Session ID: eQvL6NaYaPY8L9o7uMs6vUxhXsH9rB96
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 1.782 ms - 8973[0m
+[0mGET /css/styles.css [32m200[0m 0.901 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.598 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.648 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.742 ms - 7692[0m
+[0mGET /css/styles.css [32m200[0m 0.447 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.448 ms - 4148[0m
+[0mGET /js/scripts.js [32m200[0m 0.346 ms - 7692[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.306 ms - 6835[0m
+[0mGET /css/styles.css [32m200[0m 0.815 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.561 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.648 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.467 ms - 7692[0m
+[2025-10-09T03:44:00.123Z] GET /login
+Session ID: atZD4_8oi0QG-7f64luo0SNV7LtixMZP
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.139 ms - 7683[0m
+[0mGET /css/styles.css [32m200[0m 0.964 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.997 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.011 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.929 ms - 7692[0m
+[2025-10-09T03:44:00.266Z] GET /favicon.ico
+Session ID: pHFkobTPrPE5_loUNhUcq_pVecHiCWVh
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 3.171 ms - 7060[0m
+[2025-10-09T03:44:00.294Z] GET /favicon.ico
+Session ID: RE8uxJPOMBTg_KxMtrhkpL-sjJoJ76t6
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 3.777 ms - 7060[0m
+[2025-10-09T03:44:00.404Z] GET /favicon.ico
+Session ID: i8y01nArf1CIxZ6spOu5hQVSwajecrb_
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.877 ms - 7060[0m
+[2025-10-09T03:44:00.413Z] GET /favicon.ico
+Session ID: 1UiaBBdcb23tU53R_mSkj0c2v3eYlNgL
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 0.890 ms - 7060[0m
+[2025-10-09T03:44:00.509Z] POST /signup
+Session ID: TxYNuLS_WrNVEh7zCRSXXqmLIJC-mpmZ
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 11.182 ms - 45[0m
+[2025-10-09T03:44:00.523Z] GET /manager/pending
+Session ID: TxYNuLS_WrNVEh7zCRSXXqmLIJC-mpmZ
+Session user: e2e_manager_1759981439725 (manager)
+---
+[0mGET /manager/pending [33m404[0m 1.064 ms - 6907[0m
+[2025-10-09T03:44:00.538Z] POST /login
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:00.538Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 3.115 ms - 48[0m
+Session saved successfully for user: autotest
+[0mGET /css/styles.css [36m304[0m 0.365 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.178 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.217 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.226 ms - -[0m
+[2025-10-09T03:44:00.548Z] GET /customer/dashboard
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 12.934 ms - 10166[0m
+[0mGET /css/styles.css [36m304[0m 0.317 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.266 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.128 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.133 ms - -[0m
+[2025-10-09T03:44:00.640Z] GET /customer/dashboard
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 4.687 ms - 5940[0m
+[2025-10-09T03:44:00.688Z] POST /signup
+Session ID: 239CewrcdclsvM-MUlJ-xNzLEB5ojEs8
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 3.035 ms - 45[0m
+[2025-10-09T03:44:00.692Z] POST /login
+Session ID: ZwYWxUzP8h0-IzAOsjrs7e2q5Vs494nU
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+[2025-10-09T03:44:00.693Z] GET /manager/pending
+Session ID: 239CewrcdclsvM-MUlJ-xNzLEB5ojEs8
+Session user: e2e_manager_1759981439895 (manager)
+---
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:00.692Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 2.523 ms - 48[0m
+[0mGET /manager/pending [33m404[0m 1.050 ms - 6907[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:44:00.701Z] GET /customer/dashboard
+Session ID: ZwYWxUzP8h0-IzAOsjrs7e2q5Vs494nU
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.768 ms - 10166[0m
+[0mGET /css/styles.css [36m304[0m 0.375 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.216 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.220 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.227 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.633 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.446 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.453 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.464 ms - -[0m
+[2025-10-09T03:44:00.742Z] GET /customer/dashboard
+Session ID: ZwYWxUzP8h0-IzAOsjrs7e2q5Vs494nU
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 8.188 ms - 5940[0m
+[2025-10-09T03:44:01.075Z] GET /logout
+Session ID: TxYNuLS_WrNVEh7zCRSXXqmLIJC-mpmZ
+Session user: e2e_manager_1759981439725 (manager)
+---
+Logout requested for user: e2e_manager_1759981439725
+[0mGET /logout [36m302[0m 0.942 ms - 35[0m
+[2025-10-09T03:44:01.079Z] GET /login
+Session ID: 7w4hc1EqSjRNKWwMPF4kHVN0hU-4G8Qc
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.579 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.226 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.089 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.061 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.085 ms - -[0m
+[2025-10-09T03:44:01.107Z] GET /login
+Session ID: 7tpAGsIB0v35TF9X7wWv7qkSXyVI7Fvo
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 1.041 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.153 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.097 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.087 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.066 ms - -[0m
+[2025-10-09T03:44:01.155Z] GET /shop
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [32m200[0m 7.759 ms - 31168[0m
+[0mGET /css/styles.css [36m304[0m 0.119 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.077 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.372 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.184 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 0.854 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 0.945 ms - 28966[0m
+[0mGET /images/women-tshirt.jpeg [32m200[0m 1.188 ms - 55961[0m
+[0mGET /images/women-hoodie.webp [32m200[0m 0.793 ms - 115248[0m
+[0mGET /images/denim-jeans.webp [32m200[0m 0.730 ms - 121216[0m
+[0mGET /images/women-jeans.jpeg [32m200[0m 0.952 ms - 65578[0m
+[0mGET /images/casual-tshirt.jpeg [32m200[0m 2.031 ms - 45512[0m
+[0mGET /images/winter-hoodie.webp [32m200[0m 1.235 ms - 12006[0m
+[0mGET /images/classic-hoodie.jpeg [32m200[0m 2.026 ms - 94710[0m
+[0mGET /images/kurthi.jpeg [32m200[0m 2.004 ms - 91550[0m
+[0mGET /images/polo%20t-shirt.jpg [32m200[0m 1.978 ms - 435344[0m
+[2025-10-09T03:44:01.221Z] POST /login
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Not logged in
+---
+Login attempt with email: admin@designden.com
+User found: Yes
+User details: { username: 'Admin', email: 'admin@designden.com', role: 'admin' }
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:01.221Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e69d147e432742a360edc3'),
+    username: 'Admin',
+    email: 'admin@designden.com',
+    role: 'admin'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e69d147e432742a360edc3'),
+  username: 'Admin',
+  email: 'admin@designden.com',
+  role: 'admin'
+}
+[0mPOST /login [36m302[0m 3.369 ms - 45[0m
+Session saved successfully for user: Admin
+[2025-10-09T03:44:01.230Z] GET /admin/dashboard
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Admin (admin)
+---
+TypeError: /Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs:125
+    123|                     <td><%= order._id.toString().substring(0, 8) %>...</td>
+    124|                     <td><%= order.customerId.username %></td>
+ >> 125|                     <td><%= order.designerId.username %></td>
+    126|                     <td><%= order.designId.name %></td>
+    127|                     <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+    128|                     <td>
+
+Cannot read properties of undefined (reading 'username')
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":99:43)
+    at Array.forEach (<anonymous>)
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":90:23)
+    at dashboard (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/view.js:139:8)
+    at tryRender (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:627:10)
+    at app.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:574:3)
+    at ServerResponse.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/response.js:909:7)
+[0mGET /admin/dashboard [31m500[0m 17.154 ms - 2226[0m
+[2025-10-09T03:44:01.259Z] GET /customer/design-studio
+Session ID: ZwYWxUzP8h0-IzAOsjrs7e2q5Vs494nU
+Session user: autotest (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 8.003 ms - 50386[0m
+[0mGET /css/styles.css [36m304[0m 1.137 ms - -[0m
+[2025-10-09T03:44:01.291Z] GET /shop/product/68e69d041a0d6f73649f97e6
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mGET /shop/product/68e69d041a0d6f73649f97e6 [32m200[0m 10.115 ms - 14991[0m
+[0mGET /images/graphics/dragon_1.jpg [32m200[0m 0.949 ms - 104638[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.475 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.125 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.170 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 0.535 ms - 26133[0m
+[0mGET /js/MTLLoader.js [32m200[0m 0.556 ms - 10752[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.516 ms - 104928[0m
+[0mGET /images/graphics/dragon_2.jpg [32m200[0m 0.748 ms - 206010[0m
+[0mGET /images/graphics/dragon_3.jpg [32m200[0m 0.813 ms - 238798[0m
+[0mGET /js/OBJLoader.js [32m200[0m 1.156 ms - 21591[0m
+[0mGET /js/3d-models.js [32m200[0m 1.189 ms - 23241[0m
+[0mGET /images/graphics/dragon_4.jpg [32m200[0m 1.167 ms - 194326[0m
+[0mGET /images/graphics/dragon_5.jpg [32m200[0m 1.765 ms - 262921[0m
+[0mGET /images/graphics/dragon_8.jpg [32m200[0m 1.208 ms - 168618[0m
+[0mGET /images/graphics/dragon_6.jpg [32m200[0m 1.619 ms - 262911[0m
+[0mGET /images/graphics/dragon_7.jpg [32m200[0m 1.461 ms - 269799[0m
+[0mGET /images/graphics/dragon_9.jpg [32m200[0m 1.434 ms - 251170[0m
+[0mGET /images/graphics/dragon_10.jpg [32m200[0m 0.921 ms - 250086[0m
+[0mGET /images/graphics/model.png [32m200[0m 1.239 ms - 1659058[0m
+[0mGET /css/styles.css [36m304[0m 0.144 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.152 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.153 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.091 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.069 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.058 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.058 ms - -[0m
+[0mGET /models/tshirt_men.glb [32m200[0m 0.704 ms - 17714904[0m
+[2025-10-09T03:44:01.761Z] GET /admin/pending-managers
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 9.013 ms - 13439[0m
+[0mGET /css/styles.css [36m304[0m 0.595 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.279 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.415 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.156 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.680 ms - -[0m
+[2025-10-09T03:44:01.893Z] POST /admin/approve-manager/68e72f8096575186b4acbcb1
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Admin (admin)
+---
+[0mPOST /admin/approve-manager/68e72f8096575186b4acbcb1 [36m302[0m 20.179 ms - 52[0m
+[2025-10-09T03:44:01.915Z] GET /admin/pending-managers
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 3.076 ms - 12638[0m
+[0mGET /css/styles.css [36m304[0m 0.382 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.104 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.176 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.154 ms - -[0m
+[2025-10-09T03:44:01.934Z] GET /shop/customize/68e69d041a0d6f73649f97e6
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mGET /shop/customize/68e69d041a0d6f73649f97e6 [32m200[0m 5.814 ms - 27884[0m
+[0mGET /css/styles.css [36m304[0m 0.182 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.085 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.112 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.075 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 0.378 ms - 26133[0m
+[0mGET /js/3d-models.js [32m200[0m 0.289 ms - 23241[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 0.386 ms - 104928[0m
+[0mGET /models/hoodie_women.glb [32m200[0m 1.242 ms - 36836736[0m
+[2025-10-09T03:44:02.442Z] GET /logout
+Session ID: 1DYbEa71FW9OE5VMmQcowWUjtQIUTWUn
+Session user: Admin (admin)
+---
+Logout requested for user: Admin
+[0mGET /logout [36m302[0m 4.937 ms - 35[0m
+[2025-10-09T03:44:02.448Z] GET /login
+Session ID: ZOxA4kHhmSXIWFjuc3deZaME0IAq9-Ck
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 2.020 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.157 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.066 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.049 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.060 ms - -[0m
+[2025-10-09T03:44:02.476Z] GET /login
+Session ID: qV7mNvv2fR2KUxepdFr8ts598B9v-O07
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 0.829 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.167 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.061 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.041 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.059 ms - -[0m
+[2025-10-09T03:44:02.585Z] POST /login
+Session ID: 0icGT5VQfqDJfWtw0jEulDNjYnnKSnUh
+Session user: Not logged in
+---
+Login attempt with email: e2e.manager.approve+1759981439725@example.com
+User found: Yes
+User details: {
+  username: 'e2e_manager_1759981439725',
+  email: 'e2e.manager.approve+1759981439725@example.com',
+  role: 'manager'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:02.585Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e72f8096575186b4acbcb1'),
+    username: 'e2e_manager_1759981439725',
+    email: 'e2e.manager.approve+1759981439725@example.com',
+    role: 'manager'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e72f8096575186b4acbcb1'),
+  username: 'e2e_manager_1759981439725',
+  email: 'e2e.manager.approve+1759981439725@example.com',
+  role: 'manager'
+}
+[0mPOST /login [36m302[0m 100.343 ms - 30[0m
+Session saved successfully for user: e2e_manager_1759981439725
+[2025-10-09T03:44:02.687Z] GET /
+Session ID: 0icGT5VQfqDJfWtw0jEulDNjYnnKSnUh
+Session user: e2e_manager_1759981439725 (manager)
+---
+Home page accessed, user: e2e_manager_1759981439725 (manager)
+[0mGET / [32m200[0m 1.255 ms - 14422[0m
+[0mGET /css/styles.css [36m304[0m 0.218 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.144 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.231 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.223 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 0.594 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 0.720 ms - 28966[0m
+[0mGET /images/sustainable%20fabric.webp [32m200[0m 0.989 ms - 29474[0m
+[0mGET /images/Custom%20Embroidery.jpg [32m200[0m 0.829 ms - 289091[0m
+[2025-10-09T03:44:03.169Z] POST /shop/save-customization
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mPOST /shop/save-customization [36m302[0m 21.982 ms - 69[0m
+[2025-10-09T03:44:03.194Z] GET /customer/order/68e72f8396575186b4acbce6
+Session ID: RveTLkhuGll2hKabrsxi-dKUyC8auEq5
+Session user: autotest (customer)
+---
+[0mGET /customer/order/68e72f8396575186b4acbce6 [32m200[0m 9.244 ms - 21664[0m
+[0mGET /css/styles.css [36m304[0m 0.193 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.091 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.058 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.075 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.090 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.190 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [32m200[0m 0.682 ms - 2461185[0m
+[2025-10-09T03:44:05.251Z] GET /signup
+Session ID: yf9e_7rLzuBN0p5fWx7clUjzFGZsnzQa
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 3.118 ms - 8973[0m
+[0mGET /css/styles.css [32m200[0m 2.758 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.223 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.160 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.874 ms - 7692[0m
+[2025-10-09T03:44:05.603Z] GET /favicon.ico
+Session ID: 0HdCZeRWWDfRq3EetUGF1iKintrHezN6
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.246 ms - 7060[0m
+[2025-10-09T03:44:05.722Z] POST /signup
+Session ID: 1ekz-ZIGIwUj0yAkAgB-xocZXYaJABM7
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 21.221 ms - 45[0m
+[2025-10-09T03:44:05.747Z] GET /manager/pending
+Session ID: 1ekz-ZIGIwUj0yAkAgB-xocZXYaJABM7
+Session user: e2e_manager_1759981445224 (manager)
+---
+[0mGET /manager/pending [33m404[0m 1.037 ms - 6907[0m
+[0mGET /css/styles.css [36m304[0m 0.131 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.067 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.053 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.063 ms - -[0m
+[2025-10-09T03:44:06.276Z] GET /logout
+Session ID: 1ekz-ZIGIwUj0yAkAgB-xocZXYaJABM7
+Session user: e2e_manager_1759981445224 (manager)
+---
+Logout requested for user: e2e_manager_1759981445224
+[0mGET /logout [36m302[0m 0.961 ms - 35[0m
+[2025-10-09T03:44:06.280Z] GET /login
+Session ID: APSZVVBdLLfwvudYGC7Q83Fs3OsGNRVx
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.554 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.237 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.136 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.180 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.079 ms - -[0m
+[2025-10-09T03:44:06.306Z] GET /login
+Session ID: RWCsrm1e3FiDF_h5UnRHatlmLYD5I_1Q
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 1.058 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.173 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.076 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.091 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.067 ms - -[0m
+[2025-10-09T03:44:06.400Z] POST /login
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Not logged in
+---
+Login attempt with email: admin@designden.com
+User found: Yes
+User details: { username: 'Admin', email: 'admin@designden.com', role: 'admin' }
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:06.400Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e69d147e432742a360edc3'),
+    username: 'Admin',
+    email: 'admin@designden.com',
+    role: 'admin'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e69d147e432742a360edc3'),
+  username: 'Admin',
+  email: 'admin@designden.com',
+  role: 'admin'
+}
+[0mPOST /login [36m302[0m 2.143 ms - 45[0m
+Session saved successfully for user: Admin
+[2025-10-09T03:44:06.403Z] GET /admin/dashboard
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Admin (admin)
+---
+TypeError: /Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs:125
+    123|                     <td><%= order._id.toString().substring(0, 8) %>...</td>
+    124|                     <td><%= order.customerId.username %></td>
+ >> 125|                     <td><%= order.designerId.username %></td>
+    126|                     <td><%= order.designId.name %></td>
+    127|                     <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+    128|                     <td>
+
+Cannot read properties of undefined (reading 'username')
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":99:43)
+    at Array.forEach (<anonymous>)
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":90:23)
+    at dashboard (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/view.js:139:8)
+    at tryRender (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:627:10)
+    at app.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:574:3)
+    at ServerResponse.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/response.js:909:7)
+[0mGET /admin/dashboard [31m500[0m 8.042 ms - 2226[0m
+[2025-10-09T03:44:06.938Z] GET /admin/pending-managers
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 5.454 ms - 13439[0m
+[0mGET /css/styles.css [36m304[0m 0.206 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.247 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.161 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.290 ms - -[0m
+[2025-10-09T03:44:07.051Z] POST /admin/approve-manager/68e72f8596575186b4acbcef
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Admin (admin)
+---
+[0mPOST /admin/approve-manager/68e72f8596575186b4acbcef [36m302[0m 2.916 ms - 52[0m
+[2025-10-09T03:44:07.055Z] GET /admin/pending-managers
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 1.906 ms - 12638[0m
+[0mGET /css/styles.css [36m304[0m 0.320 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.127 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.132 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.119 ms - -[0m
+[2025-10-09T03:44:07.577Z] GET /logout
+Session ID: iGHXxzRRoaL_bjLZZWk6jw6oXPURo6fZ
+Session user: Admin (admin)
+---
+Logout requested for user: Admin
+[0mGET /logout [36m302[0m 1.109 ms - 35[0m
+[2025-10-09T03:44:07.581Z] GET /login
+Session ID: ArL3J7FiwZtCCB-vvGgGjnhbBqjS3JHF
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.100 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.106 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.087 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.072 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.081 ms - -[0m
+[2025-10-09T03:44:07.602Z] GET /login
+Session ID: xXiG64wyP_fALa1U7dnZ1wLjrPANXDN0
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 0.985 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.119 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.083 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.070 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.088 ms - -[0m
+[2025-10-09T03:44:07.682Z] POST /login
+Session ID: -gaTlSZyagZUQ6snHOu2J-H0EFCkG_zb
+Session user: Not logged in
+---
+Login attempt with email: e2e.manager.approve+1759981445224@example.com
+User found: Yes
+User details: {
+  username: 'e2e_manager_1759981445224',
+  email: 'e2e.manager.approve+1759981445224@example.com',
+  role: 'manager'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:44:07.682Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e72f8596575186b4acbcef'),
+    username: 'e2e_manager_1759981445224',
+    email: 'e2e.manager.approve+1759981445224@example.com',
+    role: 'manager'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e72f8596575186b4acbcef'),
+  username: 'e2e_manager_1759981445224',
+  email: 'e2e.manager.approve+1759981445224@example.com',
+  role: 'manager'
+}
+[0mPOST /login [36m302[0m 1.593 ms - 30[0m
+Session saved successfully for user: e2e_manager_1759981445224
+[2025-10-09T03:44:07.685Z] GET /
+Session ID: -gaTlSZyagZUQ6snHOu2J-H0EFCkG_zb
+Session user: e2e_manager_1759981445224 (manager)
+---
+Home page accessed, user: e2e_manager_1759981445224 (manager)
+[0mGET / [32m200[0m 1.132 ms - 14422[0m
+[0mGET /css/styles.css [36m304[0m 0.118 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.226 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.335 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.292 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 0.658 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 0.426 ms - 28966[0m
+[0mGET /images/sustainable%20fabric.webp [32m200[0m 0.618 ms - 29474[0m
+[0mGET /images/Custom%20Embroidery.jpg [32m200[0m 0.776 ms - 289091[0m
+[2025-10-09T03:45:02.410Z] GET /login
+Session ID: 6E2iKL5ysWhZE4wBCBD5vaHbEoKwtUB7
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 4.776 ms - 7683[0m
+[2025-10-09T03:45:02.440Z] GET /login
+Session ID: oNePzEB_za-YjlbpyeeWdEGSrV81fbZ5
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 1.956 ms - 7683[0m
+[2025-10-09T03:45:02.468Z] GET /signup
+Session ID: uRoY_bNKpn2fCN06QnyJLMN2s0u-Q-92
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 1.998 ms - 8973[0m
+[2025-10-09T03:45:02.506Z] GET /signup
+Session ID: b9Ir1YZG6wejLdCEL-aCevMisCv6QOiD
+Session user: Not logged in
+---
+[0mGET /signup [32m200[0m 2.265 ms - 8973[0m
+[0mGET /css/styles.css [32m200[0m 1.770 ms - 6181[0m
+[0mGET /js/scripts.js [32m200[0m 1.221 ms - 7692[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 1.219 ms - 6835[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 1.174 ms - 4148[0m
+[0mGET /css/styles.css [32m200[0m 0.800 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.661 ms - 4148[0m
+[0mGET /js/scripts.js [32m200[0m 0.581 ms - 7692[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.245 ms - 6835[0m
+[0mGET /css/styles.css [32m200[0m 1.551 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.595 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.594 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 0.595 ms - 7692[0m
+[0mGET /css/styles.css [32m200[0m 0.899 ms - 6181[0m
+[0mGET /js/currency-enforcer.js [32m200[0m 0.655 ms - 4148[0m
+[0mGET /js/rule-enforcement-logger.js [32m200[0m 0.667 ms - 6835[0m
+[0mGET /js/scripts.js [32m200[0m 1.338 ms - 7692[0m
+[2025-10-09T03:45:02.841Z] GET /favicon.ico
+Session ID: loWYnYVWQPfwv70WMU_r25K8-8SWO7Lw
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 5.162 ms - 7060[0m
+[2025-10-09T03:45:02.891Z] GET /favicon.ico
+Session ID: XK-bRTVfn97MOblgawNVcp1ieOTklY7M
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.595 ms - 7060[0m
+[2025-10-09T03:45:02.918Z] GET /favicon.ico
+Session ID: CtVB8Gs-1vAiPac2L4kVwcK_zMf_wjO0
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 1.682 ms - 7060[0m
+[2025-10-09T03:45:02.927Z] GET /favicon.ico
+Session ID: fAWiI5V7auMz9u_3aCCfANAU_C4vt64I
+Session user: Not logged in
+---
+[0mGET /favicon.ico [33m404[0m 7.311 ms - 7060[0m
+[2025-10-09T03:45:03.104Z] POST /login
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+[2025-10-09T03:45:03.111Z] POST /login
+Session ID: 3tZ99QJ-rboQaQFDjKlA0cabGk8dhjnB
+Session user: Not logged in
+---
+Login attempt with email: test+autotest@example.com
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:45:03.104Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 14.823 ms - 48[0m
+Session saved successfully for user: autotest
+User found: Yes
+User details: {
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:45:03.111Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e6a68f93215c4440157290'),
+    username: 'autotest',
+    email: 'test+autotest@example.com',
+    role: 'customer'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e6a68f93215c4440157290'),
+  username: 'autotest',
+  email: 'test+autotest@example.com',
+  role: 'customer'
+}
+[0mPOST /login [36m302[0m 7.979 ms - 48[0m
+Session saved successfully for user: autotest
+[2025-10-09T03:45:03.121Z] GET /customer/dashboard
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[2025-10-09T03:45:03.121Z] GET /customer/dashboard
+Session ID: 3tZ99QJ-rboQaQFDjKlA0cabGk8dhjnB
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 4.707 ms - 10166[0m
+[0mGET /customer/dashboard [32m200[0m 6.292 ms - 10166[0m
+[0mGET /css/styles.css [36m304[0m 0.192 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.259 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.304 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.374 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.263 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.321 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.689 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 2.973 ms - -[0m
+[2025-10-09T03:45:03.173Z] POST /signup
+Session ID: WejtwGPYoomNXoKbCKv2Dx6ddgCyU9gP
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 3.422 ms - 45[0m
+[2025-10-09T03:45:03.183Z] GET /manager/pending
+Session ID: WejtwGPYoomNXoKbCKv2Dx6ddgCyU9gP
+Session user: e2e_manager_1759981502465 (manager)
+---
+[0mGET /manager/pending [33m404[0m 2.798 ms - 6907[0m
+[2025-10-09T03:45:03.187Z] GET /customer/dashboard
+Session ID: 3tZ99QJ-rboQaQFDjKlA0cabGk8dhjnB
+Session user: autotest (customer)
+---
+[2025-10-09T03:45:03.193Z] GET /customer/dashboard
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.512 ms - 7130[0m
+[0mGET /customer/dashboard [32m200[0m 7.184 ms - 7130[0m
+[0mGET /css/styles.css [36m304[0m 0.275 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.266 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.307 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.277 ms - -[0m
+[2025-10-09T03:45:03.221Z] POST /signup
+Session ID: C_xwe5qp-vhVDsT1ep4GEUW7kbjwKmhS
+Session user: Not logged in
+---
+[0mPOST /signup [36m302[0m 4.342 ms - 45[0m
+[2025-10-09T03:45:03.227Z] GET /manager/pending
+Session ID: C_xwe5qp-vhVDsT1ep4GEUW7kbjwKmhS
+Session user: e2e_manager_1759981502441 (manager)
+---
+[0mGET /manager/pending [33m404[0m 0.882 ms - 6907[0m
+[0mGET /css/styles.css [36m304[0m 0.179 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.071 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.276 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.187 ms - -[0m
+[2025-10-09T03:45:03.716Z] GET /shop
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[2025-10-09T03:45:03.722Z] GET /customer/design-studio
+Session ID: 3tZ99QJ-rboQaQFDjKlA0cabGk8dhjnB
+Session user: autotest (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 7.888 ms - 50386[0m
+[2025-10-09T03:45:03.728Z] GET /logout
+Session ID: WejtwGPYoomNXoKbCKv2Dx6ddgCyU9gP
+Session user: e2e_manager_1759981502465 (manager)
+---
+Logout requested for user: e2e_manager_1759981502465
+[0mGET /logout [36m302[0m 0.366 ms - 35[0m
+[0mGET /shop [32m200[0m 15.501 ms - 31168[0m
+[2025-10-09T03:45:03.732Z] GET /login
+Session ID: 5X3e-5EopwpQn-vUetuGoEw9gW4ElLsn
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 2.591 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.252 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.222 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.188 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.083 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 1.030 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.512 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.859 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.648 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.632 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.750 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.868 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 2.479 ms - 26133[0m
+[0mGET /js/MTLLoader.js [32m200[0m 2.182 ms - 10752[0m
+[0mGET /js/scripts.js [36m304[0m 1.117 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [32m200[0m 3.026 ms - 104638[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 2.370 ms - 104928[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 2.955 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 2.994 ms - 28966[0m
+[0mGET /js/OBJLoader.js [32m200[0m 5.067 ms - 21591[0m
+[0mGET /images/women-tshirt.jpeg [32m200[0m 5.641 ms - 55961[0m
+[0mGET /js/3d-models.js [32m200[0m 5.847 ms - 23241[0m
+[0mGET /images/women-hoodie.webp [32m200[0m 5.443 ms - 115248[0m
+[0mGET /images/women-jeans.jpeg [32m200[0m 5.420 ms - 65578[0m
+[0mGET /images/graphics/dragon_2.jpg [32m200[0m 3.051 ms - 206010[0m
+[0mGET /images/graphics/dragon_3.jpg [32m200[0m 2.674 ms - 238798[0m
+[0mGET /images/denim-jeans.webp [32m200[0m 7.156 ms - 121216[0m
+[0mGET /images/winter-hoodie.webp [32m200[0m 7.153 ms - 12006[0m
+[0mGET /images/casual-tshirt.jpeg [32m200[0m 7.482 ms - 45512[0m
+[0mGET /images/graphics/dragon_4.jpg [32m200[0m 7.657 ms - 194326[0m
+[0mGET /images/kurthi.jpeg [32m200[0m 3.848 ms - 91550[0m
+[0mGET /images/graphics/dragon_5.jpg [32m200[0m 7.375 ms - 262921[0m
+[0mGET /images/classic-hoodie.jpeg [32m200[0m 3.928 ms - 94710[0m
+[0mGET /images/graphics/dragon_8.jpg [32m200[0m 4.665 ms - 168618[0m
+[0mGET /images/graphics/dragon_9.jpg [32m200[0m 4.458 ms - 251170[0m
+[0mGET /images/graphics/dragon_6.jpg [32m200[0m 3.975 ms - 262911[0m
+[0mGET /images/graphics/dragon_7.jpg [32m200[0m 3.920 ms - 269799[0m
+[0mGET /images/polo%20t-shirt.jpg [32m200[0m 3.993 ms - 435344[0m
+[0mGET /images/graphics/dragon_10.jpg [32m200[0m 4.684 ms - 250086[0m
+[2025-10-09T03:45:03.784Z] GET /login
+Session ID: hEWmsZBtPxbXU8CnLzwY3gzZ7ngWB5E0
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 1.795 ms - -[0m
+[0mGET /images/graphics/model.png [32m200[0m 3.631 ms - 1659058[0m
+[0mGET /css/styles.css [36m304[0m 0.865 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.892 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.421 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.593 ms - -[0m
+[2025-10-09T03:45:03.957Z] GET /shop/product/68e69d041a0d6f73649f97e6
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[0mGET /shop/product/68e69d041a0d6f73649f97e6 [32m200[0m 4.991 ms - 14991[0m
+[0mGET /css/styles.css [36m304[0m 0.409 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.603 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 1.535 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.502 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.318 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.280 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.179 ms - -[0m
+[2025-10-09T03:45:03.989Z] POST /login
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Not logged in
+---
+Login attempt with email: admin@designden.com
+User found: Yes
+User details: { username: 'Admin', email: 'admin@designden.com', role: 'admin' }
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:45:03.989Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e69d147e432742a360edc3'),
+    username: 'Admin',
+    email: 'admin@designden.com',
+    role: 'admin'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e69d147e432742a360edc3'),
+  username: 'Admin',
+  email: 'admin@designden.com',
+  role: 'admin'
+}
+[0mPOST /login [36m302[0m 2.810 ms - 45[0m
+Session saved successfully for user: Admin
+[2025-10-09T03:45:03.993Z] GET /admin/dashboard
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Admin (admin)
+---
+TypeError: /Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs:125
+    123|                     <td><%= order._id.toString().substring(0, 8) %>...</td>
+    124|                     <td><%= order.customerId.username %></td>
+ >> 125|                     <td><%= order.designerId.username %></td>
+    126|                     <td><%= order.designId.name %></td>
+    127|                     <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+    128|                     <td>
+
+Cannot read properties of undefined (reading 'username')
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":99:43)
+    at Array.forEach (<anonymous>)
+    at eval ("/Users/kumaraswamy/Desktop/design-den-main/views/admin/dashboard.ejs":90:23)
+    at dashboard (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/kumaraswamy/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/view.js:139:8)
+    at tryRender (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:627:10)
+    at app.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/application.js:574:3)
+    at ServerResponse.render (/Users/kumaraswamy/Desktop/design-den-main/node_modules/express/lib/response.js:909:7)
+[0mGET /admin/dashboard [31m500[0m 28.657 ms - 2226[0m
+[0mGET /models/tshirt_men.glb [32m200[0m 0.799 ms - 17714904[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.237 ms - -[0m
+[2025-10-09T03:45:04.539Z] GET /admin/pending-managers
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 3.569 ms - 14232[0m
+[0mGET /css/styles.css [36m304[0m 0.303 ms - -[0m
+[2025-10-09T03:45:04.554Z] GET /shop/customize/68e69d041a0d6f73649f97e6
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[0mGET /js/currency-enforcer.js [36m304[0m 0.676 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.194 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.245 ms - -[0m
+[0mGET /shop/customize/68e69d041a0d6f73649f97e6 [32m200[0m 5.376 ms - 27884[0m
+[0mGET /css/styles.css [36m304[0m 0.897 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.233 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.330 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.397 ms - -[0m
+[0mGET /js/OrbitControls.js [32m200[0m 1.082 ms - 26133[0m
+[0mGET /js/3d-models.js [32m200[0m 1.009 ms - 23241[0m
+[0mGET /js/GLTFLoader.js [32m200[0m 1.293 ms - 104928[0m
+[2025-10-09T03:45:04.651Z] POST /admin/approve-manager/68e72fbf96575186b4acbd09
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Admin (admin)
+---
+[0mPOST /admin/approve-manager/68e72fbf96575186b4acbd09 [36m302[0m 2.402 ms - 52[0m
+[2025-10-09T03:45:04.654Z] GET /admin/pending-managers
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Admin (admin)
+---
+[0mGET /admin/pending-managers [32m200[0m 1.891 ms - 13431[0m
+[0mGET /css/styles.css [36m304[0m 0.149 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.132 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.097 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.100 ms - -[0m
+[0mGET /models/hoodie_women.glb [32m200[0m 1.188 ms - 36836736[0m
+[2025-10-09T03:45:05.174Z] GET /logout
+Session ID: SL2h9Kt0FkKZLnBn1Q8NYl1ta1dII52E
+Session user: Admin (admin)
+---
+Logout requested for user: Admin
+[0mGET /logout [36m302[0m 1.189 ms - 35[0m
+[2025-10-09T03:45:05.179Z] GET /login
+Session ID: pzMoqD1kLI2b1Fv5U4GZFDYJHauRSK8R
+Session user: Not logged in
+---
+[0mGET /login [32m200[0m 2.829 ms - 7683[0m
+[0mGET /css/styles.css [36m304[0m 0.263 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.081 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.075 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.110 ms - -[0m
+[2025-10-09T03:45:05.206Z] GET /login
+Session ID: H_Ie0-fiwucpYLVZr8E5Hu-QE-4QqN1X
+Session user: Not logged in
+---
+[0mGET /login [36m304[0m 0.961 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.185 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.157 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.074 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.049 ms - -[0m
+[2025-10-09T03:45:05.301Z] POST /login
+Session ID: k2UGaEfDsbbcHd446AE7-la--HWw9CM0
+Session user: Not logged in
+---
+Login attempt with email: e2e.manager.approve+1759981502465@example.com
+User found: Yes
+User details: {
+  username: 'e2e_manager_1759981502465',
+  email: 'e2e.manager.approve+1759981502465@example.com',
+  role: 'manager'
+}
+Session before save: Session {
+  cookie: {
+    path: '/',
+    _expires: 2025-10-10T03:45:05.301Z,
+    originalMaxAge: 86400000,
+    httpOnly: true,
+    secure: false
+  },
+  user: {
+    id: new ObjectId('68e72fbf96575186b4acbd09'),
+    username: 'e2e_manager_1759981502465',
+    email: 'e2e.manager.approve+1759981502465@example.com',
+    role: 'manager'
+  }
+}
+User logged in: {
+  id: new ObjectId('68e72fbf96575186b4acbd09'),
+  username: 'e2e_manager_1759981502465',
+  email: 'e2e.manager.approve+1759981502465@example.com',
+  role: 'manager'
+}
+[0mPOST /login [36m302[0m 7.604 ms - 30[0m
+Session saved successfully for user: e2e_manager_1759981502465
+[2025-10-09T03:45:05.312Z] GET /
+Session ID: k2UGaEfDsbbcHd446AE7-la--HWw9CM0
+Session user: e2e_manager_1759981502465 (manager)
+---
+Home page accessed, user: e2e_manager_1759981502465 (manager)
+[0mGET / [32m200[0m 4.417 ms - 14422[0m
+[0mGET /css/styles.css [36m304[0m 1.006 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.174 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.208 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.448 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [32m200[0m 1.117 ms - 60306[0m
+[0mGET /images/womens-collection-banner.webp [32m200[0m 1.193 ms - 28966[0m
+[0mGET /images/sustainable%20fabric.webp [32m200[0m 1.215 ms - 29474[0m
+[0mGET /images/Custom%20Embroidery.jpg [32m200[0m 0.923 ms - 289091[0m
+[2025-10-09T03:45:05.707Z] POST /shop/save-customization
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[0mPOST /shop/save-customization [36m302[0m 11.487 ms - 69[0m
+[2025-10-09T03:45:05.718Z] GET /customer/order/68e72fc196575186b4acbd34
+Session ID: W53k6MUnrhIvZ14IzglHukED7zLQJU-k
+Session user: autotest (customer)
+---
+[0mGET /customer/order/68e72fc196575186b4acbd34 [32m200[0m 6.475 ms - 21664[0m
+[0mGET /css/styles.css [36m304[0m 0.214 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.131 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.090 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.052 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.073 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.109 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [32m200[0m 0.627 ms - 2461185[0m
+[2025-10-09T03:45:06.516Z] GET /manager
+Session ID: k2UGaEfDsbbcHd446AE7-la--HWw9CM0
+Session user: e2e_manager_1759981502465 (manager)
+---
+[0mGET /manager [32m200[0m 9.035 ms - 16075[0m
+[0mGET /css/styles.css [36m304[0m 0.164 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.131 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.094 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.077 ms - -[0m
+[2025-10-09T03:45:39.261Z] GET /customer/order/68e6a0c4847adae29fd378d7
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/order/68e6a0c4847adae29fd378d7 [32m200[0m 10.413 ms - 21686[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.571 ms - -[0m
+[0mGET /images/Your%20delivery%20agent%20is%20on%20the%20way.png [36m304[0m 0.630 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 2.757 ms - 6181[0m
+[0mGET /js/3d-models.js [36m304[0m 0.270 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.704 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.835 ms - -[0m
+[0mGET /js/scripts.js [32m200[0m 2.210 ms - 7692[0m
+[2025-10-09T03:45:40.333Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [32m200[0m 3.240 ms - 14775[0m
+[0mGET /css/styles.css [36m304[0m 0.255 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.114 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.127 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.207 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.155 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.363 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.103 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.459 ms - -[0m
+[2025-10-09T03:47:50.621Z] GET /
+Session ID: aGdNhXHIRHO7n2d19q8XTMf3awbDyeJW
+Session user: Not logged in
+---
+Home page accessed, user: Not logged in
+[0mGET / [32m200[0m 1.935 ms - 14516[0m
+[2025-10-09T03:49:13.203Z] GET /
+Session ID: xsx7EwuEoP7rb15--WJ1WKA5CIA5Ly7u
+Session user: Not logged in
+---
+Home page accessed, user: Not logged in
+[0mGET / [32m200[0m 1.513 ms - 14514[0m
+[2025-10-09T03:50:02.326Z] GET /
+Session ID: 7Knx01qnnik5z6fRDO7zDCY0Ecg5XMow
+Session user: Not logged in
+---
+Home page accessed, user: Not logged in
+[0mGET / [32m200[0m 1.832 ms - 14378[0m
+[2025-10-09T03:50:17.683Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [32m200[0m 4.254 ms - 14571[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.302 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.193 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 1.250 ms - 7869[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.416 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.240 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.489 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.267 ms - -[0m
+[0mGET /js/scripts.js [32m200[0m 1.002 ms - 7951[0m
+[2025-10-09T03:50:35.320Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 6.447 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 0.741 ms - 9051[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.322 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.106 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.223 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.345 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.262 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.203 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.296 ms - -[0m
+[2025-10-09T03:51:56.394Z] GET /
+Session ID: UWQH7-FS4FQ_tFzkIBTkHlgjY9EKNFUI
+Session user: Not logged in
+---
+Home page accessed, user: Not logged in
+[0mGET / [32m200[0m 1.002 ms - 14378[0m
+[2025-10-09T03:52:01.726Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 6.719 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.718 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.142 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 2.069 ms - 10102[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.707 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.789 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.795 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.182 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.169 ms - -[0m
+[2025-10-09T03:52:35.978Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 8.217 ms - 50058[0m
+[0mGET /css/styles.css [36m304[0m 0.552 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.203 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.270 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.304 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.360 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.410 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.279 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.256 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.203 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.324 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.347 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.437 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.333 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.380 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.276 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.295 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.153 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.236 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.156 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.097 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.320 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 1.092 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.501 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.222 ms - -[0m
+[2025-10-09T03:52:44.791Z] GET /shop
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [32m200[0m 20.848 ms - 30840[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.313 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 1.323 ms - 10102[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.168 ms - -[0m
+[0mGET /images/women-jeans.jpeg [36m304[0m 0.338 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.389 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.459 ms - -[0m
+[0mGET /images/women-tshirt.jpeg [36m304[0m 0.262 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.167 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.115 ms - -[0m
+[0mGET /images/denim-jeans.webp [36m304[0m 0.148 ms - -[0m
+[0mGET /images/casual-tshirt.jpeg [36m304[0m 0.174 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.214 ms - -[0m
+[0mGET /images/polo%20t-shirt.jpg [36m304[0m 0.242 ms - -[0m
+[0mGET /images/kurthi.jpeg [36m304[0m 0.274 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.119 ms - -[0m
+[2025-10-09T03:53:04.829Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 14.714 ms - 9839[0m
+[0mGET /css/styles.css [36m304[0m 0.441 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.423 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.397 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.138 ms - -[0m
+[2025-10-09T03:53:04.871Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 7.761 ms - 1208[0m
+[2025-10-09T03:53:25.928Z] GET /customer/cart
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/cart [32m200[0m 8.755 ms - 7949[0m
+[0mGET /css/styles.css [36m304[0m 1.029 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.982 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.438 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.572 ms - -[0m
+[2025-10-09T03:53:27.912Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 6.204 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.395 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.530 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.885 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.801 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.661 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.360 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.363 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.131 ms - -[0m
+[2025-10-09T03:55:18.752Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 79.850 ms - 9839[0m
+[0mGET /css/styles.css [32m200[0m 1.248 ms - 11057[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.321 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.524 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.117 ms - -[0m
+[2025-10-09T03:55:18.867Z] GET /customer/dashboard
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/dashboard [32m200[0m 6.121 ms - 1208[0m
+[2025-10-09T03:55:20.173Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 10.288 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.541 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.480 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.509 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.783 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.194 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.323 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.179 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.198 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.073 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.166 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.344 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.279 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.605 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.235 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.245 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.132 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.131 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.324 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.340 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.420 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.261 ms - -[0m
+[2025-10-09T03:55:20.736Z] GET /shop
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [36m304[0m 27.781 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.266 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.678 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.569 ms - -[0m
+[0mGET /images/women-tshirt.jpeg [36m304[0m 0.620 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.826 ms - -[0m
+[0mGET /images/women-jeans.jpeg [36m304[0m 0.280 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.315 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.156 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.166 ms - -[0m
+[0mGET /images/casual-tshirt.jpeg [36m304[0m 0.095 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.203 ms - -[0m
+[0mGET /images/polo%20t-shirt.jpg [36m304[0m 0.242 ms - -[0m
+[0mGET /images/denim-jeans.webp [36m304[0m 0.348 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.225 ms - -[0m
+[0mGET /images/kurthi.jpeg [36m304[0m 0.148 ms - -[0m
+[2025-10-09T03:55:21.305Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 7.655 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.256 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.581 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.575 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.805 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.299 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.455 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.348 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.186 ms - -[0m
+[2025-10-09T03:55:22.088Z] GET /shop
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [36m304[0m 14.930 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.350 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.726 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.473 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.847 ms - -[0m
+[0mGET /images/women-tshirt.jpeg [36m304[0m 0.326 ms - -[0m
+[0mGET /images/women-jeans.jpeg [36m304[0m 0.185 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.114 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.303 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.355 ms - -[0m
+[0mGET /images/denim-jeans.webp [36m304[0m 0.210 ms - -[0m
+[0mGET /images/casual-tshirt.jpeg [36m304[0m 0.243 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.649 ms - -[0m
+[0mGET /images/polo%20t-shirt.jpg [36m304[0m 0.563 ms - -[0m
+[0mGET /images/kurthi.jpeg [36m304[0m 0.299 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.279 ms - -[0m
+[2025-10-09T03:56:30.610Z] GET /shop
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [36m304[0m 21.821 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.488 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.140 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 1.295 ms - 11956[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.227 ms - -[0m
+[0mGET /images/women-tshirt.jpeg [36m304[0m 0.277 ms - -[0m
+[0mGET /images/women-jeans.jpeg [36m304[0m 0.305 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.122 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.140 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.163 ms - -[0m
+[0mGET /images/denim-jeans.webp [36m304[0m 0.135 ms - -[0m
+[0mGET /images/casual-tshirt.jpeg [36m304[0m 0.152 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.117 ms - -[0m
+[0mGET /images/polo%20t-shirt.jpg [36m304[0m 0.141 ms - -[0m
+[0mGET /images/kurthi.jpeg [36m304[0m 0.145 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.171 ms - -[0m
+[2025-10-09T03:56:31.810Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 4.834 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.298 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.630 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.497 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.178 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.191 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.209 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.146 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.140 ms - -[0m
+[2025-10-09T03:57:25.442Z] GET /multi-login
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /multi-login [32m200[0m 9.031 ms - 15724[0m
+[0mGET /css/styles.css [36m304[0m 0.398 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.287 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.213 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.298 ms - -[0m
+[2025-10-09T03:57:41.942Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 6.893 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.757 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.612 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.492 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.362 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.334 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.355 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.405 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.428 ms - -[0m
+[2025-10-09T03:58:08.979Z] GET /shop
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[shop] Applied filter: {} sort: {"createdAt":-1} => products found: 12
+[0mGET /shop [36m304[0m 16.246 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.331 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.287 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.303 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.332 ms - -[0m
+[0mGET /images/women-tshirt.jpeg [36m304[0m 0.355 ms - -[0m
+[0mGET /images/women-jeans.jpeg [36m304[0m 0.384 ms - -[0m
+[0mGET /images/women-hoodie.webp [36m304[0m 0.730 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.474 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.478 ms - -[0m
+[0mGET /images/denim-jeans.webp [36m304[0m 0.316 ms - -[0m
+[0mGET /images/casual-tshirt.jpeg [36m304[0m 0.497 ms - -[0m
+[0mGET /images/winter-hoodie.webp [36m304[0m 0.290 ms - -[0m
+[0mGET /images/polo%20t-shirt.jpg [36m304[0m 0.211 ms - -[0m
+[0mGET /images/kurthi.jpeg [36m304[0m 0.224 ms - -[0m
+[0mGET /images/classic-hoodie.jpeg [36m304[0m 0.737 ms - -[0m
+[2025-10-09T03:58:12.321Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 4.450 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.246 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.291 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.796 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.653 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.413 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.407 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.562 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.199 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.114 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.271 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.707 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.804 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.643 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.822 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.528 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.630 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.781 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.467 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.275 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.711 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.252 ms - -[0m
+[0mGET /models/obj/Men's%20Shirt.mtl [32m200[0m 1.404 ms - 1328[0m
+[0mGET /models/obj/Men's%20Shirt_diffuse_1001.png [32m200[0m 1.163 ms - 2712701[0m
+[0mGET /models/obj/Men's%20Shirt_normal_1001.png [32m200[0m 0.966 ms - 4195951[0m
+[0mGET /models/obj/Men's%20Shirt.obj [32m200[0m 2.225 ms - 11759057[0m
+[0mGET /models/hoodie_men.glb [32m200[0m 1.065 ms - 36836736[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.422 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.171 ms - -[0m
+[0mGET /models/free_model--bow_knot_dress.glb [32m200[0m 0.805 ms - 2915988[0m
+[0mGET /models/jeans.glb [32m200[0m 1.107 ms - 42269844[0m
+[0mGET /models/dress_women.glb [32m200[0m 1.628 ms - 982216[0m
+[0mGET /models/obj/Men's%20Shirt.mtl [36m304[0m 0.572 ms - -[0m
+[0mGET /models/obj/Men's%20Shirt.obj [36m304[0m 0.549 ms - -[0m
+[0mGET /models/obj/Men's%20Shirt_normal_1001.png [36m304[0m 0.298 ms - -[0m
+[0mGET /models/obj/Men's%20Shirt_diffuse_1001.png [36m304[0m 0.303 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 1.203 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.397 ms - -[0m
+[0mGET /models/hoodie_men.glb [36m304[0m 0.360 ms - -[0m
+[0mGET /models/free_model--bow_knot_dress.glb [36m304[0m 0.308 ms - -[0m
+[2025-10-09T03:59:25.216Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 22.528 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 1.292 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 2.272 ms - 13707[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.515 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.424 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.488 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.560 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.361 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.302 ms - -[0m
+[2025-10-09T03:59:33.107Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 7.030 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.523 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.426 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.467 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 1.772 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 1.519 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.292 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.338 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.546 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 1.063 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.990 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.970 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.571 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.543 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.404 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.368 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.152 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.378 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.492 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 1.349 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.560 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.216 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.794 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 1.324 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.174 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.584 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.600 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.379 ms - -[0m
+[2025-10-09T04:00:53.954Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 54.504 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.921 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.196 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 1.409 ms - 14249[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.504 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.208 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.395 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.270 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.308 ms - -[0m
+[2025-10-09T04:01:01.091Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 6.776 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.636 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.273 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.202 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.247 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.260 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.144 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.158 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.098 ms - -[0m
+[2025-10-09T04:01:02.094Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 8.398 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.328 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.490 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.999 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.970 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.168 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.203 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.112 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.177 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.202 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.235 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.198 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.096 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.096 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.110 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.095 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.142 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.229 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.147 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.090 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.099 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.410 ms - -[0m
+[2025-10-09T04:02:55.766Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 13.398 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 1.121 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.941 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 1.045 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.671 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.716 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.446 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.621 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.220 ms - -[0m
+[2025-10-09T04:04:55.948Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 11.026 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.424 ms - -[0m
+[0mGET /css/styles.css [32m200[0m 1.196 ms - 14512[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.399 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.242 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.279 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.311 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.216 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.204 ms - -[0m
+[2025-10-09T04:05:00.231Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 12.419 ms - 51192[0m
+[0mGET /css/styles.css [36m304[0m 0.330 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.388 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.490 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.796 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.850 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.206 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.123 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.167 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.197 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.195 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.220 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.356 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.143 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.159 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.273 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.344 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.283 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.311 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.336 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.425 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.344 ms - -[0m
+[2025-10-09T04:05:00.586Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 9.322 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.582 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.562 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.612 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.141 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.202 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.349 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.412 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.452 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.521 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.333 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.408 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.301 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.103 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.254 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.270 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.285 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.185 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.252 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.292 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.104 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.350 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.590 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.362 ms - -[0m
+[2025-10-09T04:05:18.551Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 9.352 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.669 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.790 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.252 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.370 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 1.640 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.478 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.404 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.164 ms - -[0m
+[2025-10-09T04:06:51.120Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 13.473 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.466 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.527 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.103 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 0.246 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.128 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.236 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.255 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.277 ms - -[0m
+[2025-10-09T04:06:54.034Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 10.343 ms - 52677[0m
+[0mGET /css/styles.css [36m304[0m 0.445 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.483 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.214 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.461 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.472 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.438 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.131 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.151 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.277 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.314 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.460 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.235 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.373 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.171 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.254 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.305 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.340 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.136 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 2.926 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 3.034 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.245 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.404 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.555 ms - -[0m
+[2025-10-09T04:07:05.975Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 18.106 ms - 52766[0m
+[2025-10-09T04:07:05.997Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 3.707 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.569 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.590 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.207 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.291 ms - -[0m
+[2025-10-09T04:07:09.697Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 12.300 ms - 52766[0m
+[2025-10-09T04:07:09.727Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 5.603 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.343 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.577 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.544 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.141 ms - -[0m
+[2025-10-09T04:08:11.859Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 18.803 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.365 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.297 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.332 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.393 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.347 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.192 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.272 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.134 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.268 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.292 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.340 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.138 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.147 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.229 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.320 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.337 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.418 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.093 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.139 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.186 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.568 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.259 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.526 ms - -[0m
+[2025-10-09T04:08:22.274Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 9.729 ms - 52766[0m
+[2025-10-09T04:08:22.287Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 4.556 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.554 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.776 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.377 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.481 ms - -[0m
+[2025-10-09T04:09:54.055Z] GET /
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Home page accessed, user: gamin_123 (customer)
+[0mGET / [36m304[0m 126.462 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 1.007 ms - -[0m
+[0mGET /images/sustainable%20fabric.webp [36m304[0m 1.010 ms - -[0m
+[0mGET /images/womens-collection-banner.webp [36m304[0m 0.598 ms - -[0m
+[0mGET /images/mens-collection-banner.webp [36m304[0m 0.586 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.960 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.921 ms - -[0m
+[0mGET /images/Custom%20Embroidery.jpg [36m304[0m 0.831 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.749 ms - -[0m
+[2025-10-09T04:09:55.399Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [32m200[0m 16.524 ms - 53103[0m
+[0mGET /css/styles.css [36m304[0m 0.224 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 1.311 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 1.318 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 1.156 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.458 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.333 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.200 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.353 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.349 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.378 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.444 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.518 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.611 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.594 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.237 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.269 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.249 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.241 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.378 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.212 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.372 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.660 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.705 ms - -[0m
+[2025-10-09T04:10:04.298Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 14.666 ms - 53192[0m
+[2025-10-09T04:10:04.320Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 5.695 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.365 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.433 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.448 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.524 ms - -[0m
+[2025-10-09T04:10:06.527Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 9.575 ms - 53192[0m
+[2025-10-09T04:10:06.545Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 4.853 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.374 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.469 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.581 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.087 ms - -[0m
+[2025-10-09T04:11:14.626Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 25.096 ms - 53192[0m
+[2025-10-09T04:11:14.655Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 3.354 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.503 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.447 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.389 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.106 ms - -[0m
+[2025-10-09T04:11:20.102Z] GET /customer/design-studio
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/design-studio [36m304[0m 9.706 ms - -[0m
+[0mGET /css/styles.css [36m304[0m 0.387 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.340 ms - -[0m
+[0mGET /images/graphics/dragon_2.jpg [36m304[0m 0.198 ms - -[0m
+[0mGET /images/graphics/dragon_3.jpg [36m304[0m 0.128 ms - -[0m
+[0mGET /images/graphics/dragon_4.jpg [36m304[0m 0.142 ms - -[0m
+[0mGET /images/graphics/dragon_5.jpg [36m304[0m 0.119 ms - -[0m
+[0mGET /js/OrbitControls.js [36m304[0m 0.228 ms - -[0m
+[0mGET /js/GLTFLoader.js [36m304[0m 0.247 ms - -[0m
+[0mGET /js/MTLLoader.js [36m304[0m 0.260 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.138 ms - -[0m
+[0mGET /js/OBJLoader.js [36m304[0m 0.234 ms - -[0m
+[0mGET /js/3d-models.js [36m304[0m 0.167 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.166 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.086 ms - -[0m
+[0mGET /images/graphics/dragon_7.jpg [36m304[0m 0.128 ms - -[0m
+[0mGET /images/graphics/dragon_6.jpg [36m304[0m 0.217 ms - -[0m
+[0mGET /images/graphics/model.png [36m304[0m 0.261 ms - -[0m
+[0mGET /images/graphics/dragon_8.jpg [36m304[0m 0.197 ms - -[0m
+[0mGET /images/graphics/dragon_10.jpg [36m304[0m 0.266 ms - -[0m
+[0mGET /images/graphics/dragon_9.jpg [36m304[0m 0.078 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.257 ms - -[0m
+[0mGET /models/tshirt_men.glb [36m304[0m 0.765 ms - -[0m
+[0mGET /images/graphics/dragon_1.jpg [36m304[0m 0.571 ms - -[0m
+[2025-10-09T04:11:40.473Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 11.590 ms - 53192[0m
+[2025-10-09T04:11:40.493Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 4.929 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.351 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.537 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 1.522 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.163 ms - -[0m
+[2025-10-09T04:11:42.423Z] POST /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+Error: Design validation failed: fabric: Path `fabric` is required., color: Path `color` is required., pattern: Path `pattern` is required.
+    at ValidationError.inspect (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/error/validation.js:52:26)
+    at formatValue (node:internal/util/inspect:897:19)
+    at inspect (node:internal/util/inspect:409:10)
+    at formatWithOptionsInternal (node:internal/util/inspect:2591:40)
+    at formatWithOptions (node:internal/util/inspect:2453:10)
+    at console.value (node:internal/console/constructor:345:14)
+    at console.error (node:internal/console/constructor:412:61)
+    at /Users/kumaraswamy/Desktop/design-den-main/routes/customer.js:113:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  errors: {
+    fabric: ValidatorError: Path `fabric` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'fabric',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    color: ValidatorError: Path `color` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'color',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    pattern: ValidatorError: Path `pattern` is required.
+        at validate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1414:13)
+        at SchemaType.doValidate (/Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/schemaType.js:1398:7)
+        at /Users/kumaraswamy/Desktop/design-den-main/node_modules/mongoose/lib/document.js:3115:18
+        at process.processTicksAndRejections (node:internal/process/task_queues:85:11) {
+      properties: [Object],
+      kind: 'required',
+      path: 'pattern',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'Design validation failed'
+}
+[0mPOST /customer/save-design [32m200[0m 11.232 ms - 53192[0m
+[2025-10-09T04:11:42.447Z] GET /customer/save-design
+Session ID: 98opS0Hvho5hBW1HyCG-Fy2P3g1NiFvV
+Session user: gamin_123 (customer)
+---
+[0mGET /customer/save-design [33m404[0m 4.782 ms - 7056[0m
+[0mGET /css/styles.css [36m304[0m 0.226 ms - -[0m
+[0mGET /js/currency-enforcer.js [36m304[0m 0.319 ms - -[0m
+[0mGET /js/rule-enforcement-logger.js [36m304[0m 0.503 ms - -[0m
+[0mGET /js/scripts.js [36m304[0m 0.111 ms - -[0m

@@ -1,418 +1,362 @@
 <%- include('../partials/header') %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <h2 class="card-title mb-0">Order Details</h2>
-          <a href="/customer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="card-title mb-0">Order Details</h2>
+            <a href="/customer/dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Order #<%= order._id.toString().substring(0, 8) %>...</h3>
-      </div>
-      <div class="card-body">
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <h5>Order Information</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Order Date:</span>
-                <span><%= new Date(order.orderDate).toLocaleDateString() %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Status:</span>
-                <span id="statusBadge" class="badge <%= 
-                  order.status === 'Pending' ? 'bg-warning' : 
-                  order.status === 'Assigned' ? 'bg-info' : 
-                  order.status === 'In Progress' ? 'bg-primary' : 
-                  order.status === 'Completed' ? 'bg-success' : 
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3>Order #<%= order._id.toString().substring(0, 8).toUpperCase() %>
+          </h3>
+        </div>
+        <div class="card-body">
+          <!-- Order Information -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Order Information</h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Order Date:</span>
+                  <span>
+                    <%= new Date(order.orderDate).toLocaleDateString() %>
+                  </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Status:</span>
+                  <span class="badge <%= 
+                  order.status === 'pending' ? 'bg-warning' : 
+                  order.status === 'in_production' ? 'bg-primary' : 
+                  order.status === 'completed' ? 'bg-success' : 
+                  order.status === 'shipped' ? 'bg-info' :
+                  order.status === 'delivered' ? 'bg-success' :
                   'bg-danger' 
                 %>">
-                  <%= order.status %>
-                </span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Quantity:</span>
-                <span><%= order.quantity %></span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Total Price:</span>
-                <span>₹<%= order.totalPrice.toFixed(2) %></span>
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-6">
-            <h5>Delivery Information</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <span>Delivery Address:</span>
-                <p class="mb-0 mt-1"><%= order.deliveryAddress %></p>
-              </li>
-              <% if (order.designerId) { %>
-                <li class="list-group-item">
-                  <span>Assigned Designer:</span>
-                  <p class="mb-0 mt-1"><%= order.designerId.username %></p>
+                    <%= order.status.replace('_', ' ' ).toUpperCase() %>
+                  </span>
                 </li>
-              <% } %>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="order-timeline mb-4">
-          <h5>Order Timeline</h5>
-          <div id="timeline" class="timeline">
-            <div class="timeline-item <%= order.status === 'Pending' || order.status === 'Assigned' || order.status === 'In Progress' || order.status === 'Completed' ? 'active' : '' %>">
-              <div class="timeline-badge bg-primary"></div>
-              <div class="timeline-content">
-                <h6>Order Placed</h6>
-                <p><%= new Date(order.orderDate).toLocaleDateString() %></p>
-              </div>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Payment Status:</span>
+                  <span class="badge <%= order.paymentStatus === 'paid' ? 'bg-success' : 'bg-warning' %>">
+                    <%= order.paymentStatus.toUpperCase() %>
+                  </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Total Items:</span>
+                  <span>
+                    <%= order.items.length %>
+                  </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Total Price:</span>
+                  <span class="fw-bold">₹<%= order.totalPrice.toFixed(2) %></span>
+                </li>
+              </ul>
             </div>
-            <div class="timeline-item <%= order.status === 'Assigned' || order.status === 'In Progress' || order.status === 'Completed' ? 'active' : '' %>">
-              <div class="timeline-badge bg-primary"></div>
-              <div class="timeline-content">
-                <h6>Designer Assigned</h6>
-                <p><%= order.status === 'Pending' ? 'Pending' : 'Completed' %></p>
-              </div>
-            </div>
-            <div class="timeline-item <%= order.status === 'In Progress' || order.status === 'Completed' ? 'active' : '' %>">
-              <div class="timeline-badge bg-primary"></div>
-              <div class="timeline-content">
-                <h6>Production Started</h6>
-                <p><%= order.status === 'Pending' || order.status === 'Assigned' ? 'Pending' : 'In Progress' %></p>
-              </div>
-            </div>
-            <div class="timeline-item <%= order.status === 'Completed' ? 'active' : '' %>">
-              <div class="timeline-badge bg-primary"></div>
-              <div class="timeline-content">
-                <h6>Order Completed</h6>
-                <p><%= order.status === 'Completed' ? 'Completed' : 'Pending' %></p>
-              </div>
+            <div class="col-md-6">
+              <h5>Delivery Information</h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <strong>Delivery Address:</strong>
+                  <p class="mb-0 mt-2">
+                    <%= order.deliveryAddress %>
+                  </p>
+                </li>
+              </ul>
             </div>
           </div>
-        </div>
-        
-        <% if (order.status === 'Completed') { %>
-          <div class="d-grid">
-            <a href="/feedback/submit/<%= order._id %>" class="btn btn-success">Leave Feedback</a>
-          </div>
-        <% } %>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3>Design Details</h3>
-      </div>
-      <div class="card-body">
-        <div class="text-center mb-3">
-          <% 
-            /* Show actual product image if available, otherwise fall back to category-based images */
-            let imageUrl = '/images/casual-tshirt.jpeg'; // Default fallback
-            
-            // First priority: Use productImage from design if available
-            if (order.designId.productImage) {
-              imageUrl = order.designId.productImage;
-            }
-            // Second priority: If design has linked productId with images, use first image
-            else if (order.designId.productId && order.designId.productId.images && order.designId.productId.images.length > 0) {
-              imageUrl = order.designId.productId.images[0];
-            }
-            // Third priority: Category-based images as fallback
-            else if (order.designId.category === 'Hoodie') {
-              imageUrl = '/images/winter-hoodie.webp';
-            } else if (order.designId.category === 'T-Shirt') {
-              imageUrl = '/images/casual-tshirt.jpeg';
-            } else if (order.designId.category === 'Kurthi') {
-              imageUrl = '/images/kurthi.jpeg';
-            } else if (order.designId.category === 'Jeans') {
-              imageUrl = '/images/denim-jeans.webp';
-            } else if (order.designId.category === 'Dress') {
-              imageUrl = '/images/women-dress.jpeg';
-            } else if (order.designId.category === 'Shirt') {
-              imageUrl = '/images/formal-shirt.jpeg';
-            }
-          %>
-          <img src="<%= imageUrl %>" alt="<%= order.designId.name %>" class="img-fluid" style="max-height: 220px; width: auto; object-fit: cover; border-radius: 10px;">
-        </div>
-        <h4><%= order.designId.name %></h4>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Fabric:</span>
-            <span><%= order.designId.fabric %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Color:</span>
-            <span><%= order.designId.color %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Pattern:</span>
-            <span><%= order.designId.pattern %></span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span>Size:</span>
-            <span><%= order.designId.size %></span>
-          </li>
-        </ul>
-        <% if (order.designId.additionalNotes) { %>
-          <div class="mt-3">
-            <h5>Additional Notes:</h5>
-            <p><%= order.designId.additionalNotes %></p>
-          </div>
-        <% } %>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="row mt-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="mb-0">Live Order Tracking</h3>
-        <small class="text-muted">Origin: Hyderabad</small>
+          <!-- Order Items -->
+          <div class="mb-4">
+            <h5>Order Items</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Details</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% order.items.forEach((item, index)=> { %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <% // Priority: customImage (3D design)> productId.image (shop) > default
+                            let itemImageUrl = '/images/casual-tshirt.jpeg';
+                            let itemLabel = 'Item #' + (index + 1);
+
+                            if (item.customizationId) {
+                            // Custom 3D Design from Design Studio (has customImage, no productId)
+                            if (item.customizationId.customImage && !item.customizationId.productId) {
+                            itemImageUrl = item.customizationId.customImage;
+                            itemLabel = '🎨 Custom 3D Design #' + (index + 1);
+                            }
+                            // Shop product with custom design
+                            else if (item.customizationId.customImage && item.customizationId.productId) {
+                            itemImageUrl = item.customizationId.customImage;
+                            itemLabel = '🛍️ Customized Product #' + (index + 1);
+                            }
+                            // Shop product (no custom image)
+                            else if (item.customizationId.productId && item.customizationId.productId.image) {
+                            itemImageUrl = item.customizationId.productId.image;
+                            itemLabel = '🛍️ ' + item.customizationId.productId.name;
+                            }
+                            }
+                            %>
+                            <img src="<%= itemImageUrl %>" alt="<%= itemLabel %>" class="me-3"
+                              style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #dee2e6;">
+                            <div>
+                              <strong>
+                                <%= itemLabel %>
+                              </strong>
+                              <% if (item.customizationId && !item.customizationId.productId) { %>
+                                <br><small class="badge bg-primary">3D Design Studio</small>
+                                <% } %>
+                            </div>
+                        </div>
+                      </td>
+                      <td>
+                        <% if (item.customizationId) { %>
+                          <% if (item.customizationId.customText) { %>
+                            <small class="text-muted">
+                              <%= item.customizationId.customText %>
+                            </small><br>
+                            <% } %>
+                              <% if (item.customizationId.size) { %>
+                                <small><strong>Size:</strong>
+                                  <%= item.customizationId.size %>
+                                </small><br>
+                                <% } %>
+                                  <% if (item.customizationId.color) { %>
+                                    <small><strong>Color:</strong>
+                                      <%= item.customizationId.color %>
+                                    </small>
+                                    <% } %>
+                                      <% } else { %>
+                                        <small class="text-muted">Custom item</small>
+                                        <% } %>
+                      </td>
+                      <td>
+                        <%= item.quantity %>
+                      </td>
+                      <td>₹<%= item.price.toFixed(2) %>
+                      </td>
+                      <td>₹<%= (item.price * item.quantity).toFixed(2) %>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                    <td><strong>₹<%= order.totalPrice.toFixed(2) %></strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Order Timeline -->
+          <div class="mb-4">
+            <h5>Order Timeline</h5>
+            <div class="timeline">
+              <div class="timeline-item <%= order.status ? 'active' : '' %>">
+                <div class="timeline-badge bg-success"></div>
+                <div class="timeline-content">
+                  <h6>Order Placed</h6>
+                  <p>
+                    <%= new Date(order.orderDate).toLocaleString() %>
+                  </p>
+                </div>
+              </div>
+
+              <% if (order.productionStartedAt) { %>
+                <div class="timeline-item active">
+                  <div class="timeline-badge bg-primary"></div>
+                  <div class="timeline-content">
+                    <h6>Production Started</h6>
+                    <p>
+                      <%= new Date(order.productionStartedAt).toLocaleString() %>
+                    </p>
+                  </div>
+                </div>
+                <% } %>
+
+                  <% if (order.productionCompletedAt) { %>
+                    <div class="timeline-item active">
+                      <div class="timeline-badge bg-success"></div>
+                      <div class="timeline-content">
+                        <h6>Production Completed</h6>
+                        <p>
+                          <%= new Date(order.productionCompletedAt).toLocaleString() %>
+                        </p>
+                      </div>
+                    </div>
+                    <% } %>
+
+                      <% if (order.shippedAt) { %>
+                        <div class="timeline-item active">
+                          <div class="timeline-badge bg-info"></div>
+                          <div class="timeline-content">
+                            <h6>Shipped</h6>
+                            <p>
+                              <%= new Date(order.shippedAt).toLocaleString() %>
+                            </p>
+                          </div>
+                        </div>
+                        <% } %>
+
+                          <% if (order.deliveredAt) { %>
+                            <div class="timeline-item active">
+                              <div class="timeline-badge bg-success"></div>
+                              <div class="timeline-content">
+                                <h6>Delivered</h6>
+                                <p>
+                                  <%= new Date(order.deliveredAt).toLocaleString() %>
+                                </p>
+                              </div>
+                            </div>
+                            <% } %>
+            </div>
+          </div>
+
+          <% if (order.status==='delivered' || order.status==='completed' ) { %>
+            <div class="d-grid">
+              <a href="/feedback/submit/<%= order._id %>" class="btn btn-success">Leave Feedback</a>
+            </div>
+            <% } %>
+        </div>
       </div>
-      <div class="card-body">
-        <div id="map" style="width: 100%; height: 360px; border-radius: 10px; border: 1px solid var(--border-color);"></div>
-        <div class="d-flex align-items-center mt-3">
-          <img src="/images/Your delivery agent is on the way.png" alt="Agent" style="width:42px;height:42px;margin-right:10px;border-radius:50%;object-fit:cover;">
+    </div>
+
+    <!-- Quick Summary Card -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <h6 class="text-muted">Order ID</h6>
+            <p class="mb-0 font-monospace">
+              <%= order._id %>
+            </p>
+          </div>
+          <div class="mb-3">
+            <h6 class="text-muted">Total Items</h6>
+            <p class="mb-0">
+              <%= order.items.length %> item(s)
+            </p>
+          </div>
+          <div class="mb-3">
+            <h6 class="text-muted">Total Amount</h6>
+            <h4 class="mb-0 text-primary">₹<%= order.totalPrice.toFixed(2) %>
+            </h4>
+          </div>
           <div>
-            <div class="fw-bold">Your delivery agent is on the way</div>
-            <div class="text-muted" id="etaText">Calculating ETA...</div>
+            <h6 class="text-muted">Current Status</h6>
+            <span class="badge <%= 
+            order.status === 'pending' ? 'bg-warning' : 
+            order.status === 'in_production' ? 'bg-primary' : 
+            order.status === 'completed' ? 'bg-success' : 
+            order.status === 'shipped' ? 'bg-info' :
+            order.status === 'delivered' ? 'bg-success' :
+            'bg-danger' 
+          %> fs-6">
+              <%= order.status.replace('_', ' ' ).toUpperCase() %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Card -->
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <% if (order.status==='pending' ) { %>
+              <button class="btn btn-outline-danger btn-sm"
+                onclick="if(confirm('Cancel this order?')) window.location.href='/customer/order/<%= order._id %>/cancel'">
+                <i class="fas fa-times"></i> Cancel Order
+              </button>
+              <% } %>
+                <a href="/customer/dashboard" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-arrow-left"></i> Back to Orders
+                </a>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-</div>
 
-<!-- Include Three.js -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-<!-- Include our custom 3D models -->
-<script src="/js/3d-models.js"></script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Simple 3D preview of the design
-    const modelContainer = document.getElementById('modelContainer');
-    if (modelContainer) {
-      // Create scene
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf8f9fa);
-      
-      // Create camera
-      const camera = new THREE.PerspectiveCamera(75, modelContainer.clientWidth / modelContainer.clientHeight, 0.1, 1000);
-      camera.position.z = 2;
-      
-      // Create renderer
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(modelContainer.clientWidth, modelContainer.clientHeight);
-      modelContainer.appendChild(renderer.domElement);
-      
-      // Add lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      scene.add(ambientLight);
-      
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-      
-      // Create model based on design
-      const model = ClothingModels.getModel(scene, '<%= order.designId.category || "Shirt" %>', 'Unisex');
-      
-      // Convert color name to hex
-      const colorMap = {
-        'Red': 0xff0000,
-        'Blue': 0x0000ff,
-        'Green': 0x00ff00,
-        'Black': 0x000000,
-        'White': 0xffffff,
-        'Gray': 0x808080,
-        'Yellow': 0xffff00,
-        'Purple': 0x800080,
-        'Pink': 0xffc0cb,
-        'Maroon': 0x800000
-      };
-      
-      const colorHex = colorMap['<%= order.designId.color %>'] || 0xcccccc;
-      
-      // Update model with design details
-      model.update({
-        color: colorHex,
-        pattern: '<%= order.designId.pattern %>',
-        fabric: '<%= order.designId.fabric %>'
-      });
-      
-      // Auto-rotate the model
-      function animate() {
-        requestAnimationFrame(animate);
-        if (model && model.group) {
-          model.group.rotation.y += 0.01;
-        }
-        renderer.render(scene, camera);
-      }
-      
-      animate();
-    }
-  });
-</script>
-
-<%- include('../partials/footer') %>
-
-<!-- Leaflet Map for tracking (lightweight, no API key) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-<script>
-  // Exact-city tracking from Hyderabad to the provided delivery city using Leaflet
-  document.addEventListener('DOMContentLoaded', () => {
-    const origin = { lat: 17.3850, lng: 78.4867 } // Hyderabad
-
-    // STRICT RULE 5: EXACT CITY NAME PRESERVATION - NO EXCEPTIONS
-    const ORDER_ID = '<%= order._id %>';
-    const rawAddress = `<%= (order.deliveryAddress || '').replace(/` + "`" + `/g, "'") %>`;
-    
-    console.log('🔒 ENFORCING RULE 5: Preserving EXACT city name for order:', ORDER_ID);
-    console.log('🔒 RULE 5: Original delivery address:', rawAddress);
-    
-    // VALIDATION: Ensure we have delivery address
-    if (!rawAddress || rawAddress.trim() === '') {
-      console.error('🚨 RULE 5 VIOLATION: Missing delivery address for order:', ORDER_ID);
-    }
-    
-    // STRICT EXTRACTION: Extract city name while preserving original format
-    const parts = rawAddress.split(',').map(s => s.trim()).filter(Boolean);
-    let inputCity = parts.length >= 2 ? parts[parts.length - 2] : rawAddress;
-    inputCity = (inputCity || '').replace(/[^A-Za-zÀ-ÿ' .-]/g, '').trim();
-
-    // STRICT PRESERVATION: Always use the exact city name the customer provided
-    const exactCityLabel = inputCity || rawAddress || 'Delivery City';
-    
-    console.log('✅ RULE 5: Extracted city name (EXACT):', exactCityLabel);
-    console.log('🔒 RULE 5: NO substitution or modification will be performed');
-
-    const map = L.map('map').setView([ 17.7, 78.0 ], 6)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map)
-
-    // Helper to choose the most accurate match for the specified city
-    function chooseBestMatch(results, cityName) {
-      if (!Array.isArray(results) || !results.length) return null
-      const lc = cityName.toLowerCase()
-      // Rank candidates: exact name match and class/type corresponding to a city/town
-      const rank = (r) => {
-        const display = (r.display_name || '').toLowerCase()
-        const name = (r.name || '').toLowerCase()
-        const classType = `${r.class || ''}/${r.type || ''}`
-        let score = 0
-        if (name === lc) score += 5
-        if (display.startsWith(lc + ',')) score += 4
-        if (name.includes(lc)) score += 2
-        if (['place/city','place/town','place/village','boundary/administrative'].includes(classType)) score += 2
-        // Prefer India if address mentions India
-        if (/india/i.test(rawAddress) || /india/i.test(display)) score += 1
-        // Favor higher importance a bit
-        score += (r.importance || 0)
-        return score
-      }
-      return results.slice().sort((a,b) => rank(b) - rank(a))[0]
+  <style>
+    .timeline {
+      position: relative;
+      padding: 0;
+      list-style: none;
     }
 
-    // Geocode the exact city name using OpenStreetMap Nominatim (no API key)
-    async function geocodeCity(cityName) {
-      try {
-        const q = encodeURIComponent(cityName)
-        // Bias to India if the address mentions India by appending the country
-        const biasedQuery = /india/i.test(rawAddress) ? `${q}, India` : q
-        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=${biasedQuery}`
-        const res = await fetch(url, { headers: { 'Accept': 'application/json' } })
-        const data = await res.json()
-        return chooseBestMatch(data, cityName)
-      } catch (_) {
-        return null
-      }
+    .timeline-item {
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 25px;
     }
 
-    (async () => {
-      const destMatch = await geocodeCity(exactCityLabel)
-
-      // Fallback: if no match, keep origin-only view, but still show exact label
-      const destination = destMatch ? { lat: parseFloat(destMatch.lat), lng: parseFloat(destMatch.lon) } : null
-
-      // Draw route if we have destination
-      if (destination) {
-        const route = L.polyline([[origin.lat, origin.lng],[destination.lat, destination.lng]], { color: '#2563eb', weight: 4 }).addTo(map)
-        map.fitBounds(route.getBounds(), { padding: [20,20] })
-
-        // Place destination label with the exact city name provided
-        L.marker([destination.lat, destination.lng]).addTo(map).bindPopup(exactCityLabel).openPopup()
-      } else {
-        // Center near origin as fallback
-        map.setView([origin.lat, origin.lng], 6)
-      }
-
-      // Animated marker along the route (or toward destination if available)
-      const agentIcon = L.icon({ iconUrl: '/images/Your delivery agent is on the way.png', iconSize: [36,36], iconAnchor: [18,18] })
-      const marker = L.marker([origin.lat, origin.lng], { icon: agentIcon }).addTo(map)
-
-      let t = 0
-      const stepMs = 2000
-      const totalSteps = 300 // ~10 minutes simulation
-      const etaEl = document.getElementById('etaText')
-      const lerp = (a,b,u) => a + (b-a)*u
-      const tick = () => {
-        const haveDest = !!destination
-        const u = Math.min(1, t/totalSteps)
-        const lat = haveDest ? lerp(origin.lat, destination.lat, u) : origin.lat
-        const lng = haveDest ? lerp(origin.lng, destination.lng, u) : origin.lng
-        marker.setLatLng([lat,lng])
-        const remaining = Math.max(0, totalSteps - t)
-        const mins = Math.ceil((remaining*stepMs)/60000)
-        etaEl.textContent = u >= 1 ? 'Delivered' : (mins > 60 ? `ETA ~ ${Math.ceil(mins/60)} hours` : `ETA ~ ${mins} min`)
-        t++
-        if (u < 1) setTimeout(tick, stepMs)
-      }
-      tick()
-    })()
-  })
-</script>
-
-<script>
-  // Poll order status every 8 seconds to update timeline
-  document.addEventListener('DOMContentLoaded', () => {
-    const badge = document.getElementById('statusBadge')
-    const timeline = document.getElementById('timeline')
-    const orderId = '<%= order._id %>'
-    const cls = (s) => s === 'Pending' ? 'bg-warning' : s === 'Assigned' ? 'bg-info' : s === 'In Progress' ? 'bg-primary' : s === 'Completed' ? 'bg-success' : 'bg-danger'
-    async function refresh() {
-      try {
-        const html = await fetch('/customer/order/' + orderId, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text())
-        // Basic parse: extract status text from server-rendered HTML if available
-        const m = html.match(/<span class=\"badge ([^\"]+)\">(.*?)<\\/span>/)
-        if (m) {
-          const statusText = m[2]
-          badge.textContent = statusText
-          badge.className = 'badge ' + cls(statusText)
-          // Update timeline active steps
-          const steps = Array.from(timeline.querySelectorAll('.timeline-item'))
-          const activeIdx = statusText === 'Pending' ? 0 : statusText === 'Assigned' ? 1 : statusText === 'In Progress' ? 2 : 3
-          steps.forEach((el, idx) => el.classList.toggle('active', idx <= activeIdx))
-        }
-      } catch (e) { /* ignore */ }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 13px;
+      top: 30px;
+      bottom: -25px;
+      width: 2px;
+      background: #e0e0e0;
     }
-    setInterval(refresh, 8000)
-  })
-</script>
+
+    .timeline-item:last-child::before {
+      display: none;
+    }
+
+    .timeline-badge {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px #e0e0e0;
+    }
+
+    .timeline-item.active .timeline-badge {
+      box-shadow: 0 0 0 2px currentColor;
+    }
+
+    .timeline-content h6 {
+      margin: 0 0 5px 0;
+      font-weight: 600;
+    }
+
+    .timeline-content p {
+      margin: 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+
+  <%- include('../partials/footer') %>

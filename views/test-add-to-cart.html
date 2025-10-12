@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add to Cart Diagnostic</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    h2 {
+      color: #666;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+
+    .test-form {
+      display: grid;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🔍 Add-to-Cart Diagnostic Tool</h1>
+
+  <div class="section">
+    <h2>📊 Server Status</h2>
+    <div id="server-status">Checking...</div>
+  </div>
+
+  <div class="section">
+    <h2>🧪 Test Add-to-Cart</h2>
+    <form id="test-form" class="test-form">
+      <div>
+        <label for="product">Select Product:</label>
+        <select id="product" name="productId" required>
+          <option value="">Loading products...</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="size">Size:</label>
+        <select id="size" name="size" required>
+          <option value="S">S</option>
+          <option value="M" selected>M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="color">Color:</label>
+        <select id="color" name="color" required>
+          <option value="Black" selected>Black</option>
+          <option value="Red">Red</option>
+          <option value="Blue">Blue</option>
+          <option value="White">White</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+      </div>
+
+      <button type="submit">🛒 Test Add to Cart</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="section">
+    <h2>📝 Instructions</h2>
+    <ol>
+      <li>Make sure you're logged in at <a href="/login">/login</a></li>
+      <li>Select a product, size, color, and quantity above</li>
+      <li>Click "Test Add to Cart"</li>
+      <li>Check the result below</li>
+    </ol>
+  </div>
+
+  <script>
+    // Check server status
+    fetch('/shop')
+      .then(res => {
+        if (res.ok) {
+          document.getElementById('server-status').innerHTML =
+            '<div class="status success">✅ Server is running and responding</div>';
+        } else {
+          document.getElementById('server-status').innerHTML =
+            '<div class="status error">❌ Server error: ' + res.status + '</div>';
+        }
+      })
+      .catch(err => {
+        document.getElementById('server-status').innerHTML =
+          '<div class="status error">❌ Cannot connect to server</div>';
+      });
+
+    // Load products
+    fetch('/shop')
+      .then(res => res.text())
+      .then(html => {
+        // Simple product loading - you might need to adjust this
+        const productSelect = document.getElementById('product');
+        productSelect.innerHTML = '<option value="">Select a product manually</option>';
+
+        // Add some default product IDs (these should match your database)
+        const defaultOptions = [
+          { id: '68eaaccb345cad7832b4e3e4', name: 'Product 1 (check database)' },
+          { id: '68eaaccb345cad7832b4e3e5', name: 'Product 2 (check database)' }
+        ];
+
+        defaultOptions.forEach(prod => {
+          const option = document.createElement('option');
+          option.value = prod.id;
+          option.textContent = prod.name;
+          productSelect.appendChild(option);
+        });
+      })
+      .catch(err => {
+        console.error('Error loading products:', err);
+      });
+
+    // Handle form submission
+    document.getElementById('test-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<div class="status info">⏳ Testing add-to-cart...</div>';
+
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      console.log('Sending data:', data);
+
+      try {
+        const response = await fetch('/customer/add-to-cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(data),
+          redirect: 'manual'
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response type:', response.type);
+
+        if (response.type === 'opaqueredirect' || response.status === 0) {
+          resultDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ Add-to-cart request sent successfully!<br>
+                            Server responded with redirect (typical success behavior)<br>
+                            <a href="/customer/cart">Check your cart →</a>
+                        </div>`;
+        } else if (response.ok || response.status === 302) {
+          resultDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ Success! Item should be in cart<br>
+                            <a href="/customer/cart">View cart →</a>
+                        </div>`;
+        } else if (response.status === 401 || response.status === 403) {
+          resultDiv.innerHTML = `
+                        <div class="status error">
+                            ❌ Not logged in! Please <a href="/login">login first</a>
+                        </div>`;
+        } else {
+          const text = await response.text();
+          resultDiv.innerHTML = `
+                        <div class="status error">
+                            ❌ Error ${response.status}<br>
+                            <code>${text.substring(0, 200)}</code>
+                        </div>`;
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ Network error: ${error.message}<br>
+                        Make sure server is running on port 3000
+                    </div>`;
+      }
+    });
+  </script>
+</body>
+
+</html>
