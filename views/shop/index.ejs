@@ -1,245 +1,400 @@
-<%- include('../partials/header', { user: typeof user !== 'undefined' ? user : undefined }) %>
+<%- include('../partials/header', { user: typeof user !=='undefined' ? user : undefined }) %>
 
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title">Shop Ready-Made Designs</h2>
-        <p class="card-text">Browse our collection of pre-designed clothing items for men and women.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<% if (!filters.gender || filters.gender === '') { %>
-<div class="row mb-4">
-  <div class="col-md-6 mb-4">
-    <div class="card overflow-hidden">
-      <div class="position-relative">
-        <img src="/images/mens-collection-banner.webp" class="img-fluid w-100" alt="Men's Collection">
-        <div class="position-absolute bottom-0 start-0 p-4">
-          <a href="/shop?gender=Men" class="btn btn-light">Shop Men</a>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Shop Ready-Made Designs</h2>
+          <p class="card-text">Browse our collection of pre-designed clothing items for men and women.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-md-6 mb-4">
-    <div class="card overflow-hidden">
-      <div class="position-relative">
-        <img src="/images/womens-collection-banner.webp" class="img-fluid w-100" alt="Women's Collection">
-        <div class="position-absolute bottom-0 start-0 p-4">
-          <a href="/shop?gender=Women" class="btn btn-light">Shop Women</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<% } else if (filters.gender === 'Men') { %>
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card overflow-hidden">
-      <div class="position-relative">
-        <img src="/images/mens-collection-banner.webp" class="img-fluid w-100" alt="Men's Collection">
-      </div>
-    </div>
-  </div>
-</div>
-<% } else if (filters.gender === 'Women') { %>
-<div class="row mb-4">
-  <div class="col-md-12">
-    <div class="card overflow-hidden">
-      <div class="position-relative">
-        <img src="/images/womens-collection-banner.webp" class="img-fluid w-100" alt="Women's Collection">
-      </div>
-    </div>
-  </div>
-</div>
-<% } %>
 
-<div class="row">
-  <!-- Filters Sidebar -->
-  <div class="col-md-3 mb-4">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h3 class="h5 mb-0">Filters</h3>
+  <% if (!filters.gender || filters.gender==='' ) { %>
+    <div class="row mb-4">
+      <div class="col-md-6 mb-4">
+        <div class="card overflow-hidden">
+          <div class="position-relative">
+            <img src="/images/mens-collection-banner.webp" class="img-fluid w-100" alt="Men's Collection">
+            <div class="position-absolute bottom-0 start-0 p-4">
+              <a href="/shop?gender=Men" class="btn btn-light">Shop Men</a>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <form action="/shop" method="GET" id="filterForm">
-          <!-- Category Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-bold">Category</label>
-            <div class="d-grid gap-2">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="category" id="categoryAll" value="" 
-                  <%= !filters.category ? 'checked' : '' %> onchange="this.form.submit()">
-                <label class="form-check-label" for="categoryAll">All Categories</label>
-              </div>
-              <% if (typeof categories !== 'undefined') { %>
-                <% categories.forEach(category => { %>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="category" id="category<%= category %>" 
-                      value="<%= category %>" <%= filters.category === category ? 'checked' : '' %> onchange="this.form.submit()">
-                    <label class="form-check-label" for="category<%= category %>"><%= category %></label>
-                  </div>
-                <% }) %>
-              <% } %>
+      <div class="col-md-6 mb-4">
+        <div class="card overflow-hidden">
+          <div class="position-relative">
+            <img src="/images/womens-collection-banner.webp" class="img-fluid w-100" alt="Women's Collection">
+            <div class="position-absolute bottom-0 start-0 p-4">
+              <a href="/shop?gender=Women" class="btn btn-light">Shop Women</a>
             </div>
-          </div>
-          
-          <hr>
-          
-          <!-- Gender Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-bold">Gender</label>
-            <div class="d-grid gap-2">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="gender" id="genderAll" value="" 
-                  <%= !filters.gender ? 'checked' : '' %> onchange="this.form.submit()">
-                <label class="form-check-label" for="genderAll">All</label>
-              </div>
-              <% if (typeof genders !== 'undefined') { %>
-                <% genders.forEach(gender => { %>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" id="gender<%= gender %>" 
-                      value="<%= gender %>" <%= filters.gender === gender ? 'checked' : '' %> onchange="this.form.submit()">
-                    <label class="form-check-label" for="gender<%= gender %>"><%= gender %></label>
-                  </div>
-                <% }) %>
-              <% } %>
-            </div>
-          </div>
-          
-          <hr>
-          
-          <!-- Size Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-bold">Size</label>
-            <div class="d-grid gap-2">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="size" id="sizeAll" value="" 
-                  <%= !filters.size ? 'checked' : '' %> onchange="this.form.submit()">
-                <label class="form-check-label" for="sizeAll">All Sizes</label>
-              </div>
-              <% if (typeof sizes !== 'undefined') { %>
-                <% sizes.forEach(size => { %>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="size" id="size<%= size %>" 
-                      value="<%= size %>" <%= filters.size === size ? 'checked' : '' %> onchange="this.form.submit()">
-                    <label class="form-check-label" for="size<%= size %>"><%= size %></label>
-                  </div>
-                <% }) %>
-              <% } %>
-            </div>
-          </div>
-          
-          <hr>
-          
-          <!-- Price Range Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-bold">Price Range</label>
-            <div class="row g-2">
-              <div class="col">
-                <input type="number" class="form-control" name="minPrice" id="minPrice" 
-                  placeholder="Min" value="<%= filters.minPrice %>" min="0">
-              </div>
-              <div class="col">
-                <input type="number" class="form-control" name="maxPrice" id="maxPrice" 
-                  placeholder="Max" value="<%= filters.maxPrice %>">
-              </div>
-            </div>
-            <div class="d-grid mt-2">
-              <button type="submit" class="btn btn-sm btn-outline-primary">Apply Price</button>
-            </div>
-          </div>
-          
-          <hr>
-          
-          <!-- Reset Filters -->
-          <div class="d-grid">
-            <a href="/shop" class="btn btn-outline-secondary">Reset All Filters</a>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Products Grid -->
-  <div class="col-md-9">
-    <!-- Sort Options -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <% if (typeof products !== 'undefined') { %>
-              <span class="text-muted"><%= products.length %> products found</span>
-            <% } %>
-          </div>
-          <div class="d-flex align-items-center">
-            <label class="me-2">Sort by:</label>
-            <select class="form-select form-select-sm" id="sortSelect" onchange="updateSort(this.value)">
-              <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
-              <option value="price-low-high" <%= filters.sort === 'price-low-high' ? 'selected' : '' %>>Price: Low to High</option>
-              <option value="price-high-low" <%= filters.sort === 'price-high-low' ? 'selected' : '' %>>Price: High to Low</option>
-            </select>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- Products -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <% if (typeof products !== 'undefined' && products.length > 0) { %>
-        <% products.forEach(product => { %>
-          <div class="col">
-            <div class="card h-100 product-card">
+    <% } else if (filters.gender==='Men' ) { %>
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="card overflow-hidden">
+            <div class="position-relative">
+              <img src="/images/mens-collection-banner.webp" class="img-fluid w-100" alt="Men's Collection">
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } else if (filters.gender==='Women' ) { %>
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <div class="card overflow-hidden">
               <div class="position-relative">
-                <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg?height=300&width=300' %>" 
-                  class="card-img-top" alt="<%= product.name %>">
-                <% if (!product.inStock) { %>
-                  <div class="position-absolute top-0 end-0 bg-danger text-white m-2 px-2 py-1 rounded">Out of Stock</div>
-                <% } %>
-                <% if (product.customizable) { %>
-                  <div class="position-absolute top-0 start-0 bg-success text-white m-2 px-2 py-1 rounded">Customizable</div>
-                <% } %>
+                <img src="/images/womens-collection-banner.webp" class="img-fluid w-100" alt="Women's Collection">
               </div>
-              <div class="card-body">
-                <h5 class="card-title"><%= product.name %></h5>
-                <p class="card-text text-muted"><%= product.category %> | <%= product.gender %></p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
-                    <% if (product.inStock && product.stockQuantity && product.stockQuantity > 0) { %>
-                      <br><small class="text-success"><%= product.stockQuantity %> available</small>
-                    <% } %>
-                  </div>
-                  <a href="/shop/product/<%= product._id %>" class="btn btn-sm btn-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+        <% } %>
+
+          <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-md-3 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-header">
+                  <h3 class="h5 mb-0">Filters</h3>
+                </div>
+                <div class="card-body">
+                  <form action="/shop" method="GET" id="filterForm">
+                    <!-- Category Filter -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">Category</label>
+                      <div class="d-grid gap-2">
+                        <div class="form-check">
+                          <input class="form-check-input filter-input" type="radio" name="category" id="categoryAll"
+                            value="" <%=!filters.category ? 'checked' : '' %>>
+                          <label class="form-check-label" for="categoryAll">All Categories</label>
+                        </div>
+                        <% if (typeof categories !=='undefined' ) { %>
+                          <% categories.forEach(category=> { %>
+                            <div class="form-check">
+                              <input class="form-check-input filter-input" type="radio" name="category"
+                                id="category<%= category %>" value="<%= category %>" <%=filters.category===category
+                                ? 'checked' : '' %>>
+                              <label class="form-check-label" for="category<%= category %>">
+                                <%= category %>
+                              </label>
+                            </div>
+                            <% }) %>
+                              <% } %>
+                      </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Gender Filter -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">Gender</label>
+                      <div class="d-grid gap-2">
+                        <div class="form-check">
+                          <input class="form-check-input filter-input" type="radio" name="gender" id="genderAll"
+                            value="" <%=!filters.gender ? 'checked' : '' %>>
+                          <label class="form-check-label" for="genderAll">All</label>
+                        </div>
+                        <% if (typeof genders !=='undefined' ) { %>
+                          <% genders.forEach(gender=> { %>
+                            <div class="form-check">
+                              <input class="form-check-input filter-input" type="radio" name="gender"
+                                id="gender<%= gender %>" value="<%= gender %>" <%=filters.gender===gender ? 'checked'
+                                : '' %>>
+                              <label class="form-check-label" for="gender<%= gender %>">
+                                <%= gender %>
+                              </label>
+                            </div>
+                            <% }) %>
+                              <% } %>
+                      </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Size Filter -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">Size</label>
+                      <div class="d-grid gap-2">
+                        <div class="form-check">
+                          <input class="form-check-input filter-input" type="radio" name="size" id="sizeAll" value=""
+                            <%=!filters.size ? 'checked' : '' %>>
+                          <label class="form-check-label" for="sizeAll">All Sizes</label>
+                        </div>
+                        <% if (typeof sizes !=='undefined' ) { %>
+                          <% sizes.forEach(size=> { %>
+                            <div class="form-check">
+                              <input class="form-check-input filter-input" type="radio" name="size" id="size<%= size %>"
+                                value="<%= size %>" <%=filters.size===size ? 'checked' : '' %>>
+                              <label class="form-check-label" for="size<%= size %>">
+                                <%= size %>
+                              </label>
+                            </div>
+                            <% }) %>
+                              <% } %>
+                      </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Price Range Filter -->
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">Price Range</label>
+                      <div class="row g-2">
+                        <div class="col">
+                          <input type="number" class="form-control" name="minPrice" id="minPrice" placeholder="Min"
+                            value="<%= filters.minPrice %>" min="0">
+                        </div>
+                        <div class="col">
+                          <input type="number" class="form-control" name="maxPrice" id="maxPrice" placeholder="Max"
+                            value="<%= filters.maxPrice %>">
+                        </div>
+                      </div>
+                      <div class="d-grid mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyFilters()">Apply
+                          Price</button>
+                      </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Reset Filters -->
+                    <div class="d-grid">
+                      <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">Reset All
+                        Filters</button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-          </div>
-        <% }) %>
-      <% } else { %>
-        <div class="col-12">
-          <div class="alert alert-info">
-            No products found matching your filters. <a href="/shop">Clear all filters</a> to see all products.
-          </div>
-        </div>
-      <% } %>
-    </div>
-  </div>
-</div>
 
-<script>
-  function updateSort(sortValue) {
-    // Get current URL
-    const url = new URL(window.location.href);
-    
-    // Update or add the sort parameter
-    url.searchParams.set('sort', sortValue);
-    
-    // Redirect to the new URL
-    window.location.href = url.toString();
-  }
-</script>
+            <!-- Products Grid -->
+            <div class="col-md-9">
+              <!-- Sort Options -->
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="text-muted" id="productCount">
+                        <%= products.length %> products found
+                      </span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="me-2">Sort by:</label>
+                      <select class="form-select form-select-sm" id="sortSelect">
+                        <option value="newest" <%=filters.sort==='newest' ? 'selected' : '' %>>Newest</option>
+                        <option value="price-low-high" <%=filters.sort==='price-low-high' ? 'selected' : '' %>>Price:
+                          Low to High</option>
+                        <option value="price-high-low" <%=filters.sort==='price-high-low' ? 'selected' : '' %>>Price:
+                          High to Low</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-<%- include('../partials/footer') %>
+              <!-- Loading Indicator -->
+              <div id="loadingIndicator" class="text-center my-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading products...</p>
+              </div>
+
+              <!-- Products -->
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="productsContainer">
+                <% if (typeof products !=='undefined' && products.length> 0) { %>
+                  <% products.forEach(product=> { %>
+                    <div class="col">
+                      <div class="card h-100 product-card">
+                        <div class="position-relative">
+                          <img
+                            src="<%= product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg?height=300&width=300' %>"
+                            class="card-img-top" alt="<%= product.name %>">
+                          <% if (!product.inStock) { %>
+                            <div class="position-absolute top-0 end-0 bg-danger text-white m-2 px-2 py-1 rounded">Out of
+                              Stock</div>
+                            <% } %>
+                              <% if (product.customizable) { %>
+                                <div
+                                  class="position-absolute top-0 start-0 bg-success text-white m-2 px-2 py-1 rounded">
+                                  Customizable</div>
+                                <% } %>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">
+                            <%= product.name %>
+                          </h5>
+                          <p class="card-text text-muted">
+                            <%= product.category %> | <%= product.gender %>
+                          </p>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <span class="fw-bold">₹<%= product.price.toFixed(2) %></span>
+                              <% if (product.inStock && product.stockQuantity && product.stockQuantity> 0) { %>
+                                <br><small class="text-success">
+                                  <%= product.stockQuantity %> available
+                                </small>
+                                <% } %>
+                            </div>
+                            <a href="/shop/product/<%= product._id %>" class="btn btn-sm btn-primary">View Details</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %>
+                      <% } else { %>
+                        <div class="col-12">
+                          <div class="alert alert-info">
+                            No products found matching your filters. <a href="/shop"
+                              onclick="resetFilters(); return false;">Clear all filters</a> to see all
+                            products.
+                          </div>
+                        </div>
+                        <% } %>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function () {
+              // Add event listeners to all filter inputs
+              const filterInputs = document.querySelectorAll('.filter-input');
+              filterInputs.forEach(input => {
+                input.addEventListener('change', applyFilters);
+              });
+
+              // Add event listener to sort dropdown
+              const sortSelect = document.getElementById('sortSelect');
+              if (sortSelect) {
+                sortSelect.addEventListener('change', applyFilters);
+              }
+            });
+
+            // Apply filters function
+            function applyFilters() {
+              // Show loading indicator
+              const loadingIndicator = document.getElementById('loadingIndicator');
+              const productsContainer = document.getElementById('productsContainer');
+
+              loadingIndicator.style.display = 'block';
+              productsContainer.style.opacity = '0.5';
+
+              // Collect filter values
+              const params = new URLSearchParams();
+
+              // Category
+              const category = document.querySelector('input[name="category"]:checked');
+              if (category && category.value) {
+                params.append('category', category.value);
+              }
+
+              // Gender
+              const gender = document.querySelector('input[name="gender"]:checked');
+              if (gender && gender.value) {
+                params.append('gender', gender.value);
+              }
+
+              // Size
+              const size = document.querySelector('input[name="size"]:checked');
+              if (size && size.value) {
+                params.append('size', size.value);
+              }
+
+              // Price Range
+              const minPrice = document.getElementById('minPrice').value;
+              const maxPrice = document.getElementById('maxPrice').value;
+              if (minPrice) {
+                params.append('minPrice', minPrice);
+              }
+              if (maxPrice) {
+                params.append('maxPrice', maxPrice);
+              }
+
+              // Sort
+              const sort = document.getElementById('sortSelect').value;
+              if (sort) {
+                params.append('sort', sort);
+              }
+
+              // Fetch products
+              fetch(`/shop?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                  'X-Requested-With': 'XMLHttpRequest'
+                }
+              })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.text();
+                })
+                .then(html => {
+                  // Parse the HTML to extract products
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+                  const newProductsContainer = doc.getElementById('productsContainer');
+                  const newProductCount = doc.getElementById('productCount');
+
+                  // Update products container
+                  if (newProductsContainer) {
+                    productsContainer.innerHTML = newProductsContainer.innerHTML;
+                  }
+
+                  // Update product count
+                  if (newProductCount) {
+                    document.getElementById('productCount').textContent = newProductCount.textContent;
+                  }
+
+                  // Hide loading indicator
+                  loadingIndicator.style.display = 'none';
+                  productsContainer.style.opacity = '1';
+
+                  // Update URL without reloading
+                  const newUrl = `/shop?${params.toString()}`;
+                  window.history.pushState({ path: newUrl }, '', newUrl);
+                })
+                .catch(error => {
+                  console.error('Error fetching products:', error);
+
+                  // Show error message
+                  productsContainer.innerHTML = `
+                  <div class="col-12">
+                    <div class="alert alert-danger">
+                      Error loading products. Please try again.
+                    </div>
+                  </div>
+                `;
+
+                  loadingIndicator.style.display = 'none';
+                  productsContainer.style.opacity = '1';
+                });
+            }
+
+            // Reset filters function
+            function resetFilters() {
+              // Reset all radio buttons to "All" options
+              document.getElementById('categoryAll').checked = true;
+              document.getElementById('genderAll').checked = true;
+              document.getElementById('sizeAll').checked = true;
+
+              // Clear price inputs
+              document.getElementById('minPrice').value = '';
+              document.getElementById('maxPrice').value = '';
+
+              // Reset sort to newest
+              document.getElementById('sortSelect').value = 'newest';
+
+              // Apply filters (which will load all products)
+              applyFilters();
+            }
+          </script>
+
+          <%- include('../partials/footer') %>
