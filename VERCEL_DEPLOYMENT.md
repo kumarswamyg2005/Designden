@@ -1,6 +1,7 @@
 # Vercel Deployment Guide
 
 ## Latest Updates (Fixed Internal Server Error):
+
 ✅ Fixed dependency conflict (date-fns downgraded to v3.6.0)
 ✅ Added .npmrc for legacy peer dependencies
 ✅ Created api/index.js for Vercel serverless functions
@@ -15,7 +16,7 @@
 
 1. **MONGODB_URI** (REQUIRED) - Your MongoDB connection string
    Example: `mongodb+srv://username:password@cluster.mongodb.net/designden?retryWrites=true&w=majority`
-   
+
    ⚠️ **Without this, you'll get "Internal Server Error"**
 
 2. **SESSION_SECRET** (OPTIONAL) - A random secret string for session encryption
