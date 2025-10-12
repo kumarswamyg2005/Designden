@@ -223,13 +223,7 @@ app.use((req, res) => {
     .render("404", { title: "Page Not Found", user: req.session.user || null });
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// Seed default users (admin & designer)
+// Seed default users (admin & designer) - only in development
 const seedDefaultUsers = async () => {
   try {
     const ensureUser = async (
@@ -265,4 +259,19 @@ const seedDefaultUsers = async () => {
     console.warn("User seed skipped:", e.message);
   }
 };
-seedDefaultUsers();
+
+// Only seed in development or when explicitly running the server
+if (process.env.NODE_ENV !== "production" || require.main === module) {
+  seedDefaultUsers();
+}
+
+// Start server only if running directly (not in Vercel serverless)
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
