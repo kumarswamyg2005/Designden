@@ -49,6 +49,13 @@ const DesignerMarketplace = () => {
       );
 
       if (response.data.success) {
+        console.log("=== DESIGNERS DATA ===");
+        console.log("First designer:", response.data.designers[0]);
+        console.log(
+          "availabilityStatus:",
+          response.data.designers[0]?.availabilityStatus,
+        );
+        console.log("=====================");
         setDesigners(response.data.designers);
         setPagination(response.data.pagination);
       }
@@ -254,182 +261,198 @@ const DesignerMarketplace = () => {
             ) : (
               <>
                 <div className="row g-4">
-                  {designers.map((designer) => (
-                    <div key={designer._id} className="col-md-6 col-lg-4">
-                      <div
-                        className={`designer-card card h-100 shadow-sm ${designer.availabilityStatus === "not_accepting" ? "designer-unavailable" : ""}`}
-                      >
-                        {/* Unavailable Overlay */}
-                        {designer.availabilityStatus === "not_accepting" && (
-                          <div className="unavailable-overlay">
-                            <div className="unavailable-badge">
-                              <i className="fas fa-store-slash me-2"></i>
-                              Shop Closed
+                  {designers.map((designer) => {
+                    console.log(
+                      `Designer ${designer.name} - availabilityStatus:`,
+                      designer.availabilityStatus,
+                    );
+                    return (
+                      <div key={designer._id} className="col-md-6 col-lg-4">
+                        <div
+                          className={`designer-card card h-100 shadow-sm ${designer.availabilityStatus === "not_accepting" ? "designer-unavailable" : ""}`}
+                        >
+                          {/* Unavailable Overlay */}
+                          {designer.availabilityStatus === "not_accepting" && (
+                            <div className="unavailable-overlay">
+                              <div className="unavailable-badge">
+                                <i className="fas fa-store-slash me-2"></i>
+                                Shop Closed
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        <div className="card-body">
-                          {/* Designer Header */}
-                          <div className="text-center mb-3">
-                            <div className="designer-avatar mb-2">
-                              <i
-                                className={`fas fa-user-circle fa-4x ${
-                                  designer.availabilityStatus === "available"
-                                    ? "text-primary"
-                                    : designer.availabilityStatus === "busy"
-                                      ? "text-warning"
-                                      : "text-muted"
-                                }`}
-                              ></i>
-                            </div>
-                            <h5 className="card-title mb-1">{designer.name}</h5>
-                            <p className="text-muted small mb-2">
-                              @{designer.username}
-                            </p>
+                          )}
+                          <div className="card-body">
+                            {/* Designer Header */}
+                            <div className="text-center mb-3">
+                              <div className="designer-avatar mb-2">
+                                <i
+                                  className={`fas fa-user-circle fa-4x ${
+                                    designer.availabilityStatus === "available"
+                                      ? "text-primary"
+                                      : designer.availabilityStatus === "busy"
+                                        ? "text-warning"
+                                        : "text-muted"
+                                  }`}
+                                ></i>
+                              </div>
+                              <h5 className="card-title mb-1">
+                                {designer.name}
+                              </h5>
+                              <p className="text-muted small mb-2">
+                                @{designer.username}
+                              </p>
 
-                            {/* Rating */}
-                            <div className="rating mb-2">
-                              <span className="text-warning">
-                                {"★".repeat(
-                                  Math.floor(
-                                    designer.designerProfile?.rating || 0,
-                                  ),
-                                )}
-                                {"☆".repeat(
-                                  5 -
+                              {/* Rating */}
+                              <div className="rating mb-2">
+                                <span className="text-warning">
+                                  {"★".repeat(
                                     Math.floor(
                                       designer.designerProfile?.rating || 0,
                                     ),
-                                )}
-                              </span>
-                              <span className="ms-2 fw-bold">
-                                {designer.designerProfile?.rating?.toFixed(1) ||
-                                  "0.0"}
-                              </span>
-                              <span className="text-muted small ms-1">
-                                ({designer.designerProfile?.totalRatings || 0})
-                              </span>
+                                  )}
+                                  {"☆".repeat(
+                                    5 -
+                                      Math.floor(
+                                        designer.designerProfile?.rating || 0,
+                                      ),
+                                  )}
+                                </span>
+                                <span className="ms-2 fw-bold">
+                                  {designer.designerProfile?.rating?.toFixed(
+                                    1,
+                                  ) || "0.0"}
+                                </span>
+                                <span className="text-muted small ms-1">
+                                  ({designer.designerProfile?.totalRatings || 0}
+                                  )
+                                </span>
+                              </div>
+
+                              {/* Badges */}
+                              {designer.designerProfile?.badges?.length > 0 && (
+                                <div className="badges mb-3">
+                                  {designer.designerProfile.badges
+                                    .slice(0, 2)
+                                    .map((badge, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="badge bg-success me-1 mb-1"
+                                      >
+                                        {badge}
+                                      </span>
+                                    ))}
+                                </div>
+                              )}
                             </div>
 
-                            {/* Badges */}
-                            {designer.designerProfile?.badges?.length > 0 && (
-                              <div className="badges mb-3">
-                                {designer.designerProfile.badges
-                                  .slice(0, 2)
-                                  .map((badge, idx) => (
+                            {/* Bio */}
+                            <p className="card-text small text-muted mb-3">
+                              {designer.bio?.substring(0, 100)}
+                              {designer.bio?.length > 100 && "..."}
+                            </p>
+
+                            {/* Stats */}
+                            <div className="designer-stats mb-3">
+                              <div className="stat-item">
+                                <i className="fas fa-briefcase text-primary me-2"></i>
+                                <span className="fw-bold">
+                                  {designer.completedOrders || 0}
+                                </span>
+                                <span className="text-muted small">
+                                  {" "}
+                                  orders
+                                </span>
+                              </div>
+                              <div className="stat-item">
+                                <i className="fas fa-clock text-primary me-2"></i>
+                                <span className="fw-bold">
+                                  {designer.turnaroundDays || 7}
+                                </span>
+                                <span className="text-muted small"> days</span>
+                              </div>
+                              <div className="stat-item">
+                                <i className="fas fa-medal text-primary me-2"></i>
+                                <span className="fw-bold">
+                                  {designer.experience || 0}
+                                </span>
+                                <span className="text-muted small">
+                                  {" "}
+                                  yrs exp
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Price Range */}
+                            <div className="price-range mb-3">
+                              <div className="d-flex justify-content-between align-items-center">
+                                <span className="text-muted small">
+                                  Price Range:
+                                </span>
+                                <span className="fw-bold text-success">
+                                  ₹{designer.priceRange?.min || 500} - ₹
+                                  {designer.priceRange?.max || 5000}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Specializations */}
+                            {designer.specializations?.length > 0 && (
+                              <div className="specializations mb-3">
+                                {designer.specializations
+                                  .slice(0, 3)
+                                  .map((spec, idx) => (
                                     <span
                                       key={idx}
-                                      className="badge bg-success me-1 mb-1"
+                                      className="badge bg-light text-dark me-1 mb-1"
                                     >
-                                      {badge}
+                                      {spec}
                                     </span>
                                   ))}
                               </div>
                             )}
+
+                            {/* Availability */}
+                            <div className="availability mb-3">
+                              {designer.availabilityStatus === "available" && (
+                                <span className="badge bg-success">
+                                  <i className="fas fa-check-circle me-1"></i>
+                                  Available Now
+                                </span>
+                              )}
+                              {designer.availabilityStatus === "busy" && (
+                                <span className="badge bg-warning text-dark">
+                                  <i className="fas fa-clock me-1"></i>
+                                  Busy
+                                </span>
+                              )}
+                              {designer.availabilityStatus ===
+                                "not_accepting" && (
+                                <span className="badge bg-danger">
+                                  <i className="fas fa-store-slash me-1"></i>
+                                  Shop Closed
+                                </span>
+                              )}
+                            </div>
+
+                            {/* View Profile Button */}
+                            <Link
+                              to={`/marketplace/designer/${designer._id}`}
+                              className={`btn w-100 ${designer.availabilityStatus === "available" ? "btn-primary" : "btn-outline-secondary"}`}
+                              onClick={() => {
+                                console.log("=== DESIGNER CARD CLICKED ===");
+                                console.log("Designer:", designer.name);
+                                console.log("Designer ID:", designer._id);
+                                console.log("Type:", typeof designer._id);
+                                console.log("=============================");
+                              }}
+                            >
+                              View Profile
+                              <i className="fas fa-arrow-right ms-2"></i>
+                            </Link>
                           </div>
-
-                          {/* Bio */}
-                          <p className="card-text small text-muted mb-3">
-                            {designer.bio?.substring(0, 100)}
-                            {designer.bio?.length > 100 && "..."}
-                          </p>
-
-                          {/* Stats */}
-                          <div className="designer-stats mb-3">
-                            <div className="stat-item">
-                              <i className="fas fa-briefcase text-primary me-2"></i>
-                              <span className="fw-bold">
-                                {designer.completedOrders || 0}
-                              </span>
-                              <span className="text-muted small"> orders</span>
-                            </div>
-                            <div className="stat-item">
-                              <i className="fas fa-clock text-primary me-2"></i>
-                              <span className="fw-bold">
-                                {designer.turnaroundDays || 7}
-                              </span>
-                              <span className="text-muted small"> days</span>
-                            </div>
-                            <div className="stat-item">
-                              <i className="fas fa-medal text-primary me-2"></i>
-                              <span className="fw-bold">
-                                {designer.experience || 0}
-                              </span>
-                              <span className="text-muted small"> yrs exp</span>
-                            </div>
-                          </div>
-
-                          {/* Price Range */}
-                          <div className="price-range mb-3">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <span className="text-muted small">
-                                Price Range:
-                              </span>
-                              <span className="fw-bold text-success">
-                                ₹{designer.priceRange?.min || 500} - ₹
-                                {designer.priceRange?.max || 5000}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Specializations */}
-                          {designer.specializations?.length > 0 && (
-                            <div className="specializations mb-3">
-                              {designer.specializations
-                                .slice(0, 3)
-                                .map((spec, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="badge bg-light text-dark me-1 mb-1"
-                                  >
-                                    {spec}
-                                  </span>
-                                ))}
-                            </div>
-                          )}
-
-                          {/* Availability */}
-                          <div className="availability mb-3">
-                            {designer.availabilityStatus === "available" && (
-                              <span className="badge bg-success">
-                                <i className="fas fa-check-circle me-1"></i>
-                                Available Now
-                              </span>
-                            )}
-                            {designer.availabilityStatus === "busy" && (
-                              <span className="badge bg-warning text-dark">
-                                <i className="fas fa-clock me-1"></i>
-                                Busy
-                              </span>
-                            )}
-                            {designer.availabilityStatus ===
-                              "not_accepting" && (
-                              <span className="badge bg-danger">
-                                <i className="fas fa-store-slash me-1"></i>
-                                Shop Closed
-                              </span>
-                            )}
-                          </div>
-
-                          {/* View Profile Button */}
-                          <Link
-                            to={`/marketplace/designer/${designer._id}`}
-                            className={`btn w-100 ${designer.availabilityStatus === "available" ? "btn-primary" : "btn-outline-secondary"}`}
-                            onClick={() => {
-                              console.log("=== DESIGNER CARD CLICKED ===");
-                              console.log("Designer:", designer.name);
-                              console.log("Designer ID:", designer._id);
-                              console.log("Type:", typeof designer._id);
-                              console.log("=============================");
-                            }}
-                          >
-                            View Profile
-                            <i className="fas fa-arrow-right ms-2"></i>
-                          </Link>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Pagination */}
