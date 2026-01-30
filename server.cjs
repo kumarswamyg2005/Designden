@@ -3246,6 +3246,7 @@ app.get("/api/marketplace/designers", async (req, res) => {
       totalRatings: d.designerProfile?.totalRatings || 0,
       completedOrders: d.designerProfile?.completedOrders || 0,
       isAvailable: d.designerProfile?.isAvailable !== false,
+      availabilityStatus: d.designerProfile?.availabilityStatus || "available",
       priceRange: d.designerProfile?.priceRange || { min: 500, max: 5000 },
       turnaroundDays: d.designerProfile?.turnaroundDays || 7,
       badges: d.designerProfile?.badges || [],
@@ -3323,6 +3324,8 @@ app.get("/api/marketplace/designers/:id", async (req, res) => {
       totalRatings: designer.designerProfile?.totalRatings || 0,
       completedOrders: designer.designerProfile?.completedOrders || 0,
       isAvailable: designer.designerProfile?.isAvailable !== false,
+      availabilityStatus:
+        designer.designerProfile?.availabilityStatus || "available",
       priceRange: designer.designerProfile?.priceRange || {
         min: 500,
         max: 5000,
