@@ -1,343 +1,627 @@
-# 🎨 DesignDen React - Complete Migration Guide
+# 👕 DesignDen - Custom Clothing E-Commerce Platform
 
-> **STATUS**: Core infrastructure is 100% complete. The app builds and runs successfully. 19 pages need full implementation (currently stubs).
+> A full-stack MERN custom clothing e-commerce platform connecting customers with freelance fashion designers. Features 3D design studio, real-time order tracking, designer-customer chat, and production milestone management.
+
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://design-den1.vercel.app)
+[![Backend](https://img.shields.io/badge/backend-render.com-blue)](https://backend-gw9o.onrender.com)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+## 🌟 Key Features
+
+### For Customers
+
+- 🎨 **3D Design Studio** - Create custom clothing with real-time 3D preview using Three.js
+- 🛍️ **Shop Ready-Made** - Browse pre-designed items with advanced filtering
+- 💬 **Live Chat** - Real-time communication with assigned designers
+- 📦 **Order Tracking** - Track production progress with 8 detailed milestones
+- 🔒 **Secure Checkout** - Multiple payment options with OTP delivery verification
+
+### For Designers
+
+- 🎯 **Smart Dashboard** - Accept orders, manage production, track earnings (80% commission)
+- 📊 **Progress Management** - 8-stage milestone system (10% → 100%)
+- 💬 **Customer Communication** - Built-in chat with quick action buttons
+- 🏪 **Shop Control** - Toggle availability status (Open/Closed)
+- 📈 **Portfolio Management** - Showcase work with ratings and specializations
+
+### For Managers
+
+- 📋 **Order Assignment** - Assign custom orders to available designers
+- 🚚 **Delivery Coordination** - Manage delivery partner assignments
+- 📊 **Stock Management** - Control product inventory
+- 💰 **Payout Processing** - Handle designer commission payments
+
+### For Delivery Personnel
+
+- 📍 **Live Tracking** - GPS-based location updates
+- 🔐 **OTP Verification** - 4-digit code for secure delivery confirmation
+- 📸 **Proof of Delivery** - Capture signature and photos
+- 📊 **Statistics Dashboard** - Track delivery performance
+
+### For Admins
+
+- 📊 **System Analytics** - Comprehensive dashboard with revenue tracking
+- ✅ **Approval System** - Approve/reject designer and manager signups
+- 📝 **Feedback Management** - View and analyze customer feedback
+- 🔍 **Order Oversight** - Monitor all orders across the platform
+
+## 🚀 Tech Stack
+
+### Frontend
+
+- **Framework**: React 19.2.0 with Vite 7.2.4
+- **State Management**: Redux Toolkit + Context API (hybrid approach)
+- **Routing**: React Router v7.9.6
+- **UI Framework**: Bootstrap 5.3.8 + React Bootstrap 2.10.10
+- **3D Graphics**: Three.js 0.181.2 + @react-three/fiber + @react-three/drei
+- **HTTP Client**: Axios 1.13.2
+
+### Backend
+
+- **Runtime**: Node.js with Express 4.18.2
+- **Database**: MongoDB with Mongoose 8.0.0
+- **Authentication**: Session-based with express-session + bcrypt
+- **Email Service**: Nodemailer 7.0.12 (2FA)
+- **Security**: CORS 2.8.5, bcryptjs 3.0.3
+
+### Deployment
+
+- **Frontend**: Vercel (with SPA routing)
+- **Backend**: Render.com
+- **Database**: MongoDB Atlas
+
+## 📋 System Architecture
+
+### 5 User Roles
+
+1. **Customer** - Browse, design, order, track
+2. **Designer** - Accept orders, manage production, earn 80% commission
+3. **Manager** - Assign orders, coordinate delivery
+4. **Delivery** - Handle deliveries with OTP verification
+5. **Admin** - System oversight and analytics
+
+### Order Workflow
+
+#### Shop Orders
+
+```
+Customer → Manager (auto-assigned) → Delivery → Delivered (OTP)
+```
+
+#### Custom Orders
+
+```
+Customer → Manager → Designer (8 milestones) → Manager → Delivery → Delivered (OTP)
+```
+
+### 8 Production Milestones
+
+1. Design Review (10%)
+2. Material Selection (25%)
+3. Pattern Making (40%)
+4. Fabric Cutting (55%)
+5. Stitching (70%)
+6. Quality Check (85%)
+7. Final Touches (95%)
+8. Ready for Delivery (100%)
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js 18+ and npm
+- MongoDB (local or Atlas)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+
 ```bash
-cd design-den-react
+git clone https://github.com/kumarswamyg2005/design-den1.git
+cd design-den1
+```
+
+2. **Install dependencies**
+
+```bash
 npm install
+```
+
+3. **Configure environment variables**
+
+```bash
+# Create .env file
+VITE_API_URL=https://backend-gw9o.onrender.com
+# For local development: VITE_API_URL=http://localhost:5174
+```
+
+4. **Start development server**
+
+```bash
 npm run dev
 ```
 
 Visit `http://localhost:5173`
 
-## ✅ What's Already Done
+### Backend Setup (Optional for local development)
 
-### Infrastructure (100% Complete)
+If running backend locally:
 
-- ✅ React 18 + Vite setup
-- ✅ React Router v6 with all 25+ routes
-- ✅ Context API (Auth, Cart, Theme, Flash)
-- ✅ API service layer (axios + all endpoints)
-- ✅ Form validation utilities
-- ✅ Shared components (Header, Footer, Layout, ProtectedRoute, FlashMessages)
-- ✅ CSS migration (1415 lines + dark theme)
-- ✅ Asset migration (images, 3D models)
-- ✅ Role-based access control
-- ✅ Working pages: Home, Login, Signup, 404
-
-### Build Status
-
-```
-✓ 130 modules transformed
-✓ Built successfully in 783ms
-✓ No errors
+```bash
+# Backend runs on port 5174
+node server.cjs
 ```
 
-## ⚠️ What Needs Implementation
+**MongoDB Connection**: Set `MONGODB_URI` in backend or use default localhost:27017/designden
 
-19 pages currently have placeholder stubs. Each needs to be converted from EJS:
+## 🎯 Core Features Breakdown
 
-### Shop (2 pages)
+### 3D Design Studio
 
-- `src/pages/shop/ShopIndex.jsx` ← `views/shop/index.ejs`
-- `src/pages/shop/ProductDetails.jsx` ← `views/shop/product-details.ejs`
+- **Real-time 3D Preview**: Rotate and zoom clothing models
+- **Customization Options**: Colors, fabrics, patterns, sizes
+- **Graphic Overlay**: 11 dragon graphics + custom uploads
+- **Dynamic Pricing**: Base price + fabric + pattern + graphic
+- **Model Types**: T-shirts, Hoodies, Jeans, Dresses (Men/Women)
+- **Technology**: Three.js with OrbitControls
 
-### Customer (5 pages)
+### Chat System
 
-- `src/pages/customer/Dashboard.jsx` ← `views/customer/dashboard.ejs`
-- `src/pages/customer/Cart.jsx` ← `views/customer/cart.ejs`
-- `src/pages/customer/Checkout.jsx` ← `views/customer/checkout.ejs`
-- `src/pages/customer/DesignStudio.jsx` ← `views/customer/design-studio.ejs`
-- `src/pages/customer/OrderDetails.jsx` ← `views/customer/order-details.ejs`
+- **Order-based Messaging**: Customer-Designer communication per order
+- **Quick Actions**: Pre-defined response buttons
+- **Message History**: Persistent chat with timestamps
+- **Progress Notifications**: Automatic updates on milestone completion
+- **Attachment Support**: Images and files (schema ready)
 
-### Designer (3 pages)
+### Order Management (16 Status States)
 
-- `src/pages/designer/Dashboard.jsx` ← `views/designer/dashboard.ejs`
-- `src/pages/designer/Products.jsx` ← `views/designer/products.ejs`
-- `src/pages/designer/OrderDetails.jsx` ← `views/designer/order-details.ejs`
+- `pending` → `assigned_to_manager` → `confirmed` → `processing`
+- `assigned_to_designer` → `designer_accepted` → `in_production`
+- `production_completed` → `ready_for_pickup` → `picked_up`
+- `in_transit` → `out_for_delivery` → `delivered`
+- Also: `cancelled`, `returned`, `return_requested`
 
-### Manager (3 pages)
+### Security Features
 
-- `src/pages/manager/Dashboard.jsx` ← `views/manager/dashboard.ejs`
-- `src/pages/manager/Pending.jsx` ← `views/manager/pending.ejs`
-- `src/pages/manager/OrderDetails.jsx` ← `views/manager/order-details.ejs`
-
-### Admin (6 pages)
-
-- `src/pages/admin/Dashboard.jsx` ← `views/admin/dashboard.ejs`
-- `src/pages/admin/Orders.jsx` ← `views/admin/orders.ejs`
-- `src/pages/admin/Products.jsx` ← `views/admin/products.ejs`
-- `src/pages/admin/PendingManagers.jsx` ← `views/admin/pending-managers.ejs`
-- `src/pages/admin/Feedbacks.jsx` ← `views/admin/feedbacks.ejs`
-- `src/pages/admin/OrderDetails.jsx` ← `views/admin/order-details.ejs`
-
-## 📝 How to Convert a Page (Step-by-Step)
-
-### 1. Find the Original EJS File
-
-Example: `views/customer/dashboard.ejs`
-
-### 2. Identify EJS Patterns
-
-| EJS                             | React                                 |
-| ------------------------------- | ------------------------------------- |
-| `<%= variable %>`               | `{variable}`                          |
-| `<% if (condition) { %>`        | `{condition && (...)}`                |
-| `<% array.forEach(item => { %>` | `{array.map(item => (...))}`          |
-| `<%- include('partial') %>`     | `import Component from './Component'` |
-
-### 3. Use Existing API Services
-
-All APIs are ready in `src/services/api.js`:
-
-```jsx
-import { customerAPI } from "../../services/api";
-
-const fetchOrders = async () => {
-  const response = await customerAPI.getOrders();
-  setOrders(response.data.orders);
-};
-```
-
-Available APIs:
-
-- `authAPI` - login, signup, logout
-- `customerAPI` - cart, orders, designs
-- `designerAPI` - products, earnings
-- `managerAPI` - production management
-- `adminAPI` - system management
-- `shopAPI` - product browsing
-- `feedbackAPI` - customer feedback
-
-### 4. Use Context Hooks
-
-```jsx
-import { useAuth } from "../../context/AuthContext";
-import { useCart } from "../../context/CartContext";
-import { useFlash } from "../../context/FlashContext";
-import { useTheme } from "../../context/ThemeContext";
-
-const MyPage = () => {
-  const { user, isCustomer } = useAuth();
-  const { cart, addToCart } = useCart();
-  const { success, error } = useFlash();
-  const { isDark } = useTheme();
-  // ...
-};
-```
-
-### 5. Example Conversion
-
-**EJS** (`views/customer/dashboard.ejs`):
-
-```html
-<h2>Welcome, <%= user.username %></h2>
-<% if (orders.length === 0) { %>
-<p>No orders</p>
-<% } else { %> <% orders.forEach(order => { %>
-<div>Order #<%= order._id %></div>
-<% }); %> <% } %>
-```
-
-**React** (`src/pages/customer/Dashboard.jsx`):
-
-```jsx
-import { useState, useEffect } from "react";
-import { customerAPI } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
-
-const Dashboard = () => {
-  const { user } = useAuth();
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    customerAPI.getOrders().then((res) => setOrders(res.data.orders));
-  }, []);
-
-  return (
-    <>
-      <h2>Welcome, {user?.username}</h2>
-      {orders.length === 0 ? (
-        <p>No orders</p>
-      ) : (
-        orders.map((order) => <div key={order._id}>Order #{order._id}</div>)
-      )}
-    </>
-  );
-};
-
-export default Dashboard;
-```
-
-## 🎯 Recommended Implementation Order
-
-1. **Shop pages** (ShopIndex, ProductDetails) - Core browsing
-2. **Customer Cart** - Shopping functionality
-3. **Customer Checkout** - Purchase flow
-4. **Customer Dashboard** - Order tracking
-5. **Design Studio** - 3D customization
-6. **Designer/Manager/Admin** - Role-specific features
-
-## 🛠️ Common Patterns
-
-### Form Handling
-
-```jsx
-const [formData, setFormData] = useState({ email: "", password: "" });
-const [errors, setErrors] = useState({});
-
-const handleChange = (e) => {
-  setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-};
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  // Validate & submit
-};
-```
-
-### Data Fetching
-
-```jsx
-const [data, setData] = useState([]);
-const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-  async function fetch() {
-    try {
-      const res = await someAPI.getData();
-      setData(res.data);
-    } finally {
-      setLoading(false);
-    }
-  }
-  fetch();
-}, []);
-
-if (loading) return <div>Loading...</div>;
-```
-
-### Flash Messages
-
-```jsx
-const { success, error } = useFlash();
-
-try {
-  await someAPI.action();
-  success("Success!");
-} catch (err) {
-  error(err.message);
-}
-```
+- **Session-based Authentication**: express-session with bcrypt hashing
+- **2FA Email Verification**: 6-digit codes with 5-minute expiry
+- **Role-based Access Control**: Protected routes per user role
+- **Password Hashing**: bcrypt with salt rounds
+- **CORS Protection**: Configured for production domains
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/      ✅ Header, Footer, Layout, etc.
-├── context/         ✅ Auth, Cart, Theme, Flash
-├── pages/
-│   ├── Home.jsx           ✅ Complete
-│   ├── Login.jsx          ✅ Complete
-│   ├── Signup.jsx         ✅ Complete
-│   ├── NotFound.jsx       ✅ Complete
-│   ├── shop/              ⚠️ 2 stubs
-│   ├── customer/          ⚠️ 5 stubs
-│   ├── designer/          ⚠️ 3 stubs
-│   ├── manager/           ⚠️ 3 stubs
-│   └── admin/             ⚠️ 6 stubs
-├── services/        ✅ api.js (all endpoints)
-├── styles/          ✅ styles.css, globals.css
-├── utils/           ✅ validation, currency, logger
-└── assets/          ✅ images, models
+design-den-react/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── Header.jsx       # Navigation with cart badge
+│   │   ├── Footer.jsx
+│   │   ├── Layout.jsx       # Page wrapper
+│   │   ├── ProtectedRoute.jsx  # Role-based routing
+│   │   ├── LoadingSpinner.jsx
+│   │   ├── Toast.jsx        # Redux notifications
+│   │   └── ...
+│   ├── context/             # React Context providers
+│   │   ├── AuthContext.jsx  # Authentication state
+│   │   ├── CartContext.jsx  # Shopping cart
+│   │   ├── ThemeContext.jsx # Dark/Light mode
+│   │   └── FlashContext.jsx # Flash messages
+│   ├── pages/               # Route components by role
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Signup.jsx
+│   │   ├── customer/        # Customer pages
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Cart.jsx
+│   │   │   ├── Checkout.jsx
+│   │   │   ├── DesignStudio.jsx  # 3D customization
+│   │   │   └── TrackOrder.jsx
+│   │   ├── designer/        # Designer pages
+│   │   │   ├── Dashboard.jsx     # 1345 lines, complex
+│   │   │   ├── Products.jsx
+│   │   │   └── Earnings.jsx
+│   │   ├── manager/         # Manager pages
+│   │   ├── delivery/        # Delivery pages
+│   │   └── admin/           # Admin pages
+│   ├── store/               # Redux Toolkit
+│   │   ├── index.js         # Store configuration
+│   │   └── slices/
+│   │       ├── authSlice.js
+│   │       ├── ordersSlice.js    # 1265 lines, 30+ thunks
+│   │       ├── cartSlice.js
+│   │       ├── productsSlice.js
+│   │       └── notificationsSlice.js
+│   ├── services/
+│   │   └── api.js           # 500+ lines, API endpoints
+│   ├── utils/
+│   │   ├── currency.js      # formatPrice helper
+│   │   ├── validation.js    # Form validators
+│   │   └── clothingModels.js # 3D model paths
+│   ├── styles/              # CSS files
+│   │   ├── styles.css       # 1415 lines, global styles
+│   │   ├── globals.css
+│   │   └── cartAnimation.css
+│   └── assets/              # Static files
+│       ├── images/
+│       │   └── graphics/    # 11 dragon graphics
+│       └── models/          # 3D GLB files
+├── public/                  # Public static files
+│   ├── images/
+│   └── models/
+├── server.cjs               # 8201 lines, Express backend
+├── package.json
+├── vite.config.js
+├── vercel.json             # Vercel deployment config
+└── PROJECT_OVERVIEW.md     # Detailed documentation
 ```
 
-## 🔧 Environment Setup
+## 🔌 API Documentation
 
-Create `.env`:
+### Authentication API
 
-```env
-VITE_API_URL=http://localhost:3000
+```javascript
+authAPI.login({ email, password, twoFactorCode });
+authAPI.signup({ username, email, password, role });
+authAPI.logout();
+authAPI.checkSession();
+authAPI.setup2FA();
+authAPI.verify2FA(token);
 ```
 
-## 📦 Available Packages
+### Customer API
 
-- React 18 + Vite
-- React Router v6
-- Axios
-- Bootstrap 5 (via CDN)
-- Font Awesome (via CDN)
-- Three.js + @react-three/fiber (for 3D)
+```javascript
+customerAPI.getOrders();
+customerAPI.getCart();
+customerAPI.addToCart({ productId, quantity, size, color });
+customerAPI.processCheckout({ items, shippingAddress });
+customerAPI.createDesign({ category, fabric, color, graphic });
+customerAPI.getWishlist();
+```
 
-## 🧪 Testing the App
+### Designer API
+
+```javascript
+designerAPI.getOrders();
+designerAPI.acceptOrder(orderId);
+designerAPI.startProduction(orderId);
+designerAPI.updateProgress(orderId, { progressPercentage, note });
+designerAPI.completeOrder(orderId);
+designerAPI.getPortfolio();
+```
+
+### Manager API
+
+```javascript
+managerAPI.getOrders();
+managerAPI.assignToDesigner(orderId, designerId);
+managerAPI.assignToDelivery(orderId, deliveryPersonId);
+managerAPI.getDesigners();
+managerAPI.updateStock(productId, data);
+```
+
+### Admin API
+
+```javascript
+adminAPI.getDashboard();
+adminAPI.getOrders();
+adminAPI.approveManager(userId);
+adminAPI.getDesigners();
+adminAPI.getFeedbacks();
+```
+
+## 🗄️ Database Schemas
+
+### User Schema
+
+```javascript
+{
+  username: String,
+  email: String,
+  password: String (bcrypt hashed),
+  role: Enum["customer", "designer", "manager", "admin", "delivery"],
+  approved: Boolean,
+  twoFactorEnabled: Boolean,
+  addresses: [{ street, city, state, pincode, isDefault }],
+  designerProfile: {
+    bio: String,
+    specializations: [String],
+    experience: Number,
+    portfolio: [{ title, description, image }],
+    rating: Number,
+    completedOrders: Number,
+    isAvailable: Boolean,
+    availabilityStatus: Enum["available", "busy", "not_accepting"],
+    priceRange: { min, max },
+    turnaroundDays: Number
+  }
+}
+```
+
+### Order Schema
+
+```javascript
+{
+  orderNumber: String, // "DD-20260130-0001"
+  userId: ObjectId,
+  items: [{ productId, designId, quantity, size, color, price }],
+  totalAmount: Number,
+  orderType: Enum["shop", "custom"],
+  status: Enum[16 states],
+  progressPercentage: Number, // 0-100 for custom orders
+  currentMilestone: String,
+  managerId: ObjectId,
+  designerId: ObjectId,
+  deliveryPersonId: ObjectId,
+  deliveryOTP: { code, generatedAt, verified },
+  shippingAddress: { name, email, phone, street, city, state, zipCode },
+  paymentStatus: Enum["pending", "completed", "failed"],
+  timeline: [{ status, note, by, at }]
+}
+```
+
+### Design Schema
+
+```javascript
+{
+  userId: ObjectId,
+  designerId: ObjectId,
+  name: String,
+  category: String,
+  fabric: String,
+  color: String,
+  pattern: String,
+  size: String,
+  graphic: String,
+  customText: String,
+  estimatedPrice: Number,
+  basePrice: Number
+}
+```
+
+## 🎨 Key Components
+
+### Designer Dashboard (1345 lines)
+
+**Features:**
+
+- Shop status toggle (Open/Closed)
+- 4 statistics cards (Pending, Accepted, In Production, Completed)
+- Order cards with customer info and progress bars
+- Chat panel slide-in with quick actions
+- Progress modal with 8 milestone grid + manual slider
+- Complete production modal with notes
+- Status change confirmation modal
+
+**State Management:**
+
+- 15+ local state variables
+- Redux selectors for orders, loading, messages
+- useCallback for performance optimization
+
+### Order Tracking System
+
+**Features:**
+
+- Real-time status updates
+- Timeline visualization
+- Production milestone progress
+- Delivery OTP verification
+- Live chat integration
+
+## � Business Logic
+
+### Designer Commission System
+
+- **Designer Earnings**: 80% of order total
+- **Platform Fee**: 20% of order total
+- **Tiered Rates**: Earnings increase with total completed orders
+- **Payout Minimum**: ₹500
+- **Hold Period**: 7 days before earnings available for withdrawal
+
+### Price Calculation
+
+```javascript
+basePrice = 500 (INR)
++ fabric cost (Cotton: 100, Silk: 200, Polyester: 50)
++ pattern cost (Solid: 0, Striped: 50, Printed: 100)
++ graphic cost (200 if graphic selected)
+= total estimated price
+```
+
+### OTP Delivery System
+
+- **Code Generation**: 4-digit random number
+- **Validity**: Single-use only
+- **Purpose**: Secure delivery confirmation
+- **Verification**: Customer provides OTP to delivery person
+
+## 🧪 Testing
+
+### Test Credentials
+
+| Role     | Email                  | Password    |
+| -------- | ---------------------- | ----------- |
+| Admin    | admin@designden.com    | admin123    |
+| Manager  | manager@designden.com  | manager123  |
+| Designer | designer@designden.com | designer123 |
+| Delivery | delivery@designden.com | delivery123 |
+| Customer | (signup to create)     | -           |
+
+### Running Tests
 
 ```bash
-# Development
+# Development server
 npm run dev
 
-# Build
+# Production build
 npm run build
 
-# Preview production
+# Preview production build
 npm run preview
+
+# Lint code
+npm run lint
 ```
 
-## 🚢 Deployment
+## 🚀 Deployment
 
-1. Update `.env` with production API URL
-2. Build: `npm run build`
-3. Deploy `dist/` folder to Vercel/Netlify
-4. Ensure backend supports CORS
+### Frontend (Vercel)
 
-## 📞 Common Issues
+1. Connect GitHub repository to Vercel
+2. Configure build settings:
+   - Framework: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+3. Add environment variable: `VITE_API_URL`
+4. Deploy
 
-**Images not loading?**
+### Backend (Render.com)
 
-```jsx
+1. Create new Web Service
+2. Connect repository
+3. Configure:
+   - Build Command: (none needed)
+   - Start Command: `node server.cjs`
+4. Add environment variables:
+   - `MONGODB_URI`
+   - `EMAIL_USER`
+   - `EMAIL_PASS`
+5. Deploy
+
+### Environment Variables
+
+**Frontend (.env)**
+
+```env
+VITE_API_URL=https://backend-gw9o.onrender.com
+```
+
+**Backend**
+
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/designden
+PORT=5174
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+```
+
+## 📊 Project Statistics
+
+- **Total Lines of Code**: ~15,000+
+- **Components**: 30+
+- **Pages**: 40+
+- **API Endpoints**: 100+
+- **Database Collections**: 15+
+- **User Roles**: 5
+- **Order Status States**: 16
+- **Production Milestones**: 8
+
+## 🛠️ Development Guidelines
+
+### Code Style
+
+- Use ES6+ features
+- Functional components with hooks
+- Destructuring for props
+- Meaningful variable names
+- Comments for complex logic
+
+### State Management Strategy
+
+- **Redux**: Server data, complex state
+- **Context**: UI state, auth, theme
+- **Local State**: Component-specific data
+
+### API Error Handling
+
+```javascript
+try {
+  const response = await api.someEndpoint();
+  // Handle success
+} catch (error) {
+  if (error.response) {
+    // Server responded with error
+    console.error(error.response.data.message);
+  } else if (error.request) {
+    // No response from server
+    console.error("Network error");
+  } else {
+    // Other errors
+    console.error(error.message);
+  }
+}
+```
+
+## 🐛 Common Issues & Solutions
+
+**Issue**: Images not loading
+**Solution**: Use imports for images in src/assets
+
+```javascript
 import image from "../assets/images/image.jpg";
 <img src={image} alt="..." />;
 ```
 
-**API calls failing?**
+**Issue**: API calls failing
+**Solution**:
 
 - Check backend is running
-- Verify `.env` has correct URL
-- Check CORS settings
+- Verify VITE_API_URL in .env
+- Check CORS configuration in server.cjs
 
-**Routes not working?**
+**Issue**: Routes not working after deployment
+**Solution**: Ensure vercel.json has correct rewrites configuration
 
-- All routes are configured in `App.jsx`
-- Use `<Link to="/path">` not `<a href>`
-- Protected routes check authentication
+**Issue**: 3D models not rendering
+**Solution**:
 
-## ✨ Features Already Working
+- Models must be in public/models/
+- Check file paths in clothingModels.js
+- Verify Three.js dependencies installed
 
-- ✅ Login/Signup with validation
-- ✅ Session-based auth
-- ✅ Role-based routing
-- ✅ Dark/Light theme
-- ✅ Flash messages
-- ✅ Cart context
-- ✅ Currency formatting (₹)
-- ✅ Responsive Bootstrap UI
+## 📚 Documentation
 
-## 📊 Progress Tracking
+- **PROJECT_OVERVIEW.md** - Comprehensive technical documentation
+- **DEPLOYMENT_CHECKLIST.md** - Deployment guide
+- **MARKETPLACE_README.md** - Designer marketplace documentation
+- **VERCEL_DEPLOYMENT.md** - Vercel-specific deployment guide
+- **docs/** - Individual contributor documentation
 
-- Infrastructure: 100% ✅
-- Authentication: 100% ✅
-- Public pages: 75% ✅
-- Shop pages: 0% ⚠️
-- Customer pages: 0% ⚠️
-- Designer pages: 0% ⚠️
-- Manager pages: 0% ⚠️
-- Admin pages: 0% ⚠️
+## 🤝 Contributing
 
-**Overall: ~25% Complete**
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 👥 Team
+
+- **Kumaraswamy** - Full Stack Development
+- **Contributors** - See docs/ folder for individual contributions
+
+## 🔗 Links
+
+- **Live Demo**: https://design-den1.vercel.app
+- **Backend API**: https://backend-gw9o.onrender.com
+- **GitHub**: https://github.com/kumarswamyg2005/design-den1
+
+## 📞 Support
+
+For issues and questions:
+
+- Open an issue on GitHub
+- Email: kumaritsme1510@gmail.com
 
 ---
 
-**Next Step**: Pick a page from the list above, locate its EJS file, and start converting! Follow the patterns in Login.jsx and Signup.jsx as examples.
+**Built with ❤️ using MERN Stack**
 
-The foundation is rock-solid. Now it's just systematic page-by-page conversion! 🚀
+_Last Updated: January 30, 2026_
