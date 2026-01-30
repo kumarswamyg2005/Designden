@@ -154,11 +154,32 @@ const DesignerProfile = () => {
 
           <Link
             to={`/customer/design-studio?designerId=${designerId}`}
-            className="btn btn-light btn-lg px-5"
+            className={`btn btn-light btn-lg px-5 ${
+              profile.availabilityStatus === "not_accepting" ? "disabled" : ""
+            }`}
+            onClick={(e) => {
+              if (profile.availabilityStatus === "not_accepting") {
+                e.preventDefault();
+              }
+            }}
+            title={
+              profile.availabilityStatus === "not_accepting"
+                ? "This designer's shop is currently closed"
+                : "Start a new project with this designer"
+            }
           >
             <i className="fas fa-paper-plane me-2"></i>
             Start a Project
+            {profile.availabilityStatus === "not_accepting" && (
+              <i className="fas fa-lock ms-2"></i>
+            )}
           </Link>
+          {profile.availabilityStatus === "not_accepting" && (
+            <p className="text-muted mt-3 mb-0">
+              <i className="fas fa-info-circle me-2"></i>
+              This designer is not accepting new projects at the moment
+            </p>
+          )}
         </div>
       </div>
 
@@ -362,15 +383,33 @@ const DesignerProfile = () => {
               <div className="card-body">
                 <h5 className="card-title mb-3">Get in Touch</h5>
                 <p className="small text-muted mb-3">
-                  Ready to start your project? Create a design and we'll connect
-                  you!
+                  {profile.availabilityStatus === "not_accepting"
+                    ? "This designer is not accepting new projects at the moment."
+                    : "Ready to start your project? Create a design and we'll connect you!"}
                 </p>
                 <Link
                   to="/customer/design-studio"
-                  className="btn btn-primary w-100 mb-2"
+                  className={`btn btn-primary w-100 mb-2 ${
+                    profile.availabilityStatus === "not_accepting"
+                      ? "disabled"
+                      : ""
+                  }`}
+                  onClick={(e) => {
+                    if (profile.availabilityStatus === "not_accepting") {
+                      e.preventDefault();
+                    }
+                  }}
+                  title={
+                    profile.availabilityStatus === "not_accepting"
+                      ? "This designer's shop is currently closed"
+                      : "Start a new project"
+                  }
                 >
                   <i className="fas fa-paper-plane me-2"></i>
                   Start a Project
+                  {profile.availabilityStatus === "not_accepting" && (
+                    <i className="fas fa-lock ms-2"></i>
+                  )}
                 </Link>
                 <Link
                   to="/marketplace"

@@ -257,18 +257,14 @@ const DesignerMarketplace = () => {
                   {designers.map((designer) => (
                     <div key={designer._id} className="col-md-6 col-lg-4">
                       <div
-                        className={`designer-card card h-100 shadow-sm ${!designer.isAvailable ? "designer-unavailable" : ""}`}
+                        className={`designer-card card h-100 shadow-sm ${designer.availabilityStatus === "not_accepting" ? "designer-unavailable" : ""}`}
                       >
                         {/* Unavailable Overlay */}
-                        {!designer.isAvailable && (
+                        {designer.availabilityStatus === "not_accepting" && (
                           <div className="unavailable-overlay">
                             <div className="unavailable-badge">
-                              <i
-                                className={`fas ${designer.availabilityStatus === "busy" ? "fa-clock" : "fa-store-slash"} me-2`}
-                              ></i>
-                              {designer.availabilityStatus === "busy"
-                                ? "Busy"
-                                : "Shop Closed"}
+                              <i className="fas fa-store-slash me-2"></i>
+                              Shop Closed
                             </div>
                           </div>
                         )}
@@ -277,7 +273,13 @@ const DesignerMarketplace = () => {
                           <div className="text-center mb-3">
                             <div className="designer-avatar mb-2">
                               <i
-                                className={`fas fa-user-circle fa-4x ${designer.isAvailable ? "text-primary" : "text-muted"}`}
+                                className={`fas fa-user-circle fa-4x ${
+                                  designer.availabilityStatus === "available"
+                                    ? "text-primary"
+                                    : designer.availabilityStatus === "busy"
+                                      ? "text-warning"
+                                      : "text-muted"
+                                }`}
                               ></i>
                             </div>
                             <h5 className="card-title mb-1">{designer.name}</h5>
@@ -388,12 +390,20 @@ const DesignerMarketplace = () => {
 
                           {/* Availability */}
                           <div className="availability mb-3">
-                            {designer.isAvailable ? (
+                            {designer.availabilityStatus === "available" && (
                               <span className="badge bg-success">
                                 <i className="fas fa-check-circle me-1"></i>
                                 Available Now
                               </span>
-                            ) : (
+                            )}
+                            {designer.availabilityStatus === "busy" && (
+                              <span className="badge bg-warning text-dark">
+                                <i className="fas fa-clock me-1"></i>
+                                Busy
+                              </span>
+                            )}
+                            {designer.availabilityStatus ===
+                              "not_accepting" && (
                               <span className="badge bg-danger">
                                 <i className="fas fa-store-slash me-1"></i>
                                 Shop Closed
@@ -404,7 +414,7 @@ const DesignerMarketplace = () => {
                           {/* View Profile Button */}
                           <Link
                             to={`/marketplace/designer/${designer._id}`}
-                            className={`btn w-100 ${designer.isAvailable ? "btn-primary" : "btn-outline-secondary"}`}
+                            className={`btn w-100 ${designer.availabilityStatus === "available" ? "btn-primary" : "btn-outline-secondary"}`}
                             onClick={() => {
                               console.log("=== DESIGNER CARD CLICKED ===");
                               console.log("Designer:", designer.name);
