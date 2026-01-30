@@ -412,7 +412,9 @@ const DesignerMarketplace = () => {
 
                             {/* Availability */}
                             <div className="availability mb-3">
-                              {designer.availabilityStatus === "available" && (
+                              {(!designer.availabilityStatus ||
+                                designer.availabilityStatus ===
+                                  "available") && (
                                 <span className="badge bg-success">
                                   <i className="fas fa-check-circle me-1"></i>
                                   Available Now
