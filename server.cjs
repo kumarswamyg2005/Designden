@@ -2910,12 +2910,19 @@ app.put("/api/designer/availability", async (req, res) => {
     const { isAvailable, status } = req.body;
     // status can be: "available", "busy", "not_accepting"
 
+    console.log("=== UPDATE AVAILABILITY ===");
+    console.log("Received status:", status);
+    console.log("Received isAvailable:", isAvailable);
+
     const updateData = {
       "designerProfile.isAvailable":
         isAvailable !== false && status !== "not_accepting",
       "designerProfile.availabilityStatus":
         status || (isAvailable ? "available" : "busy"),
     };
+
+    console.log("Update data:", updateData);
+    console.log("==========================");
 
     const designer = await User.findByIdAndUpdate(
       req.session.user.id,
@@ -2928,6 +2935,13 @@ app.put("/api/designer/availability", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Designer not found" });
     }
+
+    console.log("✅ Updated designer availability:");
+    console.log(
+      "   availabilityStatus:",
+      designer.designerProfile?.availabilityStatus,
+    );
+    console.log("   isAvailable:", designer.designerProfile?.isAvailable);
 
     res.json({
       success: true,
