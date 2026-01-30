@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const morgan = require("morgan");
 
 const app = express();
 const PORT = process.env.PORT || 5174;
@@ -821,6 +822,36 @@ const createDesignerEarning = async (orderId, designerId, orderAmount) => {
 };
 
 // Middleware
+
+// Logging Middleware - logs all HTTP requests
+app.use(morgan("dev")); // Format: METHOD URL STATUS TIME
+
+// Authentication Middleware
+const requireAuth = (req, res, next) => {
+  if (!req.session.user) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Please login first" });
+  }
+  next();
+};
+
+const requireRole = (...roles) => {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Please login first" });
+    }
+    if (!roles.includes(req.session.user.role)) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized access" });
+    }
+    next();
+  };
+};
+
 const allowedOrigins = [
   /^http:\/\/localhost:\d+$/, // Local development
   "https://design-den1.vercel.app", // Vercel production
@@ -2226,11 +2257,8 @@ app.post("/api/reviews/:reviewId/helpful", async (req, res) => {
 });
 
 // Admin Routes
-app.get("/api/admin/products", async (req, res) => {
+app.get("/api/admin/products", requireRole("admin"), async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
     const products = await Product.find().sort({ createdAt: -1 });
     res.json({ success: true, products });
   } catch (error) {
@@ -2239,32 +2267,33 @@ app.get("/api/admin/products", async (req, res) => {
   }
 });
 
-app.put("/api/admin/products/:id/stock", async (req, res) => {
-  try {
-    if (!req.session.user || req.session.user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
+app.put(
+  "/api/admin/products/:id/stock",
+  requireRole("admin"),
+  async (req, res) => {
+    try {
+      const { inStock } = req.body;
+      const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        { inStock, stockQuantity: inStock ? 100 : 0 },
+        { new: true },
+      );
+      if (!product) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+      res.json({
+        success: true,
+        message: `Product marked as ${inStock ? "in stock" : "out of stock"}`,
+        product,
+      });
+    } catch (error) {
+      console.error("Error updating product stock:", error);
+      res.status(500).json({ success: false, message: "Server error" });
     }
-    const { inStock } = req.body;
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      { inStock, stockQuantity: inStock ? 100 : 0 },
-      { new: true },
-    );
-    if (!product) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
-    }
-    res.json({
-      success: true,
-      message: `Product marked as ${inStock ? "in stock" : "out of stock"}`,
-      product,
-    });
-  } catch (error) {
-    console.error("Error updating product stock:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
+  },
+);
 
 // Admin - Dashboard
 app.get("/admin/dashboard", async (req, res) => {
@@ -2732,12 +2761,8 @@ const graphicStockStatus = {
   graphic_11: true,
 };
 
-app.get("/api/designer/products", async (req, res) => {
+app.get("/api/designer/products", requireRole("designer"), async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== "designer") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
-
     // Return the 11 static graphics that designers can manage
     const staticGraphics = [
       {
@@ -2878,12 +2903,8 @@ app.put("/api/designer/products/:id/stock", async (req, res) => {
 // =====================================================
 
 // Designer - Get own profile
-app.get("/api/designer/profile", async (req, res) => {
+app.get("/api/designer/profile", requireRole("designer"), async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.role !== "designer") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
-
     const designer = await User.findById(req.session.user.id)
       .select("-password")
       .lean();
@@ -2901,61 +2922,61 @@ app.get("/api/designer/profile", async (req, res) => {
 });
 
 // Designer - Update availability status
-app.put("/api/designer/availability", async (req, res) => {
-  try {
-    if (!req.session.user || req.session.user.role !== "designer") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
+app.put(
+  "/api/designer/availability",
+  requireRole("designer"),
+  async (req, res) => {
+    try {
+      const { isAvailable, status } = req.body;
+      // status can be: "available", "busy", "not_accepting"
+
+      console.log("=== UPDATE AVAILABILITY ===");
+      console.log("Received status:", status);
+      console.log("Received isAvailable:", isAvailable);
+
+      const updateData = {
+        "designerProfile.isAvailable":
+          isAvailable !== false && status !== "not_accepting",
+        "designerProfile.availabilityStatus":
+          status || (isAvailable ? "available" : "busy"),
+      };
+
+      console.log("Update data:", updateData);
+      console.log("==========================");
+
+      const designer = await User.findByIdAndUpdate(
+        req.session.user.id,
+        { $set: updateData },
+        { new: true },
+      ).select("-password");
+
+      if (!designer) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Designer not found" });
+      }
+
+      console.log("✅ Updated designer availability:");
+      console.log(
+        "   availabilityStatus:",
+        designer.designerProfile?.availabilityStatus,
+      );
+      console.log("   isAvailable:", designer.designerProfile?.isAvailable);
+
+      res.json({
+        success: true,
+        message: "Availability updated successfully",
+        designer: {
+          isAvailable: designer.designerProfile?.isAvailable,
+          availabilityStatus: designer.designerProfile?.availabilityStatus,
+        },
+      });
+    } catch (error) {
+      console.error("Error updating availability:", error);
+      res.status(500).json({ success: false, message: "Server error" });
     }
-
-    const { isAvailable, status } = req.body;
-    // status can be: "available", "busy", "not_accepting"
-
-    console.log("=== UPDATE AVAILABILITY ===");
-    console.log("Received status:", status);
-    console.log("Received isAvailable:", isAvailable);
-
-    const updateData = {
-      "designerProfile.isAvailable":
-        isAvailable !== false && status !== "not_accepting",
-      "designerProfile.availabilityStatus":
-        status || (isAvailable ? "available" : "busy"),
-    };
-
-    console.log("Update data:", updateData);
-    console.log("==========================");
-
-    const designer = await User.findByIdAndUpdate(
-      req.session.user.id,
-      { $set: updateData },
-      { new: true },
-    ).select("-password");
-
-    if (!designer) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Designer not found" });
-    }
-
-    console.log("✅ Updated designer availability:");
-    console.log(
-      "   availabilityStatus:",
-      designer.designerProfile?.availabilityStatus,
-    );
-    console.log("   isAvailable:", designer.designerProfile?.isAvailable);
-
-    res.json({
-      success: true,
-      message: "Availability updated successfully",
-      designer: {
-        isAvailable: designer.designerProfile?.isAvailable,
-        availabilityStatus: designer.designerProfile?.availabilityStatus,
-      },
-    });
-  } catch (error) {
-    console.error("Error updating availability:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
+  },
+);
 
 // Designer - Update profile
 app.put("/api/designer/profile", async (req, res) => {
@@ -5418,20 +5439,8 @@ app.get("/api/customer/cart", async (req, res) => {
   }
 });
 
-app.post("/api/customer/cart", async (req, res) => {
+app.post("/api/customer/cart", requireRole("customer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ success: false, message: "Not logged in" });
-    }
-
-    // Only customers can add to cart
-    if (req.session.user.role !== "customer") {
-      return res.status(403).json({
-        success: false,
-        message: "Only customers can add items to cart",
-      });
-    }
-
     const { productId, designId, quantity, size, color } = req.body;
 
     if (!productId && !designId) {
