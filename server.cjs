@@ -3246,6 +3246,17 @@ app.get("/api/marketplace/designers", async (req, res) => {
       .limit(Number(limit))
       .lean();
 
+    console.log("=== MARKETPLACE DESIGNERS QUERY ===");
+    console.log("Total designers found:", designers.length);
+    designers.forEach((d, idx) => {
+      console.log(`Designer ${idx + 1}: ${d.name}`);
+      console.log(
+        `  - availabilityStatus: ${d.designerProfile?.availabilityStatus}`,
+      );
+      console.log(`  - isAvailable: ${d.designerProfile?.isAvailable}`);
+    });
+    console.log("===================================");
+
     // Transform designers for frontend
     const formattedDesigners = designers.map((d) => ({
       _id: d._id,
