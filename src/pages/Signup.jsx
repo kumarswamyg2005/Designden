@@ -37,12 +37,22 @@ const Signup = () => {
     specializations: [],
     experience: "",
     portfolioUrl: "",
+    designFee: "500", // Designer's fixed fee
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Portfolio items state
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [currentPortfolioItem, setCurrentPortfolioItem] = useState({
+    title: "",
+    description: "",
+    category: "",
+    imageUrl: "",
+  });
 
   const specializations = [
     "T-Shirts",
@@ -101,6 +111,90 @@ const Signup = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+  };
+
+  // Portfolio item handlers
+  const handlePortfolioItemChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentPortfolioItem((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle file upload
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showError("Please upload an image file (JPG, PNG, GIF, etc.)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      showError("Image size should be less than 5MB");
+      return;
+    }
+
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCurrentPortfolioItem((prev) => ({
+        ...prev,
+        imageUrl: reader.result, // base64 string
+        fileName: file.name,
+      }));
+      showSuccess(`Image "${file.name}" uploaded successfully!`);
+    };
+    reader.onerror = () => {
+      showError("Failed to read the image file");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const addPortfolioItem = () => {
+    if (!currentPortfolioItem.title.trim()) {
+      showError("Please enter a title for your portfolio item");
+      return;
+    }
+    if (!currentPortfolioItem.imageUrl.trim()) {
+      showError("Please upload an image or enter an image URL");
+      return;
+    }
+
+    // Validate URL only if it's not a base64 string
+    if (!currentPortfolioItem.imageUrl.startsWith("data:image/")) {
+      try {
+        new URL(currentPortfolioItem.imageUrl);
+      } catch {
+        showError("Please enter a valid image URL");
+        return;
+      }
+    }
+
+    setPortfolioItems((prev) => [
+      ...prev,
+      {
+        ...currentPortfolioItem,
+        createdAt: new Date(),
+      },
+    ]);
+
+    // Reset form
+    setCurrentPortfolioItem({
+      title: "",
+      description: "",
+      category: "",
+      imageUrl: "",
+    });
+
+    showSuccess("Portfolio item added successfully!");
+  };
+
+  const removePortfolioItem = (index) => {
+    setPortfolioItems((prev) => prev.filter((_, i) => i !== index));
+    showSuccess("Portfolio item removed");
   };
 
   const validate = () => {
@@ -173,6 +267,11 @@ const Signup = () => {
       if (!formData.experience) {
         newErrors.experience = "Please enter your years of experience";
       }
+      // Validate design fee
+      const fee = parseInt(formData.designFee);
+      if (!fee || fee < 100 || fee > 10000) {
+        newErrors.designFee = "Design fee must be between ₹100 and ₹10,000";
+      }
     }
 
     setErrors(newErrors);
@@ -186,8 +285,6 @@ const Signup = () => {
     setLoading(true);
     try {
       const signupData = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
         name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         username: formData.username.trim(),
         email: formData.email.trim(),
@@ -211,13 +308,20 @@ const Signup = () => {
           specializations: formData.specializations,
           experience: parseInt(formData.experience) || 0,
           portfolioUrl: formData.portfolioUrl.trim(),
-          portfolio: [],
+          portfolio: portfolioItems.map((item) => ({
+            title: item.title,
+            description: item.description,
+            image: item.imageUrl,
+            category: item.category,
+            createdAt: new Date(),
+          })),
           rating: 0,
           totalRatings: 0,
           completedOrders: 0,
           isAvailable: true,
           priceRange: { min: 500, max: 5000 },
           turnaroundDays: 7,
+          designFee: parseInt(formData.designFee) || 500, // Designer's fixed fee
           badges: ["New Designer"],
         };
         signupData.approved = false; // Designers need admin approval
@@ -368,7 +472,7 @@ const Signup = () => {
                   </li>
                   <li className="mb-2">
                     <i className="fas fa-check text-success me-2"></i>
-                    Earn <strong>80% commission</strong>
+                    Set your own <strong>design fee</strong>
                   </li>
                   <li className="mb-2">
                     <i className="fas fa-check text-success me-2"></i>
@@ -837,6 +941,255 @@ const Signup = () => {
                       </div>
                     </div>
 
+                    {/* Design Fee Section */}
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="designFee" className="form-label">
+                          Your Design Fee *{" "}
+                          <small className="text-muted">(Per Order)</small>
+                        </label>
+                        <div className="input-group">
+                          <span className="input-group-text">₹</span>
+                          <input
+                            type="number"
+                            className={`form-control ${errors.designFee ? "is-invalid" : ""}`}
+                            id="designFee"
+                            name="designFee"
+                            value={formData.designFee}
+                            onChange={handleChange}
+                            placeholder="e.g., 500"
+                            min="100"
+                            max="10000"
+                          />
+                          {errors.designFee && (
+                            <div className="invalid-feedback">
+                              {errors.designFee}
+                            </div>
+                          )}
+                        </div>
+                        <small className="text-muted">
+                          This is the fee customers pay you for each design
+                          (₹100 - ₹10,000)
+                        </small>
+                      </div>
+                    </div>
+
+                    {/* Portfolio Upload Section */}
+                    <div className="mb-4 mt-4">
+                      <h6 className="mb-3">
+                        <i className="fas fa-images text-primary me-2"></i>
+                        Add Previous Work{" "}
+                        <small className="text-muted">
+                          (Optional but Recommended)
+                        </small>
+                      </h6>
+                      <p className="text-muted small">
+                        Showcase your best designs to attract more customers.
+                        You can add multiple portfolio items.
+                      </p>
+
+                      <div className="card border-primary mb-3">
+                        <div className="card-body">
+                          <div className="row">
+                            <div className="col-md-6 mb-3">
+                              <label className="form-label">Work Title *</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="title"
+                                value={currentPortfolioItem.title}
+                                onChange={handlePortfolioItemChange}
+                                placeholder="e.g., Custom Bridal Lehenga"
+                              />
+                            </div>
+                            <div className="col-md-6 mb-3">
+                              <label className="form-label">Category</label>
+                              <select
+                                className="form-select"
+                                name="category"
+                                value={currentPortfolioItem.category}
+                                onChange={handlePortfolioItemChange}
+                              >
+                                <option value="">Select category</option>
+                                {specializations.map((spec) => (
+                                  <option key={spec} value={spec}>
+                                    {spec}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label">Upload Image *</label>
+                            <div className="input-group mb-2">
+                              <input
+                                type="file"
+                                className="form-control"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                                id="portfolioFileUpload"
+                              />
+                              <label
+                                className="input-group-text bg-primary text-white"
+                                htmlFor="portfolioFileUpload"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i className="fas fa-upload me-2"></i>
+                                Browse
+                              </label>
+                            </div>
+                            <small className="text-muted d-block mb-2">
+                              <i className="fas fa-info-circle me-1"></i>
+                              Upload image file (JPG, PNG, GIF - Max 5MB)
+                            </small>
+
+                            <div className="text-center my-2">
+                              <small className="text-muted fw-bold">OR</small>
+                            </div>
+
+                            <input
+                              type="url"
+                              className="form-control"
+                              name="imageUrl"
+                              value={
+                                currentPortfolioItem.imageUrl.startsWith(
+                                  "data:",
+                                )
+                                  ? ""
+                                  : currentPortfolioItem.imageUrl
+                              }
+                              onChange={handlePortfolioItemChange}
+                              placeholder="Paste image URL here"
+                              disabled={currentPortfolioItem.imageUrl.startsWith(
+                                "data:",
+                              )}
+                            />
+                            {currentPortfolioItem.imageUrl.startsWith(
+                              "data:",
+                            ) && (
+                              <small className="text-success d-block mt-1">
+                                <i className="fas fa-check-circle me-1"></i>
+                                File uploaded: {currentPortfolioItem.fileName}
+                              </small>
+                            )}
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label">Description</label>
+                            <textarea
+                              className="form-control"
+                              name="description"
+                              rows="2"
+                              value={currentPortfolioItem.description}
+                              onChange={handlePortfolioItemChange}
+                              placeholder="Brief description of this work..."
+                            ></textarea>
+                          </div>
+
+                          {/* Image Preview */}
+                          {currentPortfolioItem.imageUrl && (
+                            <div className="mb-3">
+                              <label className="form-label">Preview:</label>
+                              <div className="border rounded p-2 text-center">
+                                <img
+                                  src={currentPortfolioItem.imageUrl}
+                                  alt="Preview"
+                                  style={{
+                                    maxWidth: "100%",
+                                    maxHeight: "200px",
+                                    objectFit: "contain",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                    e.target.nextSibling.style.display =
+                                      "block";
+                                  }}
+                                />
+                                <div
+                                  style={{ display: "none" }}
+                                  className="text-danger"
+                                >
+                                  <i className="fas fa-exclamation-triangle"></i>{" "}
+                                  Invalid image URL
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            className="btn btn-outline-primary"
+                            onClick={addPortfolioItem}
+                          >
+                            <i className="fas fa-plus me-2"></i>
+                            Add to Portfolio
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Display Added Portfolio Items */}
+                      {portfolioItems.length > 0 && (
+                        <div className="mt-3">
+                          <h6 className="mb-3">
+                            Your Portfolio ({portfolioItems.length} items)
+                          </h6>
+                          <div className="row g-3">
+                            {portfolioItems.map((item, index) => (
+                              <div key={index} className="col-md-4">
+                                <div className="card h-100 shadow-sm">
+                                  <img
+                                    src={item.imageUrl}
+                                    className="card-img-top"
+                                    alt={item.title}
+                                    style={{
+                                      height: "150px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                  <div className="card-body p-2">
+                                    <h6
+                                      className="card-title mb-1"
+                                      style={{ fontSize: "0.9rem" }}
+                                    >
+                                      {item.title}
+                                    </h6>
+                                    {item.category && (
+                                      <span
+                                        className="badge bg-primary"
+                                        style={{ fontSize: "0.7rem" }}
+                                      >
+                                        {item.category}
+                                      </span>
+                                    )}
+                                    {item.description && (
+                                      <p
+                                        className="card-text text-muted small mt-1 mb-1"
+                                        style={{ fontSize: "0.75rem" }}
+                                      >
+                                        {item.description.substring(0, 60)}
+                                        {item.description.length > 60
+                                          ? "..."
+                                          : ""}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="card-footer p-2 bg-transparent">
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-outline-danger w-100"
+                                      onClick={() => removePortfolioItem(index)}
+                                    >
+                                      <i className="fas fa-trash me-1"></i>
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Designer Info Box */}
                     <div className="alert alert-info mt-4">
                       <h6 className="alert-heading">
@@ -849,8 +1202,8 @@ const Signup = () => {
                         </li>
                         <li>Once approved, you can start receiving orders</li>
                         <li>
-                          You&apos;ll earn <strong>80% commission</strong> on
-                          every order
+                          You&apos;ll earn your <strong>full design fee</strong>{" "}
+                          on every order
                         </li>
                         <li>Minimum payout is ₹500, processed within 3 days</li>
                       </ul>

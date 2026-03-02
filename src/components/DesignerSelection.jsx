@@ -21,7 +21,7 @@ const DesignerSelection = ({ onSelectDesigner, selectedDesignerId }) => {
       if (filters.sortBy) params.append("sortBy", filters.sortBy);
 
       const response = await fetch(
-        `${API_BASE}/api/designers?${params.toString()}`
+        `${API_BASE}/api/designers?${params.toString()}`,
       );
       const data = await response.json();
 
@@ -53,19 +53,19 @@ const DesignerSelection = ({ onSelectDesigner, selectedDesignerId }) => {
         stars.push(
           <span key={i} className="star filled">
             ★
-          </span>
+          </span>,
         );
       } else if (i === fullStars && hasHalfStar) {
         stars.push(
           <span key={i} className="star half">
             ★
-          </span>
+          </span>,
         );
       } else {
         stars.push(
           <span key={i} className="star empty">
             ☆
-          </span>
+          </span>,
         );
       }
     }
@@ -229,12 +229,12 @@ const DesignerSelection = ({ onSelectDesigner, selectedDesignerId }) => {
                   </span>
                   <span className="stat-label">Days Avg.</span>
                 </div>
-                <div className="stat">
-                  <span className="stat-icon">⭐</span>
+                <div className="stat designer-fee-stat">
+                  <span className="stat-icon">💰</span>
                   <span className="stat-value">
-                    {designer.experience || 1}+
+                    ₹{designer.designFee || 500}
                   </span>
-                  <span className="stat-label">Years Exp.</span>
+                  <span className="stat-label">Design Fee</span>
                 </div>
               </div>
 

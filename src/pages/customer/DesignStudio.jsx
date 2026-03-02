@@ -8,8 +8,7 @@ import ModelViewer from "../../components/ModelViewer";
 import useExitConfirmation from "../../hooks/useExitConfirmation";
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://backend-gw9o.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 
 const DesignStudio = () => {
   const navigate = useNavigate();
@@ -180,19 +179,8 @@ const DesignStudio = () => {
       return false;
     }
 
-    // Check if graphic is selected (main requirement)
-    if (formData.graphic === "None") {
-      setShakeError(true);
-      setTimeout(() => setShakeError(false), 600);
-      showFlash(
-        "🚫 Please select a graphic design to customize your clothing!",
-        "danger",
-      );
-      return false;
-    }
-
-    // If name and graphic are provided, validation passes
-    // Other customizations are optional
+    // Graphics are optional - user can proceed without selecting one
+    // If name is provided, validation passes
 
     // Validate category
     if (!formData.category || formData.category === "") {
@@ -226,17 +214,27 @@ const DesignStudio = () => {
     try {
       setSubmitting(true);
 
+      // Capture the 3D preview image
+      let previewImage = null;
+      if (modelViewerRef.current && modelViewerRef.current.capturePreview) {
+        previewImage = modelViewerRef.current.capturePreview();
+      }
+
       // Add sustainability score and price to form data
       const designData = {
         ...formData,
-        price: estimatedPrice,
+        estimatedPrice: estimatedPrice, // The calculated price based on fabric
+        basePrice: 1200, // Base price before fabric multiplier
         sustainabilityScore: sustainabilityScore,
         formAction: action,
+        previewImage: previewImage, // Include the 3D preview image
       };
 
       console.log("=== SAVING DESIGN ===");
       console.log("Full design data:", designData);
+      console.log("Estimated Price:", estimatedPrice);
       console.log("Designer ID being saved:", designData.designerId);
+      console.log("Preview image captured:", previewImage ? "Yes" : "No");
       console.log("====================");
 
       if (action === "save") {
@@ -382,64 +380,63 @@ const DesignStudio = () => {
                   </div>
                 </div>
 
-                {formData.graphic === "None" && (
-                  <div className="row mb-3">
-                    <div className="col-md-4">
-                      <label htmlFor="fabric" className="form-label">
-                        Fabric
-                      </label>
-                      <select
-                        className="form-select"
-                        id="fabric"
-                        name="fabric"
-                        value={formData.fabric}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="Cotton">Cotton</option>
-                        <option value="Linen">Linen</option>
-                        <option value="Silk">Silk</option>
-                        <option value="Polyester">Polyester</option>
-                        <option value="Wool">Wool</option>
-                        <option value="Denim">Denim</option>
-                        <option value="Fleece">Fleece</option>
-                        <option value="Jersey">Jersey</option>
-                      </select>
-                    </div>
-                    <div className="col-md-4">
-                      <label htmlFor="color" className="form-label">
-                        Color
-                      </label>
-                      <input
-                        type="color"
-                        className="form-control form-control-color"
-                        id="color"
-                        name="color"
-                        value={formData.color}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="col-md-4">
-                      <label htmlFor="pattern" className="form-label">
-                        Pattern
-                      </label>
-                      <select
-                        className="form-select"
-                        id="pattern"
-                        name="pattern"
-                        value={formData.pattern}
-                        onChange={handleChange}
-                      >
-                        <option value="Solid">Solid</option>
-                        <option value="Striped">Striped</option>
-                        <option value="Checkered">Checkered</option>
-                        <option value="Floral">Floral</option>
-                        <option value="Abstract">Abstract</option>
-                        <option value="Polka Dot">Polka Dot</option>
-                      </select>
-                    </div>
+                {/* Fabric, Color, Pattern - Always visible */}
+                <div className="row mb-3">
+                  <div className="col-md-4">
+                    <label htmlFor="fabric" className="form-label">
+                      Fabric
+                    </label>
+                    <select
+                      className="form-select"
+                      id="fabric"
+                      name="fabric"
+                      value={formData.fabric}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="Cotton">Cotton</option>
+                      <option value="Linen">Linen</option>
+                      <option value="Silk">Silk</option>
+                      <option value="Polyester">Polyester</option>
+                      <option value="Wool">Wool</option>
+                      <option value="Denim">Denim</option>
+                      <option value="Fleece">Fleece</option>
+                      <option value="Jersey">Jersey</option>
+                    </select>
                   </div>
-                )}
+                  <div className="col-md-4">
+                    <label htmlFor="color" className="form-label">
+                      Color
+                    </label>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      id="color"
+                      name="color"
+                      value={formData.color}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label htmlFor="pattern" className="form-label">
+                      Pattern
+                    </label>
+                    <select
+                      className="form-select"
+                      id="pattern"
+                      name="pattern"
+                      value={formData.pattern}
+                      onChange={handleChange}
+                    >
+                      <option value="Solid">Solid</option>
+                      <option value="Striped">Striped</option>
+                      <option value="Checkered">Checkered</option>
+                      <option value="Floral">Floral</option>
+                      <option value="Abstract">Abstract</option>
+                      <option value="Polka Dot">Polka Dot</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div className="row mb-3">
                   <div className="col-md-6">
@@ -629,9 +626,10 @@ const DesignStudio = () => {
             <div className="card-header">
               <h3>3D Preview</h3>
             </div>
-            <div className="card-body" ref={modelViewerRef}>
+            <div className="card-body">
               {/* 3D Model Viewer */}
               <ModelViewer
+                ref={modelViewerRef}
                 category={formData.category}
                 gender={formData.gender}
                 color={formData.color}

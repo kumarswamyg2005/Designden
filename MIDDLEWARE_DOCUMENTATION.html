@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MIDDLEWARE_DOCUMENTATION.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="designden---middleware-documentation">DesignDen - Middleware Documentation</h1>
+<h2 id="project-custom-clothing-e-commerce-platform">Project: Custom Clothing E-Commerce Platform</h2>
+<h2 id="course-mern-stack-development">Course: MERN Stack Development</h2>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#middleware-summary">Middleware Summary</a></li>
+<li><a href="#individual-contributions">Individual Contributions</a></li>
+<li><a href="#detailed-middleware-documentation">Detailed Middleware Documentation</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This document provides comprehensive documentation of all middleware implementations in the DesignDen application. Each middleware is assigned to team members based on their project responsibilities.</p>
+<p><strong>Server File:</strong> <code>server.cjs</code><br>
+<strong>Port:</strong> 5174<br>
+<strong>Framework:</strong> Express.js</p>
+<hr>
+<h2 id="middleware-summary">Middleware Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Package</th>
+<th>Contributor</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Helmet</td>
+<td><code>helmet</code></td>
+<td>Chetan</td>
+<td>Admin Security</td>
+</tr>
+<tr>
+<td>Rate Limiting</td>
+<td><code>express-rate-limit</code></td>
+<td>Chetan</td>
+<td>Admin Protection</td>
+</tr>
+<tr>
+<td>Morgan</td>
+<td><code>morgan</code></td>
+<td>Harsha</td>
+<td>Production Logging</td>
+</tr>
+<tr>
+<td>Body Parser</td>
+<td><code>body-parser</code></td>
+<td>Harsha</td>
+<td>Form Data Parsing</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td><code>compression</code></td>
+<td>Kumar</td>
+<td>3D Asset Optimization</td>
+</tr>
+<tr>
+<td>Multer</td>
+<td><code>multer</code></td>
+<td>Manoj</td>
+<td>Design File Uploads</td>
+</tr>
+<tr>
+<td>fs/promises</td>
+<td><code>fs.promises</code></td>
+<td>Manoj</td>
+<td>File System Operations</td>
+</tr>
+<tr>
+<td>Cookie Parser</td>
+<td><code>cookie-parser</code></td>
+<td>Hari</td>
+<td>Cart Sessions</td>
+</tr>
+<tr>
+<td>CSRF Protection</td>
+<td>Custom (crypto)</td>
+<td>Hari</td>
+<td>Checkout Security</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="individual-contributions">Individual Contributions</h2>
+<h3 id="chetan---admin--delivery-dashboard-security">Chetan - Admin &amp; Delivery Dashboard Security</h3>
+<p><strong>Project Role:</strong> Admin Dashboard, Delivery Admin Dashboard, User Management</p>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>helmet</code></td>
+<td>Security headers for admin panels</td>
+</tr>
+<tr>
+<td><code>express-rate-limit</code></td>
+<td>Brute-force attack prevention</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="harsha---manager-dashboard">Harsha - Manager Dashboard</h3>
+<p><strong>Project Role:</strong> Manager Dashboard, Production Milestones, Assign Delivery</p>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>morgan</code></td>
+<td>HTTP logging for production tracking</td>
+</tr>
+<tr>
+<td><code>body-parser</code></td>
+<td>Parse milestone and delivery forms</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="kumar---3d-design-studio">Kumar - 3D Design Studio</h3>
+<p><strong>Project Role:</strong> 3D Design Studio, Three.js Preview, Designer Selection, Customization</p>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compression</code></td>
+<td>Compress 3D models and design assets</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="manoj---designer-dashboard">Manoj - Designer Dashboard</h3>
+<p><strong>Project Role:</strong> Designer Dashboard, Design Upload, Send to Customer/Manager</p>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multer</code></td>
+<td>Handle design file uploads</td>
+</tr>
+<tr>
+<td><code>fs/promises</code></td>
+<td>Async file system operations</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="hari---customer-experience">Hari - Customer Experience</h3>
+<p><strong>Project Role:</strong> Home, Shop, Cart, Checkout, Order Tracking, OTP Verification</p>
+<table>
+<thead>
+<tr>
+<th>Middleware</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cookie-parser</code></td>
+<td>Manage cart sessions</td>
+</tr>
+<tr>
+<td><code>CSRF Protection</code></td>
+<td>Secure checkout process</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="detailed-middleware-documentation">Detailed Middleware Documentation</h2>
+<hr>
+<h3 id="1-helmet-chetan">1. Helmet (Chetan)</h3>
+<p><strong>Definition:</strong><br>
+Helmet is a security middleware that sets various HTTP headers to protect the application from well-known web vulnerabilities like XSS attacks, clickjacking, and MIME-type sniffing.</p>
+<p><strong>Package:</strong> <code>helmet</code><br>
+<strong>Installation:</strong> <code>npm install helmet</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Admin Dashboard authentication</li>
+<li>Delivery Admin Dashboard</li>
+<li>User Management pages</li>
+<li>All API endpoints</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// CHETAN - Admin &amp; Delivery Dashboard Security Middleware</span>
+<span class="hljs-comment">// Role: Admin Dashboard, Delivery Admin Dashboard, User Management</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> helmet = <span class="hljs-built_in">require</span>(<span class="hljs-string">"helmet"</span>);
+
+<span class="hljs-comment">// Helmet: Sets various HTTP headers for security</span>
+<span class="hljs-comment">// Essential for Admin panels - Protects against: XSS, clickjacking, MIME sniffing</span>
+app.use(
+  helmet({
+    <span class="hljs-attr">contentSecurityPolicy</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// Disabled for development (enable in production)</span>
+    <span class="hljs-attr">crossOriginEmbedderPolicy</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// Allow 3D models loading</span>
+  }),
+);
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"✅ Helmet security middleware enabled (Chetan - Admin Security)"</span>);
+</div></code></pre>
+<p><strong>Security Headers Set by Helmet:</strong></p>
+<ul>
+<li><code>X-Content-Type-Options: nosniff</code> - Prevents MIME type sniffing</li>
+<li><code>X-Frame-Options: SAMEORIGIN</code> - Prevents clickjacking</li>
+<li><code>X-XSS-Protection: 1; mode=block</code> - Enables XSS filter</li>
+<li><code>Strict-Transport-Security</code> - Enforces HTTPS</li>
+</ul>
+<hr>
+<h3 id="2-rate-limiting-chetan">2. Rate Limiting (Chetan)</h3>
+<p><strong>Definition:</strong><br>
+Rate limiting middleware controls the number of requests a client can make to the server within a specified time window. This prevents brute-force attacks and DDoS attempts.</p>
+<p><strong>Package:</strong> <code>express-rate-limit</code><br>
+<strong>Installation:</strong> <code>npm install express-rate-limit</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Login endpoint (<code>/api/auth/login</code>) - 5 attempts per 15 minutes</li>
+<li>All API endpoints - 100 requests per 15 minutes</li>
+<li>Admin authentication routes</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// CHETAN - Admin Rate Limiting &amp; Brute-Force Protection</span>
+<span class="hljs-comment">// Role: Admin Dashboard, Delivery Admin Dashboard, User Management</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> rateLimit = <span class="hljs-built_in">require</span>(<span class="hljs-string">"express-rate-limit"</span>);
+
+<span class="hljs-comment">// General API Rate Limiter - Protects all admin API endpoints</span>
+<span class="hljs-keyword">const</span> apiLimiter = rateLimit({
+  <span class="hljs-attr">windowMs</span>: <span class="hljs-number">15</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 15 minutes</span>
+  <span class="hljs-attr">max</span>: <span class="hljs-number">100</span>, <span class="hljs-comment">// Limit each IP to 100 requests per windowMs</span>
+  <span class="hljs-attr">message</span>: {
+    <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">message</span>: <span class="hljs-string">"Too many requests, please try again after 15 minutes"</span>,
+  },
+  <span class="hljs-attr">standardHeaders</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">legacyHeaders</span>: <span class="hljs-literal">false</span>,
+});
+
+<span class="hljs-comment">// Strict Admin Login Rate Limiter (Brute-force protection)</span>
+<span class="hljs-comment">// Prevents unauthorized access to Admin and Delivery dashboards</span>
+<span class="hljs-keyword">const</span> loginLimiter = rateLimit({
+  <span class="hljs-attr">windowMs</span>: <span class="hljs-number">15</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 15 minutes</span>
+  <span class="hljs-attr">max</span>: <span class="hljs-number">5</span>, <span class="hljs-comment">// Limit each IP to 5 login attempts per windowMs</span>
+  <span class="hljs-attr">message</span>: {
+    <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">message</span>: <span class="hljs-string">"Too many login attempts, please try again after 15 minutes"</span>,
+  },
+  <span class="hljs-attr">standardHeaders</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">legacyHeaders</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">skipSuccessfulRequests</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// Don't count successful logins</span>
+});
+
+<span class="hljs-comment">// Store rate limiters for admin route protection</span>
+app.set(<span class="hljs-string">"apiLimiter"</span>, apiLimiter);
+app.set(<span class="hljs-string">"loginLimiter"</span>, loginLimiter);
+
+<span class="hljs-built_in">console</span>.log(
+  <span class="hljs-string">"✅ Rate limiting middleware configured (Chetan - Admin Protection)"</span>,
+);
+</div></code></pre>
+<p><strong>Usage in Routes:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Apply login limiter to authentication route</span>
+app.post(<span class="hljs-string">"/api/auth/login"</span>, loginLimiter, <span class="hljs-keyword">async</span> (req, res) =&gt; {
+  <span class="hljs-comment">// Login logic here</span>
+});
+</div></code></pre>
+<hr>
+<h3 id="3-morgan-harsha">3. Morgan (Harsha)</h3>
+<p><strong>Definition:</strong><br>
+Morgan is an HTTP request logger middleware. It logs all incoming HTTP requests to the console and/or a file, which is essential for monitoring server activity and debugging.</p>
+<p><strong>Package:</strong> <code>morgan</code><br>
+<strong>Installation:</strong> <code>npm install morgan</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>All HTTP requests to track production activities</li>
+<li>Manager Dashboard for monitoring order processing</li>
+<li>Production milestone tracking</li>
+<li>Delivery assignment logging</li>
+</ul>
+<p><strong>Log File Location:</strong> <code>/logs/access.log</code></p>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// HARSHA - Manager Dashboard Middleware</span>
+<span class="hljs-comment">// Role: Manager Dashboard, Production Milestones, Assign Delivery</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> morgan = <span class="hljs-built_in">require</span>(<span class="hljs-string">"morgan"</span>);
+<span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>);
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">"path"</span>);
+
+<span class="hljs-comment">// Create logs directory if it doesn't exist</span>
+<span class="hljs-keyword">const</span> logsDir = path.join(__dirname, <span class="hljs-string">"logs"</span>);
+<span class="hljs-keyword">if</span> (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+}
+
+<span class="hljs-comment">// Morgan: HTTP request logging to file</span>
+<span class="hljs-comment">// Essential for Manager to track production activities and delivery assignments</span>
+<span class="hljs-keyword">const</span> accessLogStream = fs.createWriteStream(
+  path.join(__dirname, <span class="hljs-string">"logs"</span>, <span class="hljs-string">"access.log"</span>),
+  { <span class="hljs-attr">flags</span>: <span class="hljs-string">"a"</span> }, <span class="hljs-comment">// Append mode</span>
+);
+
+<span class="hljs-comment">// Morgan format: Combined Apache-style logs for production tracking</span>
+app.use(morgan(<span class="hljs-string">"combined"</span>, { <span class="hljs-attr">stream</span>: accessLogStream })); <span class="hljs-comment">// Log to file</span>
+app.use(morgan(<span class="hljs-string">"dev"</span>)); <span class="hljs-comment">// Log to console (colored)</span>
+
+<span class="hljs-built_in">console</span>.log(
+  <span class="hljs-string">"✅ Morgan logging middleware enabled (Harsha - Manager Production Tracking)"</span>,
+);
+</div></code></pre>
+<p><strong>Log Format (Combined):</strong></p>
+<pre class="hljs"><code><div>:remote-addr - :remote-user [:date[clf]] &quot;:method :url HTTP/:http-version&quot; :status :res[content-length] &quot;:referrer&quot; &quot;:user-agent&quot;
+</div></code></pre>
+<p><strong>Sample Log Entry:</strong></p>
+<pre class="hljs"><code><div>::1 - - [05/Feb/2026:10:30:45 +0530] &quot;GET /api/products HTTP/1.1&quot; 200 1523 &quot;http://localhost:5173/&quot; &quot;Mozilla/5.0&quot;
+</div></code></pre>
+<hr>
+<h3 id="4-body-parser-harsha">4. Body Parser (Harsha)</h3>
+<p><strong>Definition:</strong><br>
+Body Parser middleware parses incoming request bodies before handlers, making the data available under <code>req.body</code>. It handles JSON and URL-encoded form data.</p>
+<p><strong>Package:</strong> <code>body-parser</code><br>
+<strong>Installation:</strong> <code>npm install body-parser</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Production milestone form submissions</li>
+<li>Delivery assignment forms</li>
+<li>Manager Dashboard data updates</li>
+<li>All POST/PUT/PATCH requests</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// HARSHA - Manager Dashboard Middleware (continued)</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> bodyParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">"body-parser"</span>);
+
+<span class="hljs-comment">// Body Parser: Parse production milestone and delivery assignment form data</span>
+app.use(bodyParser.json({ <span class="hljs-attr">limit</span>: <span class="hljs-string">"50mb"</span> })); <span class="hljs-comment">// Parse JSON bodies</span>
+app.use(bodyParser.urlencoded({ <span class="hljs-attr">extended</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">limit</span>: <span class="hljs-string">"50mb"</span> })); <span class="hljs-comment">// Parse URL-encoded bodies</span>
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"✅ Body-parser middleware enabled (Harsha - Manager Forms)"</span>);
+</div></code></pre>
+<p><strong>Configuration Options:</strong></p>
+<ul>
+<li><code>limit: &quot;50mb&quot;</code> - Maximum request body size (for large design files)</li>
+<li><code>extended: true</code> - Allows nested objects in URL-encoded data</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Accessing parsed body in route handler</span>
+app.post(<span class="hljs-string">"/api/milestones"</span>, (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> { orderId, status, notes } = req.body; <span class="hljs-comment">// Body parsed by body-parser</span>
+  <span class="hljs-comment">// Process milestone update</span>
+});
+</div></code></pre>
+<hr>
+<h3 id="5-compression-kumar">5. Compression (Kumar)</h3>
+<p><strong>Definition:</strong><br>
+Compression middleware compresses HTTP responses using gzip or deflate compression, reducing the size of data transferred over the network. This is critical for performance when serving large 3D models and design assets.</p>
+<p><strong>Package:</strong> <code>compression</code><br>
+<strong>Installation:</strong> <code>npm install compression</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>3D Design Studio (Three.js model loading)</li>
+<li>Designer Selection page (portfolio images)</li>
+<li>Customization interface (texture files)</li>
+<li>All API responses</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// KUMAR - 3D Design Studio Performance Middleware</span>
+<span class="hljs-comment">// Role: 3D Design Studio, Three.js Preview, Designer Selection, Customization</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> compression = <span class="hljs-built_in">require</span>(<span class="hljs-string">"compression"</span>);
+
+<span class="hljs-comment">// Compression: Gzip compress 3D models, textures, and design assets</span>
+<span class="hljs-comment">// Critical for 3D Design Studio performance with large model files</span>
+app.use(
+  compression({
+    <span class="hljs-attr">level</span>: <span class="hljs-number">6</span>, <span class="hljs-comment">// Compression level (1-9) - balanced for 3D assets</span>
+    <span class="hljs-attr">threshold</span>: <span class="hljs-number">1024</span>, <span class="hljs-comment">// Only compress responses &gt; 1KB</span>
+    <span class="hljs-attr">filter</span>: <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+      <span class="hljs-comment">// Enable compression for 3D model routes and design assets</span>
+      <span class="hljs-keyword">if</span> (req.headers[<span class="hljs-string">"x-no-compression"</span>]) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">return</span> compression.filter(req, res);
+    },
+  }),
+);
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"✅ Compression middleware enabled (Kumar - 3D Design Studio)"</span>);
+</div></code></pre>
+<p><strong>Configuration Options:</strong></p>
+<ul>
+<li><code>level: 6</code> - Compression level (1=fastest, 9=best compression)</li>
+<li><code>threshold: 1024</code> - Minimum response size to compress (1KB)</li>
+<li><code>filter</code> - Custom function to determine which responses to compress</li>
+</ul>
+<p><strong>Performance Impact:</strong></p>
+<ul>
+<li>3D models (.glb, .gltf): ~60-70% size reduction</li>
+<li>Images: ~30-50% size reduction</li>
+<li>JSON responses: ~70-80% size reduction</li>
+</ul>
+<hr>
+<h3 id="6-multer-manoj">6. Multer (Manoj)</h3>
+<p><strong>Definition:</strong><br>
+Multer is a middleware for handling <code>multipart/form-data</code>, primarily used for uploading files. It provides control over file storage, naming, and validation.</p>
+<p><strong>Package:</strong> <code>multer</code><br>
+<strong>Installation:</strong> <code>npm install multer</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Designer Dashboard (design uploads)</li>
+<li>Portfolio management</li>
+<li>Product image uploads</li>
+<li>Send designs to Customer/Manager</li>
+</ul>
+<p><strong>Upload Directories:</strong></p>
+<ul>
+<li><code>/public/uploads/designs</code> - Designer created designs</li>
+<li><code>/public/uploads/portfolios</code> - Designer portfolio images</li>
+<li><code>/public/uploads/products</code> - Product images</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// MANOJ - Designer Dashboard File Upload Middleware</span>
+<span class="hljs-comment">// Role: Designer Dashboard, Design Upload, Send to Customer/Manager</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> multer = <span class="hljs-built_in">require</span>(<span class="hljs-string">"multer"</span>);
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">"path"</span>);
+<span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>);
+
+<span class="hljs-comment">// Create upload directories using fs/promises for design files</span>
+<span class="hljs-comment">// Essential for Designer Dashboard file management</span>
+<span class="hljs-keyword">const</span> uploadDirs = [
+  <span class="hljs-string">"public/uploads/designs"</span>, <span class="hljs-comment">// Designer created designs</span>
+  <span class="hljs-string">"public/uploads/portfolios"</span>, <span class="hljs-comment">// Designer portfolio images</span>
+  <span class="hljs-string">"public/uploads/products"</span>, <span class="hljs-comment">// Product images</span>
+];
+
+<span class="hljs-comment">// Use fsPromises for async directory creation (Manoj - fs/promises)</span>
+uploadDirs.forEach(<span class="hljs-function">(<span class="hljs-params">dir</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> fullPath = path.join(__dirname, dir);
+  <span class="hljs-keyword">if</span> (!fs.existsSync(fullPath)) {
+    fs.mkdirSync(fullPath, { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+  }
+});
+
+<span class="hljs-comment">// Multer Storage Configuration for Designer uploads</span>
+<span class="hljs-keyword">const</span> storage = multer.diskStorage({
+  <span class="hljs-attr">destination</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, file, cb</span>) </span>{
+    <span class="hljs-comment">// Route designs to appropriate folders</span>
+    <span class="hljs-keyword">let</span> folder = <span class="hljs-string">"public/uploads/designs"</span>; <span class="hljs-comment">// Default for designer uploads</span>
+    <span class="hljs-keyword">if</span> (req.baseUrl.includes(<span class="hljs-string">"portfolio"</span>) || req.path.includes(<span class="hljs-string">"portfolio"</span>)) {
+      folder = <span class="hljs-string">"public/uploads/portfolios"</span>; <span class="hljs-comment">// Designer portfolio</span>
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (
+      req.baseUrl.includes(<span class="hljs-string">"product"</span>) ||
+      req.path.includes(<span class="hljs-string">"product"</span>)
+    ) {
+      folder = <span class="hljs-string">"public/uploads/products"</span>;
+    }
+    cb(<span class="hljs-literal">null</span>, path.join(__dirname, folder));
+  },
+  <span class="hljs-attr">filename</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, file, cb</span>) </span>{
+    <span class="hljs-comment">// Generate unique filename for designer uploads: timestamp-originalname</span>
+    <span class="hljs-keyword">const</span> uniqueSuffix = <span class="hljs-built_in">Date</span>.now() + <span class="hljs-string">"-"</span> + <span class="hljs-built_in">Math</span>.round(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">1e9</span>);
+    <span class="hljs-keyword">const</span> ext = path.extname(file.originalname);
+    cb(<span class="hljs-literal">null</span>, uniqueSuffix + ext);
+  },
+});
+
+<span class="hljs-comment">// File Filter: Only allow design file types (images and PDFs)</span>
+<span class="hljs-comment">// Validates files uploaded by designers</span>
+<span class="hljs-keyword">const</span> fileFilter = <span class="hljs-function">(<span class="hljs-params">req, file, cb</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> allowedTypes = [
+    <span class="hljs-string">"image/jpeg"</span>,
+    <span class="hljs-string">"image/jpg"</span>,
+    <span class="hljs-string">"image/png"</span>,
+    <span class="hljs-string">"image/gif"</span>,
+    <span class="hljs-string">"application/pdf"</span>, <span class="hljs-comment">// Design specifications</span>
+  ];
+  <span class="hljs-keyword">if</span> (allowedTypes.includes(file.mimetype)) {
+    cb(<span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>);
+  } <span class="hljs-keyword">else</span> {
+    cb(
+      <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Invalid file type. Only JPG, PNG, GIF and PDF allowed."</span>),
+      <span class="hljs-literal">false</span>,
+    );
+  }
+};
+
+<span class="hljs-comment">// Multer Upload Instance for Designer Dashboard</span>
+<span class="hljs-keyword">const</span> upload = multer({
+  <span class="hljs-attr">storage</span>: storage,
+  <span class="hljs-attr">fileFilter</span>: fileFilter,
+  <span class="hljs-attr">limits</span>: {
+    <span class="hljs-attr">fileSize</span>: <span class="hljs-number">5</span> * <span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>, <span class="hljs-comment">// 5MB max for design files</span>
+    <span class="hljs-attr">files</span>: <span class="hljs-number">5</span>, <span class="hljs-comment">// Max 5 design files at once</span>
+  },
+});
+
+<span class="hljs-comment">// Store upload middleware for Designer routes</span>
+app.set(<span class="hljs-string">"upload"</span>, upload);
+
+<span class="hljs-built_in">console</span>.log(
+  <span class="hljs-string">"✅ Multer file upload middleware configured (Manoj - Designer Uploads)"</span>,
+);
+</div></code></pre>
+<p><strong>Usage in Routes:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Single file upload</span>
+app.post(<span class="hljs-string">"/api/designs/upload"</span>, upload.single(<span class="hljs-string">"design"</span>), (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> file = req.file; <span class="hljs-comment">// Uploaded file info</span>
+  res.json({ <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">filename</span>: file.filename });
+});
+
+<span class="hljs-comment">// Multiple files upload</span>
+app.post(<span class="hljs-string">"/api/portfolio/upload"</span>, upload.array(<span class="hljs-string">"images"</span>, <span class="hljs-number">5</span>), (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> files = req.files; <span class="hljs-comment">// Array of uploaded files</span>
+  res.json({ <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">count</span>: files.length });
+});
+</div></code></pre>
+<hr>
+<h3 id="7-fspromises-manoj">7. fs/promises (Manoj)</h3>
+<p><strong>Definition:</strong><br>
+The <code>fs/promises</code> module provides promise-based file system operations, allowing for cleaner async/await syntax when working with files and directories.</p>
+<p><strong>Package:</strong> Built-in Node.js module<br>
+<strong>Installation:</strong> No installation required</p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Creating upload directories</li>
+<li>Reading design files</li>
+<li>File management operations</li>
+<li>Designer portfolio handling</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// MANOJ - File System Operations</span>
+<span class="hljs-comment">// Role: Designer Dashboard, Design Upload, Send to Customer/Manager</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> fsPromises = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>).promises;
+
+<span class="hljs-comment">// Example: Async directory creation</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ensureDirectoryExists</span>(<span class="hljs-params">dirPath</span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">await</span> fsPromises.access(dirPath);
+  } <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">await</span> fsPromises.mkdir(dirPath, { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+  }
+}
+
+<span class="hljs-comment">// Example: Read design file</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">readDesignFile</span>(<span class="hljs-params">filePath</span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> fsPromises.readFile(filePath);
+    <span class="hljs-keyword">return</span> data;
+  } <span class="hljs-keyword">catch</span> (error) {
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Error reading file:"</span>, error);
+    <span class="hljs-keyword">throw</span> error;
+  }
+}
+
+<span class="hljs-comment">// Example: Delete design file</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteDesignFile</span>(<span class="hljs-params">filePath</span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">await</span> fsPromises.unlink(filePath);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+  } <span class="hljs-keyword">catch</span> (error) {
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Error deleting file:"</span>, error);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+}
+</div></code></pre>
+<hr>
+<h3 id="8-cookie-parser-hari">8. Cookie Parser (Hari)</h3>
+<p><strong>Definition:</strong><br>
+Cookie Parser middleware parses Cookie header and populates <code>req.cookies</code> with an object keyed by cookie names. It's essential for managing user sessions and cart data.</p>
+<p><strong>Package:</strong> <code>cookie-parser</code><br>
+<strong>Installation:</strong> <code>npm install cookie-parser</code></p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Shopping cart session management</li>
+<li>User authentication</li>
+<li>Checkout process</li>
+<li>Order tracking</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// HARI - Customer Checkout &amp; Session Security Middleware</span>
+<span class="hljs-comment">// Role: Home, Shop, Cart, Checkout, Order Tracking, OTP Verification</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> cookieParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">"cookie-parser"</span>);
+
+<span class="hljs-comment">// Cookie Parser: Manage cart sessions and user preferences</span>
+<span class="hljs-comment">// Essential for shopping cart persistence and checkout process</span>
+app.use(cookieParser());
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"✅ Cookie-parser middleware enabled (Hari - Cart Sessions)"</span>);
+</div></code></pre>
+<p><strong>Usage Example:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Setting a cookie</span>
+app.get(<span class="hljs-string">"/api/cart/session"</span>, (req, res) =&gt; {
+  res.cookie(<span class="hljs-string">"cartSession"</span>, sessionId, {
+    <span class="hljs-attr">httpOnly</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">secure</span>: process.env.NODE_ENV === <span class="hljs-string">"production"</span>,
+    <span class="hljs-attr">maxAge</span>: <span class="hljs-number">7</span> * <span class="hljs-number">24</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 7 days</span>
+  });
+  res.json({ <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span> });
+});
+
+<span class="hljs-comment">// Reading cookies</span>
+app.get(<span class="hljs-string">"/api/cart"</span>, (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> cartSession = req.cookies.cartSession;
+  <span class="hljs-comment">// Retrieve cart data using session</span>
+});
+</div></code></pre>
+<hr>
+<h3 id="9-csrf-protection-hari">9. CSRF Protection (Hari)</h3>
+<p><strong>Definition:</strong><br>
+Cross-Site Request Forgery (CSRF) protection prevents malicious websites from making unauthorized requests on behalf of authenticated users. Our implementation uses session-based tokens.</p>
+<p><strong>Package:</strong> Custom implementation using <code>crypto</code><br>
+<strong>Installation:</strong> Built-in Node.js module</p>
+<p><strong>Where Used:</strong></p>
+<ul>
+<li>Checkout form submission</li>
+<li>Cart modifications</li>
+<li>Order placement</li>
+<li>Payment processing</li>
+<li>All state-changing POST/PUT/DELETE requests</li>
+</ul>
+<p><strong>Code Implementation:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// =============================================================================</span>
+<span class="hljs-comment">// HARI - CSRF Protection Middleware</span>
+<span class="hljs-comment">// Role: Home, Shop, Cart, Checkout, Order Tracking, OTP Verification</span>
+<span class="hljs-comment">// =============================================================================</span>
+
+<span class="hljs-keyword">const</span> crypto = <span class="hljs-built_in">require</span>(<span class="hljs-string">"crypto"</span>);
+
+<span class="hljs-comment">// Generate CSRF Token for checkout security</span>
+<span class="hljs-keyword">const</span> generateCsrfToken = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> crypto.randomBytes(<span class="hljs-number">32</span>).toString(<span class="hljs-string">"hex"</span>);
+};
+
+<span class="hljs-comment">// CSRF Protection Middleware - Protects Cart and Checkout from CSRF attacks</span>
+<span class="hljs-keyword">const</span> csrfProtection = <span class="hljs-function">(<span class="hljs-params">req, res, next</span>) =&gt;</span> {
+  <span class="hljs-comment">// Skip CSRF for GET, HEAD, OPTIONS requests (safe methods)</span>
+  <span class="hljs-keyword">if</span> ([<span class="hljs-string">"GET"</span>, <span class="hljs-string">"HEAD"</span>, <span class="hljs-string">"OPTIONS"</span>].includes(req.method)) {
+    <span class="hljs-keyword">return</span> next();
+  }
+
+  <span class="hljs-keyword">const</span> token = req.headers[<span class="hljs-string">"x-csrf-token"</span>] || req.body._csrf;
+  <span class="hljs-keyword">const</span> sessionToken = req.session.csrfToken;
+
+  <span class="hljs-keyword">if</span> (!token || !sessionToken || token !== sessionToken) {
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">403</span>).json({
+      <span class="hljs-attr">success</span>: <span class="hljs-literal">false</span>,
+      <span class="hljs-attr">message</span>: <span class="hljs-string">"Invalid CSRF token - Checkout security violation"</span>,
+    });
+  }
+  next();
+};
+
+<span class="hljs-built_in">console</span>.log(
+  <span class="hljs-string">"✅ CSRF protection middleware configured (Hari - Checkout Security)"</span>,
+);
+</div></code></pre>
+<p><strong>CSRF Token Endpoint:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Endpoint to get CSRF token</span>
+app.get(<span class="hljs-string">"/api/csrf-token"</span>, (req, res) =&gt; {
+  <span class="hljs-comment">// Generate new token if not exists</span>
+  <span class="hljs-keyword">if</span> (!req.session.csrfToken) {
+    req.session.csrfToken = generateCsrfToken();
+  }
+  res.json({
+    <span class="hljs-attr">success</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">csrfToken</span>: req.session.csrfToken,
+  });
+});
+</div></code></pre>
+<p><strong>Frontend Usage:</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Fetch CSRF token before checkout</span>
+<span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> fetch(<span class="hljs-string">"/api/csrf-token"</span>);
+<span class="hljs-keyword">const</span> { csrfToken } = <span class="hljs-keyword">await</span> response.json();
+
+<span class="hljs-comment">// Include token in checkout request</span>
+<span class="hljs-keyword">await</span> fetch(<span class="hljs-string">"/api/checkout"</span>, {
+  <span class="hljs-attr">method</span>: <span class="hljs-string">"POST"</span>,
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"application/json"</span>,
+    <span class="hljs-string">"X-CSRF-Token"</span>: csrfToken, <span class="hljs-comment">// Include CSRF token</span>
+  },
+  <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(orderData),
+});
+</div></code></pre>
+<hr>
+<h2 id="middleware-execution-order">Middleware Execution Order</h2>
+<p>The middleware executes in the following order:</p>
+<pre class="hljs"><code><div>1. Helmet (Security Headers)           → Chetan
+2. Compression (Response Compression)  → Kumar
+3. Morgan (HTTP Logging)               → Harsha
+4. Body Parser (Request Parsing)       → Harsha
+5. Cookie Parser (Cookie Handling)     → Hari
+6. Session (Session Management)        → Built-in
+7. CORS (Cross-Origin Requests)        → Built-in
+8. CSRF Protection (Form Security)     → Hari
+9. Rate Limiting (On specific routes)  → Chetan
+10. Multer (On upload routes)          → Manoj
+</div></code></pre>
+<hr>
+<h2 id="testing-middleware">Testing Middleware</h2>
+<h3 id="test-helmet-headers">Test Helmet Headers</h3>
+<pre class="hljs"><code><div>curl -I http://localhost:5174/api/products
+</div></code></pre>
+<h3 id="test-rate-limiting">Test Rate Limiting</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Make multiple login attempts</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> {1..6}; <span class="hljs-keyword">do</span>
+  curl -X POST http://localhost:5174/api/auth/login \
+    -H <span class="hljs-string">"Content-Type: application/json"</span> \
+    -d <span class="hljs-string">'{"email":"test@test.com","password":"wrong"}'</span>
+<span class="hljs-keyword">done</span>
+</div></code></pre>
+<h3 id="test-csrf-token">Test CSRF Token</h3>
+<pre class="hljs"><code><div>curl http://localhost:5174/api/csrf-token
+</div></code></pre>
+<h3 id="test-compression">Test Compression</h3>
+<pre class="hljs"><code><div>curl -H <span class="hljs-string">"Accept-Encoding: gzip"</span> http://localhost:5174/api/products -v
+</div></code></pre>
+<h3 id="check-access-logs">Check Access Logs</h3>
+<pre class="hljs"><code><div>tail -f logs/access.log
+</div></code></pre>
+<hr>
+<h2 id="summary">Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Contributor</th>
+<th>Middleware Count</th>
+<th>Security Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chetan</td>
+<td>2</td>
+<td>High (Admin Security)</td>
+</tr>
+<tr>
+<td>Harsha</td>
+<td>2</td>
+<td>Medium (Logging &amp; Parsing)</td>
+</tr>
+<tr>
+<td>Kumar</td>
+<td>1</td>
+<td>Medium (Performance)</td>
+</tr>
+<tr>
+<td>Manoj</td>
+<td>2</td>
+<td>Medium (File Handling)</td>
+</tr>
+<tr>
+<td>Hari</td>
+<td>2</td>
+<td>High (Session &amp; CSRF)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Middleware Implementations:</strong> 9</p>
+<hr>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://helmetjs.github.io/">Helmet.js Documentation</a></li>
+<li><a href="https://www.npmjs.com/package/express-rate-limit">Express Rate Limit</a></li>
+<li><a href="https://www.npmjs.com/package/morgan">Morgan Logger</a></li>
+<li><a href="https://www.npmjs.com/package/body-parser">Body Parser</a></li>
+<li><a href="https://www.npmjs.com/package/compression">Compression</a></li>
+<li><a href="https://www.npmjs.com/package/multer">Multer</a></li>
+<li><a href="https://www.npmjs.com/package/cookie-parser">Cookie Parser</a></li>
+<li><a href="https://nodejs.org/api/crypto.html">Node.js Crypto</a></li>
+<li><a href="https://nodejs.org/api/fs.html#promises-api">Node.js fs/promises</a></li>
+</ul>
+<hr>
+<p><em>Document created for DesignDen Project Evaluation</em><br>
+<em>Date: February 2026</em></p>
+
+</body>
+</html>

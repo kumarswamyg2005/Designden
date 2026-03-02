@@ -3,6 +3,8 @@ import { designerAPI } from "../../services/api";
 import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
+
 const Products = () => {
   const { showFlash } = useFlash();
   const [products, setProducts] = useState([]);
@@ -289,7 +291,7 @@ const Products = () => {
                   >
                     {item.graphic ? (
                       <img
-                        src={`http://localhost:5174${item.graphic}`}
+                        src={`${API_URL}${item.graphic}`}
                         alt={item.name}
                         style={{
                           maxWidth: "100%",
@@ -297,8 +299,10 @@ const Products = () => {
                           objectFit: "contain",
                         }}
                         onError={(e) => {
-                          e.target.src =
-                            "http://localhost:5174/images/graphics/dragon_1.jpg";
+                          if (!e.target.dataset.fallback) {
+                            e.target.dataset.fallback = "true";
+                            e.target.src = `${API_URL}/images/graphics/dragon_1.jpg`;
+                          }
                         }}
                       />
                     ) : (
@@ -412,7 +416,7 @@ const Products = () => {
                     }}
                   >
                     <img
-                      src={`http://localhost:5174${product.graphic}`}
+                      src={`${API_URL}${product.graphic}`}
                       alt={product.name || "Graphic"}
                       style={{
                         maxWidth: "100%",
@@ -420,8 +424,10 @@ const Products = () => {
                         objectFit: "contain",
                       }}
                       onError={(e) => {
-                        e.target.src =
-                          "http://localhost:5174/images/graphics/dragon_1.jpg";
+                        if (!e.target.dataset.fallback) {
+                          e.target.dataset.fallback = "true";
+                          e.target.src = `${API_URL}/images/graphics/dragon_1.jpg`;
+                        }
                       }}
                     />
                   </div>
@@ -618,9 +624,15 @@ const Products = () => {
                         style={{ backgroundColor: "#f8f9fa" }}
                       >
                         <img
-                          src={`http://localhost:5174${formData.graphic}`}
+                          src={`${API_URL}${formData.graphic}`}
                           alt="Preview"
                           style={{ maxHeight: "150px", objectFit: "contain" }}
+                          onError={(e) => {
+                            if (!e.target.dataset.fallback) {
+                              e.target.dataset.fallback = "true";
+                              e.target.src = `${API_URL}/images/graphics/dragon_1.jpg`;
+                            }
+                          }}
                         />
                       </div>
                     </div>

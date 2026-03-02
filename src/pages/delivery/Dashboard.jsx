@@ -24,7 +24,7 @@ import {
 } from "../../store/slices/ordersSlice";
 import { useAuth } from "../../context/AuthContext";
 import { formatPrice } from "../../utils/currency";
-import "./DeliveryDashboard.css";
+import "../../styles/DashboardCommon.css";
 
 // Simulated locations for demo
 const DEMO_LOCATIONS = [
@@ -210,10 +210,10 @@ const Dashboard = () => {
       case "ready_for_pickup":
         return (
           <button
-            className="btn btn-success btn-sm w-100"
+            className="dash-btn dash-btn-success w-100"
             onClick={() => handlePickup(order._id)}
           >
-            <i className="bi bi-box-seam me-2"></i>
+            <i className="fas fa-box me-2"></i>
             Pickup from Warehouse
           </button>
         );
@@ -222,18 +222,18 @@ const Dashboard = () => {
         return (
           <div className="d-flex gap-2">
             <button
-              className="btn btn-info btn-sm flex-fill"
+              className="dash-btn dash-btn-info flex-fill"
               onClick={() => handleInTransit(order._id)}
             >
-              <i className="bi bi-truck me-1"></i>
+              <i className="fas fa-truck me-1"></i>
               Mark In Transit
             </button>
             <button
-              className="btn btn-outline-secondary btn-sm"
+              className="dash-btn dash-btn-outline"
               onClick={() => handleUpdateLocation(order._id)}
               title="Update Location"
             >
-              <i className="bi bi-geo-alt"></i>
+              <i className="fas fa-map-marker-alt"></i>
             </button>
           </div>
         );
@@ -242,18 +242,18 @@ const Dashboard = () => {
         return (
           <div className="d-flex gap-2">
             <button
-              className="btn btn-primary btn-sm flex-fill"
+              className="dash-btn dash-btn-primary flex-fill"
               onClick={() => handleOutForDelivery(order._id)}
             >
-              <i className="bi bi-bicycle me-1"></i>
+              <i className="fas fa-bicycle me-1"></i>
               Out for Delivery
             </button>
             <button
-              className="btn btn-outline-secondary btn-sm"
+              className="dash-btn dash-btn-outline"
               onClick={() => handleUpdateLocation(order._id)}
               title="Update Location"
             >
-              <i className="bi bi-geo-alt"></i>
+              <i className="fas fa-map-marker-alt"></i>
             </button>
           </div>
         );
@@ -261,10 +261,10 @@ const Dashboard = () => {
       case "out_for_delivery":
         return (
           <button
-            className="btn btn-success btn-sm w-100"
+            className="dash-btn dash-btn-success w-100"
             onClick={() => openDeliverModal(order)}
           >
-            <i className="bi bi-check2-circle me-2"></i>
+            <i className="fas fa-check-circle me-2"></i>
             Complete Delivery (OTP)
           </button>
         );
@@ -272,7 +272,7 @@ const Dashboard = () => {
       case "delivered":
         return (
           <span className="text-success">
-            <i className="bi bi-check-circle-fill me-2"></i>
+            <i className="fas fa-check-circle me-2"></i>
             Delivered Successfully
           </span>
         );
@@ -283,16 +283,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="delivery-dashboard">
-      <div className="container-fluid py-4">
+    <div className="unified-dashboard">
+      <div className="container-fluid my-4 animate-fade-in">
         {/* Header */}
         <div className="row mb-4">
           <div className="col-12">
-            <div className="card dashboard-header shadow-sm">
-              <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="dashboard-header">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                  <h2 className="mb-1">
-                    <i className="bi bi-truck text-success me-2"></i>
+                  <h2 className="mb-2">
+                    <i className="fas fa-truck text-success me-2"></i>
                     Delivery Dashboard
                   </h2>
                   <p className="text-muted mb-0">
@@ -304,8 +304,8 @@ const Dashboard = () => {
                         : "Delivery Partner")}
                   </p>
                 </div>
-                <div className="delivery-badge">
-                  <i className="bi bi-person-badge"></i>
+                <div className="dashboard-role-badge">
+                  <i className="fas fa-id-badge"></i>
                   <span>DesignDen Express Partner</span>
                 </div>
               </div>
@@ -315,64 +315,56 @@ const Dashboard = () => {
 
         {/* Statistics Cards */}
         <div className="row mb-4">
-          <div className="col-md-3 col-sm-6 mb-3">
-            <div className="card stat-card h-100 shadow-sm border-left-warning">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p className="stat-label mb-1">Pending Pickup</p>
-                    <h3 className="stat-value mb-0">{stats.pending}</h3>
-                  </div>
-                  <div className="stat-icon bg-warning">
-                    <i className="bi bi-box-seam"></i>
-                  </div>
+          <div className="col-md-3 col-sm-6 mb-3 animate-slide-up delay-100">
+            <div className="dash-stat-card dash-card-warning h-100">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="dash-stat-content">
+                  <p className="dash-stat-label">Pending Pickup</p>
+                  <h3 className="dash-stat-value">{stats.pending}</h3>
+                </div>
+                <div className="dash-stat-icon dash-icon-warning">
+                  <i className="fas fa-box"></i>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3 col-sm-6 mb-3">
-            <div className="card stat-card h-100 shadow-sm border-left-primary">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p className="stat-label mb-1">Active Deliveries</p>
-                    <h3 className="stat-value mb-0">{stats.active}</h3>
-                  </div>
-                  <div className="stat-icon bg-primary">
-                    <i className="bi bi-truck"></i>
-                  </div>
+          <div className="col-md-3 col-sm-6 mb-3 animate-slide-up delay-200">
+            <div className="dash-stat-card dash-card-primary h-100">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="dash-stat-content">
+                  <p className="dash-stat-label">Active Deliveries</p>
+                  <h3 className="dash-stat-value">{stats.active}</h3>
+                </div>
+                <div className="dash-stat-icon dash-icon-primary">
+                  <i className="fas fa-truck"></i>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3 col-sm-6 mb-3">
-            <div className="card stat-card h-100 shadow-sm border-left-success">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p className="stat-label mb-1">Delivered Today</p>
-                    <h3 className="stat-value mb-0">{stats.delivered}</h3>
-                  </div>
-                  <div className="stat-icon bg-success">
-                    <i className="bi bi-check-circle"></i>
-                  </div>
+          <div className="col-md-3 col-sm-6 mb-3 animate-slide-up delay-300">
+            <div className="dash-stat-card dash-card-success h-100">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="dash-stat-content">
+                  <p className="dash-stat-label">Delivered Today</p>
+                  <h3 className="dash-stat-value">{stats.delivered}</h3>
+                </div>
+                <div className="dash-stat-icon dash-icon-success">
+                  <i className="fas fa-check-circle"></i>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3 col-sm-6 mb-3">
-            <div className="card stat-card h-100 shadow-sm border-left-info">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p className="stat-label mb-1">Today's Earnings</p>
-                    <h3 className="stat-value mb-0">
-                      {formatPrice(stats.todayEarnings)}
-                    </h3>
-                  </div>
-                  <div className="stat-icon bg-info">
-                    <i className="bi bi-currency-rupee"></i>
-                  </div>
+          <div className="col-md-3 col-sm-6 mb-3 animate-slide-up delay-400">
+            <div className="dash-stat-card dash-card-info h-100">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="dash-stat-content">
+                  <p className="dash-stat-label">Today's Earnings</p>
+                  <h3 className="dash-stat-value">
+                    {formatPrice(stats.todayEarnings)}
+                  </h3>
+                </div>
+                <div className="dash-stat-icon dash-icon-info">
+                  <i className="fas fa-rupee-sign"></i>
                 </div>
               </div>
             </div>
@@ -380,35 +372,34 @@ const Dashboard = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="row mb-4">
+        <div className="row mb-4 animate-slide-up delay-500">
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div className="card-body py-2">
+            <div className="dash-item-card px-4 py-3">
                 <div className="d-flex flex-wrap gap-2">
                   {[
-                    { value: "all", label: "All Orders", icon: "bi-list" },
+                    { value: "all", label: "All Orders", icon: "fa-list" },
                     {
                       value: "pending",
                       label: "Pending Pickup",
-                      icon: "bi-box-seam",
+                      icon: "fa-box",
                     },
-                    { value: "active", label: "In Progress", icon: "bi-truck" },
+                    { value: "active", label: "In Progress", icon: "fa-truck" },
                     {
                       value: "completed",
                       label: "Delivered",
-                      icon: "bi-check-circle",
+                      icon: "fa-check-circle",
                     },
                   ].map((filter) => (
                     <button
                       key={filter.value}
-                      className={`btn btn-sm ${
+                      className={`dash-btn ${
                         filterStatus === filter.value
-                          ? "btn-success"
-                          : "btn-outline-secondary"
+                          ? "dash-btn-success"
+                          : "dash-btn-outline"
                       }`}
                       onClick={() => setFilterStatus(filter.value)}
                     >
-                      <i className={`bi ${filter.icon} me-1`}></i>
+                      <i className={`fas ${filter.icon} me-1`}></i>
                       {filter.label}
                       <span className="badge bg-light text-dark ms-2">
                         {filter.value === "all"
@@ -425,7 +416,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
 
         {/* Orders List */}
         <div className="row">
@@ -438,32 +428,30 @@ const Dashboard = () => {
                 <p className="mt-2 text-muted">Loading deliveries...</p>
               </div>
             ) : filteredOrders.length === 0 ? (
-              <div className="card shadow-sm">
-                <div className="card-body text-center py-5">
-                  <i className="bi bi-inbox display-1 text-muted"></i>
-                  <h5 className="mt-3">No deliveries found</h5>
-                  <p className="text-muted">
-                    {filterStatus === "pending"
-                      ? "No packages ready for pickup"
-                      : filterStatus === "active"
-                      ? "No active deliveries in progress"
-                      : "Check back later for new assignments"}
-                  </p>
-                </div>
+              <div className="dash-item-card text-center py-5">
+                <i className="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5 className="mt-3">No deliveries found</h5>
+                <p className="text-muted">
+                  {filterStatus === "pending"
+                    ? "No packages ready for pickup"
+                    : filterStatus === "active"
+                    ? "No active deliveries in progress"
+                    : "Check back later for new assignments"}
+                </p>
               </div>
             ) : (
               <div className="row">
                 {filteredOrders.map((order) => (
                   <div key={order._id} className="col-lg-6 col-xl-4 mb-4">
                     <div
-                      className={`card delivery-card h-100 shadow-sm ${
+                      className={`dash-item-card h-100 ${
                         order.status === "out_for_delivery"
                           ? "border-warning border-2"
                           : ""
                       }`}
                     >
                       {/* Card Header */}
-                      <div className="card-header bg-white d-flex justify-content-between align-items-center">
+                      <div className="card-header d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-0 fw-bold">
                             #
@@ -476,7 +464,7 @@ const Dashboard = () => {
                         </div>
                         <div className="d-flex gap-2 align-items-center">
                           <span
-                            className={`badge ${
+                            className={`dash-badge ${
                               order.orderType === "custom"
                                 ? "bg-purple"
                                 : "bg-teal"
@@ -485,7 +473,7 @@ const Dashboard = () => {
                             {order.orderType === "custom" ? "Custom" : "Shop"}
                           </span>
                           <span
-                            className={`badge ${
+                            className={`dash-badge ${
                               getStatusBadge(order.status).class
                             }`}
                           >

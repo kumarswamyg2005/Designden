@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useFlash } from "../context/FlashContext";
@@ -21,6 +21,23 @@ const Login = () => {
   // 2FA state
   const [requires2FA, setRequires2FA] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [devCode, setDevCode] = useState(null); // Store dev code for display
+
+  // Rate limit timer state
+  const [rateLimitTimer, setRateLimitTimer] = useState(0);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (rateLimitTimer > 0) {
+      const timer = setTimeout(() => {
+        setRateLimitTimer(rateLimitTimer - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (rateLimitTimer === 0 && isRateLimited) {
+      setIsRateLimited(false);
+    }
+  }, [rateLimitTimer, isRateLimited]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +88,10 @@ const Login = () => {
       // Check if 2FA is required
       if (result.requires2FA) {
         setRequires2FA(true);
+        // Store dev code if available
+        if (result.devCode) {
+          setDevCode(result.devCode);
+        }
         setLoading(false);
         return;
       }
@@ -96,9 +117,20 @@ const Login = () => {
         err.message ||
         "Login failed. Please try again.";
 
-      // Check if 2FA is required from error response
-      if (err.response?.data?.requires2FA) {
+      // Check if rate limited
+      if (err.response?.status === 429) {
+        setIsRateLimited(true);
+        setRateLimitTimer(30); // 30 seconds timer
+        error(
+          "Too many login attempts. Please wait 30 seconds before trying again.",
+        );
+      } else if (err.response?.data?.requires2FA) {
+        // Check if 2FA is required from error response
         setRequires2FA(true);
+        // Store dev code if available
+        if (err.response?.data?.devCode) {
+          setDevCode(err.response.data.devCode);
+        }
       } else if (err.response?.data?.pendingApproval) {
         // Show pending approval message with warning style
         error(`⏳ ${message}`);
@@ -113,6 +145,7 @@ const Login = () => {
   const handleBack = () => {
     setRequires2FA(false);
     setTwoFactorCode("");
+    setDevCode(null);
   };
 
   return (
@@ -152,6 +185,17 @@ const Login = () => {
                   <p className="text-muted">
                     We've sent a verification code to your email address.
                   </p>
+                  {devCode && (
+                    <div className="alert alert-info mt-3">
+                      <i className="fas fa-info-circle me-2"></i>
+                      <strong>Development Mode:</strong> Your code is{" "}
+                      <strong>{devCode}</strong>
+                      <br />
+                      <small className="text-muted">
+                        (Check server console or use code above)
+                      </small>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -268,11 +312,26 @@ const Login = () => {
                   </div>
                 </div>
 
+                {/* Rate limit timer display */}
+                {isRateLimited && rateLimitTimer > 0 && (
+                  <div
+                    className="alert alert-warning d-flex align-items-center mb-3"
+                    role="alert"
+                  >
+                    <i className="fas fa-clock me-2"></i>
+                    <div>
+                      Too many login attempts. Please wait{" "}
+                      <strong>{rateLimitTimer}</strong> seconds before trying
+                      again.
+                    </div>
+                  </div>
+                )}
+
                 <div className="d-grid">
                   <button
                     type="submit"
                     className="btn btn-primary"
-                    disabled={loading}
+                    disabled={loading || isRateLimited}
                   >
                     {loading ? (
                       <>
@@ -281,6 +340,11 @@ const Login = () => {
                           role="status"
                         ></span>
                         Logging in...
+                      </>
+                    ) : isRateLimited ? (
+                      <>
+                        <i className="fas fa-lock me-2"></i>
+                        Please wait {rateLimitTimer}s
                       </>
                     ) : (
                       "Login"

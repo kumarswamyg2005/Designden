@@ -1,0 +1,256 @@
+/* Common Dashboard Styles for Admin, Manager, Designer, and Delivery */
+
+/* Root Variables for Dashboard Theme */
+:root {
+  --dash-bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  --dash-card-bg: #ffffff;
+  --dash-primary: #007bff;
+  --dash-success: #28a745;
+  --dash-warning: #ffc107;
+  --dash-info: #17a2b8;
+  --dash-purple: #6f42c1;
+  --dash-teal: #20c997;
+  --dash-text-main: #2c3e50;
+  --dash-text-muted: #6c757d;
+  --dash-shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --dash-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --dash-radius: 16px;
+  --dash-card-radius: 12px;
+}
+
+/* Global Dashboard Container */
+.unified-dashboard {
+  min-height: 100vh;
+  background: var(--dash-bg-gradient);
+  background-attachment: fixed;
+  padding-bottom: 2rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--dash-text-main);
+}
+
+.unified-dashboard .container-fluid {
+  max-width: 1400px;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  border: none;
+  background: var(--dash-card-bg) !important;
+  border-radius: var(--dash-radius);
+  box-shadow: var(--dash-shadow-sm);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-role-badge {
+  background: linear-gradient(135deg, var(--dash-primary) 0%, #0056b3 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Generic Stat Cards */
+.dash-stat-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  border-radius: var(--dash-card-radius);
+  background: var(--dash-card-bg);
+  box-shadow: var(--dash-shadow-sm);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--dash-shadow-hover) !important;
+}
+
+/* Interactive Card Indicators */
+.dash-stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--dash-primary); /* Default */
+  border-top-left-radius: var(--dash-card-radius);
+  border-bottom-left-radius: var(--dash-card-radius);
+}
+
+.dash-card-info::before { background: var(--dash-info); }
+.dash-card-warning::before { background: var(--dash-warning); }
+.dash-card-success::before { background: var(--dash-success); }
+.dash-card-purple::before { background: var(--dash-purple); }
+
+.dash-stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.75rem;
+  background: linear-gradient(135deg, var(--dash-primary), #0056b3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.dash-icon-info { background: linear-gradient(135deg, var(--dash-info), #117a8b); }
+.dash-icon-warning { background: linear-gradient(135deg, var(--dash-warning), #d39e00); }
+.dash-icon-success { background: linear-gradient(135deg, var(--dash-success), #1e7e34); }
+.dash-icon-purple { background: linear-gradient(135deg, var(--dash-purple), #543293); }
+
+.dash-stat-content {
+  flex-grow: 1;
+}
+
+.dash-stat-label {
+  font-size: 0.875rem;
+  color: var(--dash-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.dash-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--dash-text-main);
+  line-height: 1;
+  margin-bottom: 0;
+}
+
+/* Generic List/Order Cards */
+.dash-item-card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: var(--dash-card-radius);
+  background: var(--dash-card-bg);
+  box-shadow: var(--dash-shadow-sm);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.dash-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--dash-shadow-hover) !important;
+}
+
+.dash-item-card .card-header {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  background: transparent;
+  padding: 1.25rem 1.5rem;
+  font-weight: 700;
+  color: var(--dash-text-main);
+}
+
+.dash-item-card .card-body {
+  padding: 1.5rem;
+}
+
+.dash-item-card .card-footer {
+  border-top: 1px solid rgba(0,0,0,0.05);
+  background: transparent;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Smooth Entrance Animations */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Staggered animation delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Buttons */
+.dash-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.dash-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dash-btn-primary { background: linear-gradient(135deg, var(--dash-primary), #0056b3); color: white; }
+.dash-btn-success { background: linear-gradient(135deg, var(--dash-success), #1e7e34); color: white; }
+.dash-btn-info { background: linear-gradient(135deg, var(--dash-info), #117a8b); color: white; }
+.dash-btn-outline { background: transparent; border: 2px solid var(--dash-primary); color: var(--dash-primary); }
+.dash-btn-outline:hover { background: var(--dash-primary); color: white; }
+
+/* Status Badges */
+.dash-badge {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Dark theme accommodations for unified dashboard */
+body.dark-theme .unified-dashboard {
+  background: linear-gradient(180deg, #0b1220 0%, #071022 100%);
+  color: #e6eef8;
+}
+
+body.dark-theme .dash-stat-card,
+body.dark-theme .dash-item-card,
+body.dark-theme .dashboard-header {
+  background: #0f1724 !important;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.dark-theme .dash-stat-value,
+body.dark-theme .dash-item-card .card-header {
+  color: #ffffff;
+}
+
+body.dark-theme .dash-item-card .card-header,
+body.dark-theme .dash-item-card .card-footer {
+  border-color: rgba(255, 255, 255, 0.05);
+}

@@ -191,7 +191,7 @@ const DesignerEarnings = () => {
         </div>
       </div>
 
-      {/* Commission Info Card */}
+      {/* Design Fee Info Card */}
       {commissionInfo && (
         <div className="card mb-4 border-0 shadow-sm">
           <div className="card-body">
@@ -202,24 +202,20 @@ const DesignerEarnings = () => {
             <div className="row">
               <div className="col-md-4 text-center mb-3">
                 <div className="p-3 bg-success bg-opacity-10 rounded">
-                  <h2 className="text-success mb-1">
-                    {commissionInfo.designerRate}%
-                  </h2>
-                  <p className="mb-0 text-muted">You Keep</p>
+                  <h2 className="text-success mb-1">100%</h2>
+                  <p className="mb-0 text-muted">You Keep Your Design Fee</p>
                 </div>
               </div>
               <div className="col-md-4 text-center mb-3">
                 <div className="p-3 bg-primary bg-opacity-10 rounded">
-                  <h2 className="text-primary mb-1">
-                    {commissionInfo.platformRate}%
-                  </h2>
-                  <p className="mb-0 text-muted">Platform Fee</p>
+                  <h2 className="text-primary mb-1">Fixed Fee</h2>
+                  <p className="mb-0 text-muted">Set Your Own Price</p>
                 </div>
               </div>
               <div className="col-md-4 text-center mb-3">
                 <div className="p-3 bg-warning bg-opacity-10 rounded">
                   <h2 className="text-warning mb-1">
-                    ₹{commissionInfo.minimumPayout}
+                    ₹{commissionInfo.minimumPayout || 500}
                   </h2>
                   <p className="mb-0 text-muted">Min. Payout</p>
                 </div>
@@ -227,25 +223,17 @@ const DesignerEarnings = () => {
             </div>
             <div className="mt-3">
               <small className="text-muted">
-                <i className="fas fa-chart-line me-1"></i>
-                <strong>Earn More with Tiers:</strong> As you earn more, your
-                commission rate increases!
-                {commissionInfo.tiers &&
-                  commissionInfo.tiers.map((tier, idx) => (
-                    <span key={idx} className="ms-2 badge bg-light text-dark">
-                      ₹{tier.minEarnings.toLocaleString()}+ →{" "}
-                      {tier.designerRate}%
-                    </span>
-                  ))}
+                <i className="fas fa-hand-holding-usd me-1"></i>
+                <strong>Simple & Transparent:</strong> You set your design fee
+                during signup. When customers select you, they pay your fee
+                directly. No complicated commission calculations!
               </small>
             </div>
             <div className="mt-2">
               <small className="text-muted">
-                <i className="fas fa-balance-scale me-1"></i>
-                <strong>Industry Comparison:</strong> Fiverr (
-                {commissionInfo.comparison?.fiverr?.designerRate}%), Upwork (
-                {commissionInfo.comparison?.upwork?.designerRate}%), 99designs (
-                {commissionInfo.comparison?.["99designs"]?.designerRate}%)
+                <i className="fas fa-star me-1"></i>
+                <strong>Your Advantage:</strong> Unlike platforms that take
+                20-50% commission, you keep 100% of your design fee!
               </small>
             </div>
           </div>
@@ -320,8 +308,7 @@ const DesignerEarnings = () => {
                       <th>Order #</th>
                       <th>Date</th>
                       <th>Order Amount</th>
-                      <th>Commission %</th>
-                      <th>Your Earning</th>
+                      <th>Your Design Fee</th>
                       <th>Status</th>
                     </tr>
                   </thead>
@@ -338,7 +325,6 @@ const DesignerEarnings = () => {
                             {new Date(earning.createdAt).toLocaleDateString()}
                           </td>
                           <td>₹{earning.orderAmount.toLocaleString()}</td>
-                          <td>{earning.commissionRate}%</td>
                           <td className="fw-bold text-success">
                             ₹{earning.designerEarning.toLocaleString()}
                           </td>
@@ -355,7 +341,7 @@ const DesignerEarnings = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center text-muted py-4">
+                        <td colSpan="5" className="text-center text-muted py-4">
                           No earnings yet. Complete orders to start earning!
                         </td>
                       </tr>

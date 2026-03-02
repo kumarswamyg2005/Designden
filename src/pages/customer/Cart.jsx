@@ -107,14 +107,20 @@ const Cart = () => {
                         // Handle image URL for custom designs
                         let imageUrl;
                         if (isCustomDesign) {
-                          if (design.graphic) {
-                            // If graphic path starts with /images, use it directly
+                          // First priority: Use the 3D preview image if available
+                          if (design.previewImage) {
+                            imageUrl = design.previewImage;
+                          } else if (
+                            design.graphic &&
+                            design.graphic !== "None"
+                          ) {
+                            // Fallback: Use the graphic image
                             const graphicPath = design.graphic.startsWith(
-                              "/images"
+                              "/images",
                             )
                               ? design.graphic
                               : `/images/graphics/${design.graphic}`;
-                            imageUrl = `http://localhost:3000${graphicPath}`;
+                            imageUrl = `http://localhost:5174${graphicPath}`;
                           } else {
                             imageUrl = "/images/custom-design.png";
                           }
@@ -177,7 +183,7 @@ const Cart = () => {
                                   onChange={(e) =>
                                     handleUpdateQuantity(
                                       item._id,
-                                      parseInt(e.target.value) || 1
+                                      parseInt(e.target.value) || 1,
                                     )
                                   }
                                   min="1"

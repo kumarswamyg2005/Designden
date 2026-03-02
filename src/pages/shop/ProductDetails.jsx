@@ -8,8 +8,7 @@ import { useCart } from "../../context/CartContext";
 import { useCartAnimation } from "../../hooks/useCartAnimation";
 import ProductReviews from "../../components/ProductReviews";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://backend-gw9o.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 
 function ProductDetails() {
   const { id } = useParams();

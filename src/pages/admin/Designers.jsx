@@ -4,6 +4,8 @@ import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
+
 const AdminDesigners = () => {
   const { showFlash } = useFlash();
   const [designers, setDesigners] = useState([]);
@@ -12,6 +14,8 @@ const AdminDesigners = () => {
   const [designerProfile, setDesignerProfile] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPortfolioItem, setSelectedPortfolioItem] = useState(null);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [editForm, setEditForm] = useState({
@@ -24,6 +28,7 @@ const AdminDesigners = () => {
 
   useEffect(() => {
     fetchDesigners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchDesigners = async () => {
@@ -45,6 +50,7 @@ const AdminDesigners = () => {
       setDesignerProfile(res.data);
       setShowProfileModal(true);
     } catch (error) {
+      console.error("Failed to load designer profile:", error);
       showFlash("Failed to load designer profile", "error");
     }
   };
@@ -69,6 +75,7 @@ const AdminDesigners = () => {
       );
       fetchDesigners();
     } catch (error) {
+      console.error("Failed to update designer approval:", error);
       showFlash("Failed to update designer status", "error");
     }
   };
@@ -91,6 +98,7 @@ const AdminDesigners = () => {
       setShowEditModal(false);
       fetchDesigners();
     } catch (error) {
+      console.error("Failed to update designer profile:", error);
       showFlash("Failed to update designer", "error");
     } finally {
       setProcessing(false);
@@ -500,25 +508,87 @@ const AdminDesigners = () => {
                 </div>
                 <hr />
                 <h6>
-                  Portfolio ({designerProfile.portfolio?.length || 0} items)
+                  Portfolio (
+                  {designerProfile.portfolio?.length ||
+                    designerProfile.designer?.designerProfile?.portfolio
+                      ?.length ||
+                    0}{" "}
+                  items)
                 </h6>
-                <div
-                  className="row g-2 mb-3"
-                  style={{ maxHeight: "150px", overflowY: "auto" }}
-                >
-                  {(designerProfile.portfolio || []).map((item, i) => (
-                    <div key={i} className="col-4 col-md-3">
-                      <div className="card">
-                        <div className="card-body p-2 text-center">
-                          <i className="fas fa-image fa-2x text-muted"></i>
-                          <small className="d-block text-truncate">
-                            {item.title}
-                          </small>
+                {(designerProfile.portfolio &&
+                  designerProfile.portfolio.length > 0) ||
+                (designerProfile.designer?.designerProfile?.portfolio &&
+                  designerProfile.designer.designerProfile.portfolio.length >
+                    0) ? (
+                  <div
+                    className="row g-2 mb-3"
+                    style={{ maxHeight: "300px", overflowY: "auto" }}
+                  >
+                    {(
+                      designerProfile.portfolio ||
+                      designerProfile.designer?.designerProfile?.portfolio ||
+                      []
+                    ).map((item, i) => (
+                      <div key={i} className="col-6 col-md-4">
+                        <div
+                          className="card h-100"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setSelectedPortfolioItem(item);
+                            setShowPortfolioModal(true);
+                          }}
+                        >
+                          {item.image && (
+                            <img
+                              src={`${API_URL}${item.image}`}
+                              alt={item.title}
+                              className="card-img-top"
+                              style={{ height: "120px", objectFit: "cover" }}
+                              onError={(e) => {
+                                if (!e.target.dataset.fallback) {
+                                  e.target.dataset.fallback = "true";
+                                  e.target.style.display = "none";
+                                  e.target.nextSibling.style.display = "block";
+                                }
+                              }}
+                            />
+                          )}
+                          <div
+                            style={{ display: item.image ? "none" : "block" }}
+                            className="p-2 text-center bg-light"
+                          >
+                            <i className="fas fa-image fa-2x text-muted"></i>
+                          </div>
+                          <div className="card-body p-2">
+                            <small className="d-block fw-bold text-truncate">
+                              {item.title}
+                            </small>
+                            {item.category && (
+                              <span
+                                className="badge bg-primary"
+                                style={{ fontSize: "0.65rem" }}
+                              >
+                                {item.category}
+                              </span>
+                            )}
+                            {item.description && (
+                              <small
+                                className="d-block text-muted text-truncate"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                {item.description}
+                              </small>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted small mb-3">
+                    No portfolio items uploaded
+                  </p>
+                )}
                 <hr />
                 <h6>Recent Orders ({designerProfile.orders?.length || 0})</h6>
                 <div
@@ -697,6 +767,83 @@ const AdminDesigners = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio Image Viewer Modal */}
+      {showPortfolioModal && selectedPortfolioItem && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.9)" }}
+          onClick={() => setShowPortfolioModal(false)}
+        >
+          <div className="modal-dialog modal-xl modal-dialog-centered">
+            <div
+              className="modal-content bg-dark text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header border-secondary">
+                <h5 className="modal-title">
+                  <i className="fas fa-image me-2"></i>
+                  {selectedPortfolioItem.title}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowPortfolioModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body text-center">
+                <img
+                  src={`${API_URL}${selectedPortfolioItem.image}`}
+                  alt={selectedPortfolioItem.title}
+                  className="img-fluid rounded mb-3"
+                  style={{ maxHeight: "70vh", objectFit: "contain" }}
+                  onError={(e) => {
+                    if (!e.target.dataset.fallback) {
+                      e.target.dataset.fallback = "true";
+                      e.target.src = `${API_URL}/images/casual-tshirt.jpeg`;
+                    }
+                  }}
+                />
+                <div className="text-start">
+                  {selectedPortfolioItem.category && (
+                    <div className="mb-3">
+                      <span className="badge bg-primary fs-6">
+                        {selectedPortfolioItem.category}
+                      </span>
+                    </div>
+                  )}
+                  {selectedPortfolioItem.description && (
+                    <div>
+                      <h6 className="text-muted">Description:</h6>
+                      <p className="fs-6">
+                        {selectedPortfolioItem.description}
+                      </p>
+                    </div>
+                  )}
+                  {selectedPortfolioItem.createdAt && (
+                    <div className="text-muted small">
+                      <i className="fas fa-calendar me-1"></i>
+                      Added on{" "}
+                      {new Date(
+                        selectedPortfolioItem.createdAt,
+                      ).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="modal-footer border-secondary">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowPortfolioModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

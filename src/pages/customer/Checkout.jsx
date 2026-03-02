@@ -494,20 +494,27 @@ const Checkout = () => {
   const calculateSubtotal = () => {
     if (!cart?.items) return 0;
     return cart.items.reduce((sum, item) => {
-      // For products, use product price; for custom designs, use basePrice or estimatedPrice (default 500)
+      // For products, use product price; for custom designs, use estimatedPrice or basePrice (default 1200)
       const price =
         item.productId?.price ||
-        item.designId?.basePrice ||
         item.designId?.estimatedPrice ||
-        500;
+        item.designId?.basePrice ||
+        1200;
       return sum + price * item.quantity;
     }, 0);
   };
 
+  // Calculate designer fee (only for custom designs with selected designer)
+  const calculateDesignerFee = () => {
+    if (!hasCustomDesigns || !selectedDesigner) return 0;
+    return selectedDesigner.designFee || 500;
+  };
+
   const subtotal = calculateSubtotal();
-  const tax = subtotal * 0.18;
+  const designerFee = calculateDesignerFee();
+  const tax = (subtotal + designerFee) * 0.18;
   const shipping = 100;
-  const total = subtotal + tax + shipping;
+  const total = subtotal + designerFee + tax + shipping;
 
   return (
     <div className="container my-4">
@@ -1145,6 +1152,15 @@ const Checkout = () => {
                 <span>Subtotal:</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
+              {designerFee > 0 && (
+                <div className="d-flex justify-content-between mb-2 text-primary">
+                  <span>
+                    <i className="fas fa-paint-brush me-1"></i>
+                    Designer Fee ({selectedDesigner?.name}):
+                  </span>
+                  <span>{formatPrice(designerFee)}</span>
+                </div>
+              )}
               <div className="d-flex justify-content-between mb-2">
                 <span>Tax (18% GST):</span>
                 <span>{formatPrice(tax)}</span>
@@ -1175,7 +1191,7 @@ const Checkout = () => {
                   ? design.name || "Custom Design"
                   : product?.name || "Product";
                 const price = isCustomDesign
-                  ? design.basePrice || design.estimatedPrice || 500
+                  ? design.estimatedPrice || design.basePrice || 1200
                   : product?.price || 0;
 
                 return (
