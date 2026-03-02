@@ -4,8 +4,7 @@ import { shopAPI } from "../../services/api";
 import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://backend-gw9o.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 
 const ShopIndex = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -413,7 +412,11 @@ const ShopIndex = () => {
                       alt={product.name}
                       style={{ height: "250px", objectFit: "cover" }}
                       onError={(e) => {
-                        e.target.src = `${API_BASE_URL}/images/casual-tshirt.jpeg`;
+                        // Prevent infinite loop by checking if already using fallback
+                        if (!e.target.dataset.fallback) {
+                          e.target.dataset.fallback = "true";
+                          e.target.src = `${API_BASE_URL}/images/casual-tshirt.jpeg`;
+                        }
                       }}
                     />
                     <div className="card-body d-flex flex-column">

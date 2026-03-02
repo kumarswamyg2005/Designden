@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // Create axios instance with default config
-const API_URL =
-  import.meta.env.VITE_API_URL || "https://backend-gw9o.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -84,6 +83,12 @@ export const customerAPI = {
   updateAddress: (id, data) => api.put(`/api/customer/addresses/${id}`, data),
   deleteAddress: (id) => api.delete(`/api/customer/addresses/${id}`),
   updateProfile: (data) => api.put("/api/customer/profile", data),
+
+  // NEW DESIGN WORKFLOW - Customer approval
+  approveDesign: (orderId) =>
+    api.put(`/api/orders/${orderId}/design/customer-approve`),
+  rejectDesign: (orderId, reason) =>
+    api.put(`/api/orders/${orderId}/design/customer-reject`, { reason }),
 };
 
 // Pincode API
@@ -99,12 +104,26 @@ export const designerAPI = {
   getOrderById: (id) => api.get(`/designer/orders/${id}`),
   updateOrderStatus: (id, status) =>
     api.put(`/designer/order/${id}/status`, { status }),
+
+  // NEW DESIGN WORKFLOW - Design Phase
+  updateDesignProgress: (id, designProgress, note) =>
+    api.put(`/designer/api/order/${id}/design-progress`, {
+      designProgress,
+      note,
+    }),
+  submitDesignForApproval: (id, notes, designFiles) =>
+    api.post(`/designer/api/order/${id}/submit-design`, { notes, designFiles }),
+  submitDesignToManager: (orderId, notes) =>
+    api.put(`/api/orders/${orderId}/design/submit-to-manager`, { notes }),
+
+  // Legacy production endpoints (kept for backwards compatibility)
   startProduction: (id) => api.post(`/designer/orders/${id}/start`),
   updateProgress: (id, progress) =>
     api.post(`/designer/orders/${id}/progress`, {
       progressPercentage: progress,
     }),
   completeOrder: (id) => api.post(`/designer/orders/${id}/complete`),
+
   // Legacy products endpoints (static graphics)
   getProducts: () => api.get("/api/designer/products"),
   updateProductStock: (id, inStock) =>
@@ -129,7 +148,23 @@ export const managerAPI = {
   getDesigners: () => api.get("/manager/designers"),
   assignToDesigner: (id, designerId) =>
     api.post(`/manager/order/${id}/assign`, { designerId }),
-  startProduction: (id) => api.post(`/manager/orders/${id}/start-production`),
+
+  // NEW DESIGN WORKFLOW - Design Approval & Production
+  approveDesign: (id, notes) =>
+    api.post(`/manager/api/order/${id}/approve-design`, { notes }),
+  rejectDesign: (id, reason) =>
+    api.post(`/manager/api/order/${id}/reject-design`, { reason }),
+  startProduction: (id) =>
+    api.post(`/manager/api/order/${id}/start-production`),
+  updateProductionProgress: (id, progressPercentage, note) =>
+    api.put(`/manager/api/order/${id}/production-progress`, {
+      progressPercentage,
+      note,
+    }),
+  completeProduction: (id, notes) =>
+    api.post(`/manager/api/order/${id}/complete-production`, { notes }),
+
+  // Legacy endpoints
   markComplete: (id) => api.post(`/manager/orders/${id}/mark-complete`),
   shipOrder: (id, trackingNumber) =>
     api.post(`/manager/order/${id}/ship`, { trackingNumber }),

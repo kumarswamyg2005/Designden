@@ -342,7 +342,7 @@ const OrderDetails = () => {
                   Your Expected Earnings
                 </h6>
                 <div className="d-flex justify-content-between align-items-center">
-                  <span>Commission (80%):</span>
+                  <span>Commission (50%):</span>
                   <strong className="text-success fs-5">
                     {formatPrice(Math.round((order.totalAmount || 0) * 0.8))}
                   </strong>

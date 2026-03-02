@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { adminAPI } from "../../services/api";
 import { useFlash } from "../../context/FlashContext";
@@ -8,21 +8,21 @@ const Feedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchFeedbacks();
-  }, []);
-
-  const fetchFeedbacks = async () => {
+  const fetchFeedbacks = useCallback(async () => {
     try {
       setLoading(true);
       const response = await adminAPI.getFeedbacks();
       setFeedbacks(response.data.feedbacks || []);
-    } catch (error) {
+    } catch {
       showFlash("Failed to load feedbacks", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showFlash]);
+
+  useEffect(() => {
+    fetchFeedbacks();
+  }, [fetchFeedbacks]);
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (

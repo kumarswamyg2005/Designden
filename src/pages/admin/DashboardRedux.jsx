@@ -8,7 +8,7 @@
  * - Reusable components
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -42,24 +42,18 @@ const AdminDashboard = () => {
   const dispatch = useDispatch();
 
   // Redux state selectors
-  const user = useSelector(selectUser);
+  const _user = useSelector(selectUser);
   const orders = useSelector(selectOrders);
   const products = useSelector(selectProducts);
   const statistics = useSelector(selectOrderStatistics);
   const ordersLoading = useSelector(selectOrdersLoading);
-  const productsLoading = useSelector(selectProductsLoading);
+  const _productsLoading = useSelector(selectProductsLoading);
   const ordersError = useSelector(selectOrdersError);
 
   // Local state for filtering
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredOrders, setFilteredOrders] = useState([]);
 
-  // Fetch data on component mount
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       // Dispatch multiple async thunks
       await Promise.all([
@@ -72,31 +66,34 @@ const AdminDashboard = () => {
         showToast({
           message: "Dashboard data loaded successfully",
           type: "success",
-        })
+        }),
       );
-    } catch (error) {
+    } catch {
       dispatch(
         showToast({
           message: "Failed to load dashboard data",
           type: "error",
-        })
+        }),
       );
     }
-  };
+  }, [dispatch]);
 
-  // Filter orders based on search
+  // Fetch data on component mount
   useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  // Filter orders based on search using useMemo
+  const filteredOrdersList = useMemo(() => {
     if (searchTerm) {
-      const filtered = orders.filter(
+      return orders.filter(
         (order) =>
           order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
           order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.status.toLowerCase().includes(searchTerm.toLowerCase())
+          order.status.toLowerCase().includes(searchTerm.toLowerCase()),
       );
-      setFilteredOrders(filtered);
-    } else {
-      setFilteredOrders(orders);
     }
+    return orders;
   }, [searchTerm, orders]);
 
   // Table columns configuration
@@ -290,7 +287,7 @@ const AdminDashboard = () => {
         </div>
 
         <DataTable
-          data={filteredOrders.slice(0, 10)}
+          data={filteredOrdersList.slice(0, 10)}
           columns={orderColumns}
           loading={ordersLoading}
           pagination={false}

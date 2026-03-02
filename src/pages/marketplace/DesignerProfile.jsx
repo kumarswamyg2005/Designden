@@ -13,6 +13,8 @@ const DesignerProfile = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPortfolioItem, setSelectedPortfolioItem] = useState(null);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
 
   console.log("=== DESIGNER PROFILE ===");
   console.log("Designer ID from URL params:", designerId);
@@ -123,7 +125,7 @@ const DesignerProfile = () => {
             {profile.availabilityStatus === "available" && (
               <span className="badge bg-success fs-6 px-4 py-2">
                 <i className="fas fa-check-circle me-2"></i>
-                Available for Projects
+                Available for Designs
               </span>
             )}
             {profile.availabilityStatus === "busy" && (
@@ -142,7 +144,7 @@ const DesignerProfile = () => {
               (profile.isAvailable ? (
                 <span className="badge bg-success fs-6 px-4 py-2">
                   <i className="fas fa-check-circle me-2"></i>
-                  Available for Projects
+                  Available for Designs
                 </span>
               ) : (
                 <span className="badge bg-secondary fs-6 px-4 py-2">
@@ -165,11 +167,11 @@ const DesignerProfile = () => {
             title={
               profile.availabilityStatus === "not_accepting"
                 ? "This designer's shop is currently closed"
-                : "Start a new project with this designer"
+                : "Start a new design with this designer"
             }
           >
             <i className="fas fa-paper-plane me-2"></i>
-            Start a Project
+            Start a Design
             {profile.availabilityStatus === "not_accepting" && (
               <i className="fas fa-lock ms-2"></i>
             )}
@@ -177,7 +179,7 @@ const DesignerProfile = () => {
           {profile.availabilityStatus === "not_accepting" && (
             <p className="text-muted mt-3 mb-0">
               <i className="fas fa-info-circle me-2"></i>
-              This designer is not accepting new projects at the moment
+              This designer is not accepting new designs at the moment
             </p>
           )}
         </div>
@@ -211,15 +213,28 @@ const DesignerProfile = () => {
                   <div className="row g-3">
                     {profile.portfolio.map((item, idx) => (
                       <div key={idx} className="col-md-6 col-lg-4">
-                        <div className="portfolio-item">
+                        <div
+                          className="portfolio-item"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setSelectedPortfolioItem(item);
+                            setShowPortfolioModal(true);
+                          }}
+                        >
                           <img
-                            src={
+                            src={`${API_URL}${
                               item.image ||
                               item.imageUrl ||
-                              "https://via.placeholder.com/400"
-                            }
+                              "/images/casual-tshirt.jpeg"
+                            }`}
                             alt={item.title}
                             className="img-fluid"
+                            onError={(e) => {
+                              if (!e.target.dataset.fallback) {
+                                e.target.dataset.fallback = "true";
+                                e.target.src = `${API_URL}/images/casual-tshirt.jpeg`;
+                              }
+                            }}
                           />
                           <div className="p-3">
                             <h6 className="mb-1">{item.title}</h6>
@@ -384,8 +399,8 @@ const DesignerProfile = () => {
                 <h5 className="card-title mb-3">Get in Touch</h5>
                 <p className="small text-muted mb-3">
                   {profile.availabilityStatus === "not_accepting"
-                    ? "This designer is not accepting new projects at the moment."
-                    : "Ready to start your project? Create a design and we'll connect you!"}
+                    ? "This designer is not accepting new designs at the moment."
+                    : "Ready to start your design? Create a design and we'll connect you!"}
                 </p>
                 <Link
                   to="/customer/design-studio"
@@ -402,11 +417,11 @@ const DesignerProfile = () => {
                   title={
                     profile.availabilityStatus === "not_accepting"
                       ? "This designer's shop is currently closed"
-                      : "Start a new project"
+                      : "Start a new design"
                   }
                 >
                   <i className="fas fa-paper-plane me-2"></i>
-                  Start a Project
+                  Start a Design
                   {profile.availabilityStatus === "not_accepting" && (
                     <i className="fas fa-lock ms-2"></i>
                   )}
@@ -423,6 +438,87 @@ const DesignerProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Portfolio Image Viewer Modal */}
+      {showPortfolioModal && selectedPortfolioItem && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.9)", zIndex: 9999 }}
+          onClick={() => setShowPortfolioModal(false)}
+        >
+          <div className="modal-dialog modal-xl modal-dialog-centered">
+            <div
+              className="modal-content bg-dark text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header border-secondary">
+                <h5 className="modal-title">
+                  <i className="fas fa-image me-2"></i>
+                  {selectedPortfolioItem.title}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowPortfolioModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body text-center">
+                <img
+                  src={`${API_URL}${
+                    selectedPortfolioItem.image ||
+                    selectedPortfolioItem.imageUrl ||
+                    "/images/casual-tshirt.jpeg"
+                  }`}
+                  alt={selectedPortfolioItem.title}
+                  className="img-fluid rounded mb-3"
+                  style={{ maxHeight: "70vh", objectFit: "contain" }}
+                  onError={(e) => {
+                    if (!e.target.dataset.fallback) {
+                      e.target.dataset.fallback = "true";
+                      e.target.src = `${API_URL}/images/casual-tshirt.jpeg`;
+                    }
+                  }}
+                />
+                <div className="text-start">
+                  {selectedPortfolioItem.category && (
+                    <div className="mb-3">
+                      <span className="badge bg-primary fs-6">
+                        {selectedPortfolioItem.category}
+                      </span>
+                    </div>
+                  )}
+                  {selectedPortfolioItem.description && (
+                    <div>
+                      <h6 className="text-muted">Description:</h6>
+                      <p className="fs-6">
+                        {selectedPortfolioItem.description}
+                      </p>
+                    </div>
+                  )}
+                  {selectedPortfolioItem.createdAt && (
+                    <div className="text-muted small">
+                      <i className="fas fa-calendar me-1"></i>
+                      Added on{" "}
+                      {new Date(
+                        selectedPortfolioItem.createdAt,
+                      ).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="modal-footer border-secondary">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowPortfolioModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

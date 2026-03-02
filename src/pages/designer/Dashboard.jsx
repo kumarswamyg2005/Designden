@@ -27,7 +27,14 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { formatPrice } from "../../utils/currency";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import "./DesignerDashboard.css";
+import { designerAPI } from "../../services/api";
+import {
+  shouldUseDesignWorkflow,
+  isDesignPhase,
+  wasDesignRejected,
+  DESIGN_MILESTONES,
+} from "../../utils/designWorkflow";
+import "../../styles/DashboardCommon.css";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -48,6 +55,15 @@ const Dashboard = () => {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showChatPanel, setShowChatPanel] = useState(false);
+
+  // NEW: Design workflow state
+  const [designProgress, setDesignProgress] = useState(0);
+  const [designNote, setDesignNote] = useState("");
+  const [showDesignModal, setShowDesignModal] = useState(false);
+  const [showSubmitDesignModal, setShowSubmitDesignModal] = useState(false);
+  const [designSubmissionNotes, setDesignSubmissionNotes] = useState("");
+  const [designFiles, setDesignFiles] = useState([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
 
   // Availability status state
   const [availabilityStatus, setAvailabilityStatus] = useState(
@@ -212,6 +228,152 @@ const Dashboard = () => {
     }
   };
 
+  // ===== NEW DESIGN WORKFLOW HANDLERS =====
+
+  const openDesignProgressModal = (order) => {
+    setSelectedOrder(order);
+    setDesignProgress(order.designProgress || 0);
+    setDesignNote("");
+    setShowDesignModal(true);
+  };
+
+  const handleUpdateDesignProgress = async () => {
+    if (!selectedOrder) return;
+
+    try {
+      await designerAPI.updateDesignProgress(
+        selectedOrder._id,
+        designProgress,
+        designNote || `Design ${designProgress}% complete`,
+      );
+
+      // Send update to customer via chat
+      if (chatOrder?._id === selectedOrder._id) {
+        await dispatch(
+          sendOrderMessage({
+            orderId: selectedOrder._id,
+            message: `🎨 Design Update: ${designProgress}% complete${
+              designNote ? ` - ${designNote}` : ""
+            }`,
+          }),
+        );
+      }
+
+      setShowDesignModal(false);
+      dispatch(fetchDesignerOrders());
+    } catch (error) {
+      console.error("Failed to update design progress:", error);
+      alert("Failed to update design progress");
+    }
+  };
+
+  const openSubmitDesignModal = (order) => {
+    setSelectedOrder(order);
+    setDesignSubmissionNotes("");
+    setDesignFiles([]);
+    setShowSubmitDesignModal(true);
+  };
+
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + designFiles.length > 5) {
+      alert("Maximum 5 design files allowed");
+      return;
+    }
+
+    setUploadingFiles(true);
+
+    Promise.all(
+      files.map((file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve({
+              name: file.name,
+              type: file.type.startsWith("image/") ? "image" : "file",
+              url: e.target.result, // base64
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      }),
+    ).then((newFiles) => {
+      setDesignFiles((prev) => [...prev, ...newFiles]);
+      setUploadingFiles(false);
+    });
+  };
+
+  // Remove file
+  const removeFile = (index) => {
+    setDesignFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitDesign = async () => {
+    if (!selectedOrder) return;
+
+    if (designFiles.length === 0) {
+      alert("Please upload at least one design file for customer review");
+      return;
+    }
+
+    try {
+      await designerAPI.submitDesignForApproval(
+        selectedOrder._id,
+        designSubmissionNotes || "Design completed and ready for review",
+        designFiles,
+      );
+
+      // Notify customer
+      await dispatch(
+        sendOrderMessage({
+          orderId: selectedOrder._id,
+          message:
+            "✅ Design complete! Your design has been submitted for your approval. Please review the design files.",
+        }),
+      );
+
+      setShowSubmitDesignModal(false);
+      setDesignFiles([]);
+      dispatch(fetchDesignerOrders());
+    } catch (error) {
+      console.error("Failed to submit design:", error);
+      alert(
+        error.response?.data?.message || "Failed to submit design for approval",
+      );
+    }
+  };
+
+  // Submit design to manager (after customer approval)
+  const handleSubmitToManager = async (order) => {
+    if (!confirm("Submit this design to manager for final approval?")) return;
+
+    try {
+      await designerAPI.submitDesignToManager(
+        order._id,
+        "Customer approved - Ready for production",
+      );
+
+      // Notify customer and manager
+      await dispatch(
+        sendOrderMessage({
+          orderId: order._id,
+          message:
+            "✅ Your approved design has been submitted to our manager for final approval.",
+        }),
+      );
+
+      dispatch(fetchDesignerOrders());
+    } catch (error) {
+      console.error("Failed to submit to manager:", error);
+      alert(
+        error.response?.data?.message || "Failed to submit design to manager",
+      );
+    }
+  };
+
+  // ===== END DESIGN WORKFLOW HANDLERS =====
+
   const handleStartProduction = async (orderId) => {
     try {
       await dispatch(startProduction(orderId)).unwrap();
@@ -342,6 +504,36 @@ const Dashboard = () => {
         text: "Pending",
       },
       designer_accepted: { class: "bg-info", icon: "check", text: "Accepted" },
+      design_in_progress: {
+        class: "bg-primary",
+        icon: "palette",
+        text: "Design In Progress",
+      },
+      design_pending_customer_approval: {
+        class: "bg-info",
+        icon: "hourglass-half",
+        text: "Awaiting Customer Approval",
+      },
+      design_approved_by_customer: {
+        class: "bg-success",
+        icon: "thumbs-up",
+        text: "Customer Approved",
+      },
+      design_rejected_by_customer: {
+        class: "bg-danger",
+        icon: "redo",
+        text: "Revision Requested",
+      },
+      design_ready: {
+        class: "bg-info",
+        icon: "hourglass-half",
+        text: "Submitted to Manager",
+      },
+      design_approved: {
+        class: "bg-success",
+        icon: "check-circle",
+        text: "Design Approved",
+      },
       in_production: {
         class: "bg-primary",
         icon: "cogs",
@@ -387,13 +579,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="designer-dashboard">
-      <div className="container-fluid my-4">
+    <div className="unified-dashboard">
+      <div className="container-fluid my-4 animate-fade-in">
         {/* Header */}
         <div className="row mb-4">
           <div className="col-12">
-            <div className="card dashboard-header shadow-sm">
-              <div className="card-body">
+            <div className="dashboard-header">
                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                   <div>
                     <h2 className="mb-2">
@@ -438,7 +629,7 @@ const Dashboard = () => {
                     </div>
 
                     <button
-                      className={`btn btn-outline-secondary ${
+                      className={`dash-btn dash-btn-outline ${
                         refreshing ? "rotating" : ""
                       }`}
                       onClick={handleRefresh}
@@ -446,7 +637,7 @@ const Dashboard = () => {
                     >
                       <i className="fas fa-sync-alt"></i>
                     </button>
-                    <div className="designer-badge">
+                    <div className="dashboard-role-badge">
                       <i className="fas fa-palette"></i>
                       <span>Designer</span>
                     </div>
@@ -455,13 +646,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
 
         {/* Statistics Grid */}
         <div className="row mb-4">
-          <div className="col-lg-3 col-md-6 mb-3">
+          <div className="col-lg-3 col-md-6 mb-3 animate-slide-up delay-100">
             <div
-              className={`stat-card card shadow-sm h-100 border-left-warning cursor-pointer ${
+              className={`dash-stat-card dash-card-warning cursor-pointer ${
                 activeTab === "pending" ? "active" : ""
               }`}
               onClick={() => {
@@ -469,26 +659,22 @@ const Dashboard = () => {
                 setActiveTab("pending");
               }}
             >
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className="stat-icon bg-warning text-white">
-                    <i className="fas fa-clock"></i>
-                  </div>
-                  <div className="ms-3">
-                    <div className="stat-label">Pending</div>
-                    <div className="stat-value text-warning">
-                      {stats.pending}
-                    </div>
-                    <small className="text-muted">Awaiting your action</small>
-                  </div>
+                <div className="dash-stat-icon dash-icon-warning">
+                  <i className="fas fa-clock"></i>
                 </div>
-              </div>
+                <div className="dash-stat-content">
+                  <div className="dash-stat-label">Pending</div>
+                  <div className="dash-stat-value text-warning">
+                    {stats.pending}
+                  </div>
+                  <small className="text-muted">Awaiting your action</small>
+                </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6 mb-3">
+          <div className="col-lg-3 col-md-6 mb-3 animate-slide-up delay-200">
             <div
-              className={`stat-card card shadow-sm h-100 border-left-info cursor-pointer ${
+              className={`dash-stat-card dash-card-info cursor-pointer ${
                 activeTab === "accepted" ? "active" : ""
               }`}
               onClick={() => {
@@ -496,24 +682,20 @@ const Dashboard = () => {
                 setActiveTab("accepted");
               }}
             >
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className="stat-icon bg-info text-white">
-                    <i className="fas fa-check-circle"></i>
-                  </div>
-                  <div className="ms-3">
-                    <div className="stat-label">Accepted</div>
-                    <div className="stat-value text-info">{stats.accepted}</div>
-                    <small className="text-muted">Ready to start</small>
-                  </div>
+                <div className="dash-stat-icon dash-icon-info">
+                  <i className="fas fa-check-circle"></i>
                 </div>
-              </div>
+                <div className="dash-stat-content">
+                  <div className="dash-stat-label">Accepted</div>
+                  <div className="dash-stat-value text-info">{stats.accepted}</div>
+                  <small className="text-muted">Ready to start</small>
+                </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6 mb-3">
+          <div className="col-lg-3 col-md-6 mb-3 animate-slide-up delay-300">
             <div
-              className={`stat-card card shadow-sm h-100 border-left-primary cursor-pointer ${
+              className={`dash-stat-card dash-card-primary cursor-pointer ${
                 activeTab === "production" ? "active" : ""
               }`}
               onClick={() => {
@@ -521,26 +703,22 @@ const Dashboard = () => {
                 setActiveTab("production");
               }}
             >
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className="stat-icon bg-primary text-white">
-                    <i className="fas fa-cogs"></i>
-                  </div>
-                  <div className="ms-3">
-                    <div className="stat-label">In Production</div>
-                    <div className="stat-value text-primary">
-                      {stats.inProduction}
-                    </div>
-                    <small className="text-muted">Currently working</small>
-                  </div>
+                <div className="dash-stat-icon dash-icon-purple">
+                  <i className="fas fa-cogs"></i>
                 </div>
-              </div>
+                <div className="dash-stat-content">
+                  <div className="dash-stat-label">In Production</div>
+                  <div className="dash-stat-value text-primary">
+                    {stats.inProduction}
+                  </div>
+                  <small className="text-muted">Currently working</small>
+                </div>
             </div>
           </div>
 
-          <div className="col-lg-3 col-md-6 mb-3">
+          <div className="col-lg-3 col-md-6 mb-3 animate-slide-up delay-400">
             <div
-              className={`stat-card card shadow-sm h-100 border-left-success cursor-pointer ${
+              className={`dash-stat-card dash-card-success cursor-pointer ${
                 activeTab === "completed" ? "active" : ""
               }`}
               onClick={() => {
@@ -548,20 +726,16 @@ const Dashboard = () => {
                 setActiveTab("completed");
               }}
             >
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className="stat-icon bg-success text-white">
-                    <i className="fas fa-check-double"></i>
-                  </div>
-                  <div className="ms-3">
-                    <div className="stat-label">Completed</div>
-                    <div className="stat-value text-success">
-                      {stats.completed}
-                    </div>
-                    <small className="text-muted">Ready for delivery</small>
-                  </div>
+                <div className="dash-stat-icon dash-icon-success">
+                  <i className="fas fa-check-double"></i>
                 </div>
-              </div>
+                <div className="dash-stat-content">
+                  <div className="dash-stat-label">Completed</div>
+                  <div className="dash-stat-value text-success">
+                    {stats.completed}
+                  </div>
+                  <small className="text-muted">Ready for delivery</small>
+                </div>
             </div>
           </div>
         </div>
@@ -640,7 +814,7 @@ const Dashboard = () => {
         <div className="row">
           {filteredOrders.length === 0 ? (
             <div className="col-12">
-              <div className="card shadow-sm">
+              <div className="dash-item-card">
                 <div className="card-body text-center py-5">
                   <i className="fas fa-inbox fa-4x text-muted mb-3"></i>
                   <h4 className="text-muted">No orders found</h4>
@@ -650,7 +824,7 @@ const Dashboard = () => {
                       : "No orders with this status"}
                   </p>
                   <button
-                    className="btn btn-outline-primary"
+                    className="dash-btn dash-btn-outline"
                     onClick={() => setFilterStatus("all")}
                   >
                     View All Orders
@@ -668,32 +842,28 @@ const Dashboard = () => {
 
               return (
                 <div key={order._id} className="col-lg-6 col-xl-4 mb-4">
-                  <div
-                    className={`order-card card shadow-sm h-100 ${order.status}`}
-                  >
+                  <div className={`dash-item-card h-100 ${order.status}`}>
                     {/* Card Header */}
-                    <div className="card-header bg-white">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <h6 className="mb-0 fw-bold">
-                            Order #{order._id.substring(0, 8).toUpperCase()}
-                          </h6>
-                          <small className="text-muted">
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              },
-                            )}
-                          </small>
-                        </div>
-                        <span className={`badge ${statusInfo.class}`}>
-                          <i className={`fas fa-${statusInfo.icon} me-1`}></i>
-                          {statusInfo.text}
-                        </span>
+                    <div className="card-header d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 className="mb-0 fw-bold">
+                          Order #{order._id.substring(0, 8).toUpperCase()}
+                        </h6>
+                        <small className="text-muted">
+                          {new Date(order.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            },
+                          )}
+                        </small>
                       </div>
+                      <span className={`dash-badge ${statusInfo.class}`}>
+                        <i className={`fas fa-${statusInfo.icon}`}></i>
+                        {statusInfo.text}
+                      </span>
                     </div>
 
                     {/* Card Body */}
@@ -800,10 +970,10 @@ const Dashboard = () => {
                       <div className="expected-earnings d-flex justify-content-between align-items-center p-2 bg-primary bg-opacity-10 rounded">
                         <span className="text-muted">
                           <i className="fas fa-wallet me-1"></i>
-                          Your Earnings (80%):
+                          Your Design Fee:
                         </span>
                         <span className="fw-bold text-primary">
-                          {formatPrice(Math.round(order.totalAmount * 0.8))}
+                          {formatPrice(order.designerFee || 500)}
                         </span>
                       </div>
                     </div>
@@ -822,40 +992,168 @@ const Dashboard = () => {
                           </button>
                         )}
 
-                        {/* Accepted - Start Production */}
-                        {order.status === "designer_accepted" && (
-                          <button
-                            className="btn btn-primary flex-grow-1"
-                            onClick={() => handleStartProduction(order._id)}
-                          >
-                            <i className="fas fa-play me-2"></i>
-                            Start Production
-                          </button>
-                        )}
+                        {/* NEW DESIGN WORKFLOW - Design Phase */}
+                        {shouldUseDesignWorkflow(order) &&
+                          isDesignPhase(order) && (
+                            <>
+                              {/* Show rejection message if design was rejected by manager */}
+                              {wasDesignRejected(order) && (
+                                <div className="w-100 alert alert-warning small mb-2">
+                                  <i className="fas fa-exclamation-triangle me-1"></i>
+                                  <strong>Manager Rejected:</strong>{" "}
+                                  {order.designApproval?.rejectionReason}
+                                  <br />
+                                  <small>Please revise and resubmit.</small>
+                                </div>
+                              )}
 
-                        {/* In Production - Update Progress */}
-                        {order.status === "in_production" && (
+                              {/* Show rejection message if customer requested revision */}
+                              {order.status ===
+                                "design_rejected_by_customer" && (
+                                <div className="w-100 alert alert-danger small mb-2">
+                                  <i className="fas fa-undo me-1"></i>
+                                  <strong>
+                                    Customer Requested Revision:
+                                  </strong>{" "}
+                                  {order.designRejection?.reason ||
+                                    "Please make changes and resubmit."}
+                                  <br />
+                                  <small className="text-muted">
+                                    Revision #
+                                    {order.designRejection?.revisionCount || 1}{" "}
+                                    - Update design progress and resubmit to
+                                    customer.
+                                  </small>
+                                </div>
+                              )}
+
+                              {/* Design in progress - Update design progress */}
+                              {(order.status === "design_in_progress" ||
+                                order.status === "design_rejected" ||
+                                order.status ===
+                                  "design_rejected_by_customer") && (
+                                <button
+                                  className="btn btn-info flex-grow-1"
+                                  onClick={() => openDesignProgressModal(order)}
+                                >
+                                  <i className="fas fa-palette me-2"></i>
+                                  Update Design Progress
+                                </button>
+                              )}
+
+                              {/* Submit design for approval when ready */}
+                              {(order.status === "design_in_progress" ||
+                                order.status === "design_rejected" ||
+                                order.status ===
+                                  "design_rejected_by_customer") &&
+                                order.designProgress >= 100 && (
+                                  <button
+                                    className="btn btn-success"
+                                    onClick={() => openSubmitDesignModal(order)}
+                                  >
+                                    <i className="fas fa-paper-plane me-2"></i>
+                                    Submit to Customer
+                                  </button>
+                                )}
+
+                              {/* Awaiting customer approval */}
+                              {order.status ===
+                                "design_pending_customer_approval" && (
+                                <div className="w-100 alert alert-info small mb-2">
+                                  <i className="fas fa-clock me-1"></i>
+                                  Design submitted - Awaiting customer approval
+                                </div>
+                              )}
+
+                              {/* Customer approved - can submit to manager */}
+                              {order.status ===
+                                "design_approved_by_customer" && (
+                                <button
+                                  className="btn btn-primary"
+                                  onClick={() => handleSubmitToManager(order)}
+                                >
+                                  <i className="fas fa-paper-plane me-2"></i>
+                                  Submit to Manager
+                                </button>
+                              )}
+
+                              {/* Awaiting manager approval */}
+                              {order.status === "design_ready" && (
+                                <div className="w-100 alert alert-info small mb-2">
+                                  <i className="fas fa-clock me-1"></i>
+                                  Submitted to manager - Awaiting final approval
+                                </div>
+                              )}
+
+                              {/* Design accepted - Just start working */}
+                              {order.status === "designer_accepted" && (
+                                <button
+                                  className="btn btn-primary flex-grow-1"
+                                  onClick={() => openDesignProgressModal(order)}
+                                >
+                                  <i className="fas fa-palette me-2"></i>
+                                  Start Design Work
+                                </button>
+                              )}
+                            </>
+                          )}
+
+                        {/* LEGACY WORKFLOW - Old production workflow for non-custom orders */}
+                        {!shouldUseDesignWorkflow(order) && (
                           <>
-                            <button
-                              className="btn btn-info flex-grow-1"
-                              onClick={() => openProgressModal(order)}
-                            >
-                              <i className="fas fa-tasks me-2"></i>
-                              Update Progress
-                            </button>
-                            {order.progressPercentage >= 100 && (
+                            {/* Accepted - Start Production */}
+                            {order.status === "designer_accepted" && (
                               <button
-                                className="btn btn-success"
-                                onClick={() => openCompleteModal(order)}
+                                className="btn btn-primary flex-grow-1"
+                                onClick={() => handleStartProduction(order._id)}
                               >
-                                <i className="fas fa-check-double me-2"></i>
-                                Complete
+                                <i className="fas fa-play me-2"></i>
+                                Start Production
                               </button>
+                            )}
+
+                            {/* In Production - Update Progress */}
+                            {order.status === "in_production" && (
+                              <>
+                                <button
+                                  className="btn btn-info flex-grow-1"
+                                  onClick={() => openProgressModal(order)}
+                                >
+                                  <i className="fas fa-tasks me-2"></i>
+                                  Update Progress
+                                </button>
+                                {order.progressPercentage >= 100 && (
+                                  <button
+                                    className="btn btn-success"
+                                    onClick={() => openCompleteModal(order)}
+                                  >
+                                    <i className="fas fa-check-double me-2"></i>
+                                    Complete
+                                  </button>
+                                )}
+                              </>
                             )}
                           </>
                         )}
 
-                        {/* Chat Button */}
+                        {/* Production phase info for new workflow */}
+                        {shouldUseDesignWorkflow(order) &&
+                          order.status === "design_approved" && (
+                            <div className="w-100 alert alert-success small mb-2">
+                              <i className="fas fa-check-circle me-1"></i>
+                              Design approved! Manager is handling production.
+                            </div>
+                          )}
+
+                        {shouldUseDesignWorkflow(order) &&
+                          order.status === "in_production" && (
+                            <div className="w-100 alert alert-info small mb-2">
+                              <i className="fas fa-industry me-1"></i>
+                              Production in progress - Manager handling (
+                              {order.progressPercentage || 0}%)
+                            </div>
+                          )}
+
                         <button
                           className="btn btn-outline-purple"
                           onClick={() => openChat(order)}
@@ -998,6 +1296,309 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* ===== NEW DESIGN WORKFLOW MODALS ===== */}
+
+      {/* Design Progress Modal */}
+      {showDesignModal && selectedOrder && (
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-header bg-info text-white">
+                <h5 className="modal-title">
+                  <i className="fas fa-palette me-2"></i>
+                  Update Design Progress
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowDesignModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="alert alert-info">
+                  <i className="fas fa-info-circle me-2"></i>
+                  Update your design progress. When complete, submit for manager
+                  approval.
+                </div>
+
+                <div className="order-info mb-4 p-3 bg-light rounded">
+                  <div className="row">
+                    <div className="col-6">
+                      <small className="text-muted">Order</small>
+                      <div className="fw-bold">
+                        #
+                        {selectedOrder.orderNumber ||
+                          selectedOrder._id.substring(0, 8)}
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <small className="text-muted">Customer</small>
+                      <div className="fw-bold">
+                        {selectedOrder.userId?.name}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Design Milestones */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-flag-checkered me-2"></i>
+                    Design Milestones
+                  </label>
+                  <div className="row g-2">
+                    {DESIGN_MILESTONES.map((milestone, idx) => (
+                      <div key={idx} className="col-6">
+                        <div
+                          className={`card ${
+                            designProgress >= milestone.percentage
+                              ? "bg-success text-white"
+                              : "bg-light"
+                          }`}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setDesignProgress(milestone.percentage);
+                            setDesignNote(milestone.name);
+                          }}
+                        >
+                          <div className="card-body p-2">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <small className="fw-bold">
+                                  {milestone.name}
+                                </small>
+                              </div>
+                              <div>
+                                <span className="badge bg-dark">
+                                  {milestone.percentage}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Manual Progress Slider */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    Design Progress:{" "}
+                    <span className="text-info">{designProgress}%</span>
+                  </label>
+                  <input
+                    type="range"
+                    className="form-range"
+                    min="0"
+                    max="100"
+                    step="25"
+                    value={designProgress}
+                    onChange={(e) => setDesignProgress(Number(e.target.value))}
+                  />
+                  <div className="progress mt-2" style={{ height: "20px" }}>
+                    <div
+                      className="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                      style={{ width: `${designProgress}%` }}
+                    >
+                      {designProgress}%
+                    </div>
+                  </div>
+                </div>
+
+                {/* Note */}
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-sticky-note me-2"></i>
+                    Note (optional)
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={designNote}
+                    onChange={(e) => setDesignNote(e.target.value)}
+                    placeholder="Add notes about this design update..."
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowDesignModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-info"
+                  onClick={handleUpdateDesignProgress}
+                >
+                  <i className="fas fa-save me-2"></i>
+                  Update Progress
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Submit Design for Approval Modal */}
+      {showSubmitDesignModal && selectedOrder && (
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">
+                  <i className="fas fa-check-circle me-2"></i>
+                  Submit Design for Approval
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowSubmitDesignModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="alert alert-warning">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  Once submitted, the customer will review your design. Upload
+                  design files so they can see and approve your work.
+                </div>
+
+                <div className="order-info mb-3 p-3 bg-light rounded">
+                  <div className="row">
+                    <div className="col-12">
+                      <small className="text-muted">Order</small>
+                      <div className="fw-bold">
+                        #
+                        {selectedOrder.orderNumber ||
+                          selectedOrder._id.substring(0, 8)}
+                      </div>
+                    </div>
+                    <div className="col-12 mt-2">
+                      <small className="text-muted">Design Progress</small>
+                      <div className="progress mt-1" style={{ height: "20px" }}>
+                        <div
+                          className="progress-bar bg-success"
+                          style={{
+                            width: `${selectedOrder.designProgress || 0}%`,
+                          }}
+                        >
+                          {selectedOrder.designProgress || 0}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* File Upload Section */}
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-upload me-2"></i>
+                    Upload Design Files *
+                  </label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    multiple
+                    accept="image/*,.pdf"
+                    onChange={handleFileSelect}
+                    disabled={uploadingFiles || designFiles.length >= 5}
+                  />
+                  <small className="text-muted">
+                    Upload images or PDF files (Max 5 files, 5MB each)
+                  </small>
+
+                  {/* Preview uploaded files */}
+                  {designFiles.length > 0 && (
+                    <div className="mt-3">
+                      <div className="d-flex flex-wrap gap-2">
+                        {designFiles.map((file, index) => (
+                          <div
+                            key={index}
+                            className="position-relative border rounded p-2"
+                            style={{ width: "120px" }}
+                          >
+                            {file.type === "image" ? (
+                              <img
+                                src={file.url}
+                                alt={file.name}
+                                className="img-fluid rounded"
+                                style={{
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  width: "100%",
+                                }}
+                              />
+                            ) : (
+                              <div className="text-center p-3 bg-light rounded">
+                                <i className="fas fa-file-pdf fa-3x text-danger"></i>
+                              </div>
+                            )}
+                            <button
+                              className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+                              onClick={() => removeFile(index)}
+                              style={{
+                                width: "24px",
+                                height: "24px",
+                                padding: "0",
+                                fontSize: "12px",
+                              }}
+                            >
+                              ×
+                            </button>
+                            <small className="d-block text-truncate mt-1">
+                              {file.name}
+                            </small>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    <i className="fas fa-comment me-2"></i>
+                    Submission Notes
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows="4"
+                    value={designSubmissionNotes}
+                    onChange={(e) => setDesignSubmissionNotes(e.target.value)}
+                    placeholder="Add any final notes about the design for the customer..."
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowSubmitDesignModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-success"
+                  onClick={handleSubmitDesign}
+                  disabled={designFiles.length === 0 || uploadingFiles}
+                >
+                  <i className="fas fa-paper-plane me-2"></i>
+                  {uploadingFiles ? "Uploading..." : "Submit to Customer"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== END DESIGN WORKFLOW MODALS ===== */}
 
       {/* Progress Update Modal with Milestones */}
       {showProgressModal && selectedOrder && (

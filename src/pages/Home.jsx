@@ -69,8 +69,8 @@ const Home = () => {
                   <i className="fas fa-hand-holding-usd fa-3x text-success mb-3"></i>
                   <h3 className="card-title h5">Fair Pricing</h3>
                   <p className="card-text">
-                    Transparent pricing with designers earning 80% commission on
-                    every order
+                    Transparent pricing with upfront designer fees shown before
+                    you order
                   </p>
                 </div>
               </div>
@@ -179,17 +179,17 @@ const Home = () => {
           </h2>
           <p className="lead mb-4">
             Join our marketplace and showcase your talent to thousands of
-            potential customers. Earn 80% commission on every order you complete
-            – among the best rates in the industry!
+            potential customers. Set your own design fee and earn directly – you
+            keep what you charge!
           </p>
           <div className="row justify-content-center mb-4">
             <div className="col-md-3 col-6 mb-3">
-              <h3 className="display-6 fw-bold">80%</h3>
-              <p>Commission Rate</p>
+              <h3 className="display-6 fw-bold">100%</h3>
+              <p>Your Fee, Your Earnings</p>
             </div>
             <div className="col-md-3 col-6 mb-3">
               <h3 className="display-6 fw-bold">₹500+</h3>
-              <p>Min. Payout</p>
+              <p>Min. Design Fee</p>
             </div>
             <div className="col-md-3 col-6 mb-3">
               <h3 className="display-6 fw-bold">24/7</h3>

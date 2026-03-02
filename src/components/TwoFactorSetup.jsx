@@ -13,6 +13,7 @@ const TwoFactorSetup = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [maskedEmail, setMaskedEmail] = useState("");
+  const [devCode, setDevCode] = useState(null); // Store dev code for display
 
   useEffect(() => {
     fetchStatus();
@@ -41,6 +42,10 @@ const TwoFactorSetup = () => {
       }
 
       setMaskedEmail(response.data.email);
+      // Store dev code if available
+      if (response.data.devCode) {
+        setDevCode(response.data.devCode);
+      }
       setStep("verify");
       success("Verification code sent to your email!");
     } catch (err) {
@@ -65,6 +70,7 @@ const TwoFactorSetup = () => {
       setStatus({ enabled: true });
       setStep("status");
       setVerificationCode("");
+      setDevCode(null);
     } catch (err) {
       error(err.response?.data?.message || "Invalid verification code");
     } finally {
@@ -196,6 +202,17 @@ const TwoFactorSetup = () => {
                 <br />
                 <strong>{maskedEmail}</strong>
               </p>
+              {devCode && (
+                <div className="alert alert-info mt-3">
+                  <i className="fas fa-info-circle me-2"></i>
+                  <strong>Development Mode:</strong> Your code is{" "}
+                  <strong>{devCode}</strong>
+                  <br />
+                  <small className="text-muted">
+                    (Check server console or use code above)
+                  </small>
+                </div>
+              )}
             </div>
 
             <div className="mb-4">
@@ -207,7 +224,7 @@ const TwoFactorSetup = () => {
                 value={verificationCode}
                 onChange={(e) =>
                   setVerificationCode(
-                    e.target.value.replace(/\D/g, "").slice(0, 6)
+                    e.target.value.replace(/\D/g, "").slice(0, 6),
                   )
                 }
                 maxLength={6}
@@ -248,6 +265,7 @@ const TwoFactorSetup = () => {
                 onClick={() => {
                   setStep("status");
                   setVerificationCode("");
+                  setDevCode(null);
                 }}
               >
                 Cancel

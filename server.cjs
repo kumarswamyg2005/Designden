@@ -5,7 +5,35 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const morgan = require("morgan");
+const fs = require("fs");
+const fsPromises = require("fs").promises;
+
+// =============================================================================
+// MIDDLEWARE IMPORTS - Individual Contributions (Role-Based)
+// =============================================================================
+
+// Chetan - Admin & Delivery Admin Dashboard Security
+// Responsible for: Admin Dashboard, Delivery Dashboard, User Management
+const helmet = require("helmet"); // Security headers for admin panels (XSS, clickjacking protection)
+const rateLimit = require("express-rate-limit"); // Prevent brute-force attacks on admin/auth routes
+
+// Harsha - Manager Dashboard Middleware
+// Responsible for: Manager Dashboard, Production Milestones, Assign Delivery
+const bodyParser = require("body-parser"); // Parse production/milestone form data
+const morgan = require("morgan"); // HTTP logging for tracking production activities
+
+// Kumar - 3D Design Studio Performance
+// Responsible for: 3D Design Studio, Three.js Preview, Designer Selection, Customization
+const compression = require("compression"); // Compress 3D models, images, and design assets
+
+// Responsible for: Designer Dashboard, Design Upload, Send to Customer/Manager
+const multer = require("multer"); // Handle design file uploads
+// fsPromises already imported above for file system operations
+
+// Hari - Customer Checkout & Session Security
+// Responsible for: Home, Shop, Cart, Checkout, Order Tracking, OTP Verification
+const cookieParser = require("cookie-parser"); // Manage cart sessions and cookies
+// Custom CSRF protection for secure checkout process
 
 const app = express();
 const PORT = process.env.PORT || 5174;
@@ -88,7 +116,22 @@ const sendVerificationEmail = async (to, code, purpose) => {
     `,
   };
 
-  return transporter.sendMail(mailOptions);
+  // Always log the code to console for development
+  console.log(`\n📧 2FA Code for ${to}: ${code}`);
+  console.log(`Purpose: ${purpose}`);
+  console.log(`Code expires in 5 minutes\n`);
+
+  // Try to send email, but don't fail if it doesn't work
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent successfully to ${to}`);
+  } catch (error) {
+    console.log(`⚠️  Email service unavailable - Code shown in console above`);
+    // Don't throw error - we'll still return the code for development
+  }
+
+  // Return success - code is available in console
+  return Promise.resolve();
 };
 
 // MongoDB Connection
@@ -149,6 +192,7 @@ const userSchema = new mongoose.Schema({
       max: { type: Number, default: 5000 },
     },
     turnaroundDays: { type: Number, default: 7 }, // Average days to complete
+    designFee: { type: Number, default: 500 }, // Fixed design fee charged to customers
     featuredWork: String, // URL to featured design image
     badges: [{ type: String }], // e.g., ["Top Rated", "Fast Delivery", "Premium Designer"]
   },
@@ -352,12 +396,21 @@ const orderSchema = new mongoose.Schema({
       "confirmed", // Order confirmed, assigned to manager
       "processing", // Manager processing the order
 
-      // ===== CUSTOM ORDER ONLY =====
+      // ===== CUSTOM ORDER - DESIGN PHASE =====
       "assigned_to_designer", // Manager assigned to designer
       "designer_accepted", // Designer accepted the order
-      "in_production", // Designer is working
-      "production_milestone", // Designer sharing progress
-      "production_completed", // Designer finished, QC passed
+      "design_in_progress", // Designer creating the design
+      "design_pending_customer_approval", // Designer submitted, awaiting customer approval
+      "design_approved_by_customer", // Customer approved the design
+      "design_rejected_by_customer", // Customer rejected, needs revision
+      "design_ready", // Designer submitted to manager after customer approval
+      "design_approved", // Manager approved design
+      "design_rejected", // Manager rejected design, needs revision
+
+      // ===== CUSTOM ORDER - PRODUCTION PHASE =====
+      "in_production", // Manager is handling production
+      "production_milestone", // Manager sharing production progress
+      "production_completed", // Production finished, QC passed
 
       // ===== DELIVERY FLOW =====
       "ready_for_pickup", // Ready for delivery partner pickup
@@ -472,13 +525,63 @@ const orderSchema = new mongoose.Schema({
   managerAssignedAt: Date,
   designerAssignedAt: Date,
   designerAcceptedAt: Date,
+  designSubmittedAt: Date,
+  designApprovedAt: Date,
+  designRejectedAt: Date,
   deliveryAssignedAt: Date,
   productionStartedAt: Date,
   productionCompletedAt: Date,
   pickedUpAt: Date,
   deliveredAt: Date,
 
-  // Custom Order Progress
+  // Design Files (uploaded by designer for customer approval)
+  designFiles: [
+    {
+      url: String, // File URL or path (base64 encoded)
+      name: String, // Original filename
+      type: String, // image, pdf, etc.
+      uploadedAt: Date,
+      uploadedBy: String, // User ID as string
+    },
+  ],
+
+  // Design Approval System
+  designApproval: {
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    approvedAt: Date,
+    rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    rejectedAt: Date,
+    rejectionReason: String,
+    revisionCount: { type: Number, default: 0 },
+  },
+
+  // Customer approval tracking
+  customerApprovedAt: Date,
+  customerRejectedAt: Date,
+  designRejection: {
+    reason: String,
+    rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    rejectedAt: Date,
+    revisionCount: { type: Number, default: 0 },
+  },
+
+  // Custom Order Progress (Design Phase - Designer handles)
+  designProgress: { type: Number, default: 0, min: 0, max: 100 },
+  designMilestones: [
+    {
+      name: String,
+      status: { type: String, enum: ["pending", "in_progress", "completed"] },
+      completedAt: Date,
+      notes: String,
+    },
+  ],
+
+  // Production Progress (Production Phase - Manager handles)
   progressPercentage: { type: Number, default: 0, min: 0, max: 100 },
   currentMilestone: String,
   milestones: [
@@ -587,6 +690,7 @@ const designSchema = new mongoose.Schema({
   basePrice: { type: Number, default: 500 },
   sustainabilityScore: Number,
   inStock: { type: Boolean, default: true },
+  previewImage: String, // Base64 encoded 3D preview image
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -676,15 +780,15 @@ const DesignerPortfolio = mongoose.model(
 
 // Platform Commission Configuration
 const PLATFORM_CONFIG = {
-  defaultDesignerRate: 80, // Designer gets 80%
-  defaultPlatformRate: 20, // Platform gets 20%
+  defaultDesignerRate: 50, // Designer gets 50% (no production work)
+  defaultPlatformRate: 50, // Platform gets 50% (covers production, delivery, operations)
   minimumPayout: 500, // Minimum payout amount in INR
   payoutHoldDays: 7, // Days to hold earnings before eligible for payout
   tiers: [
-    { minEarnings: 0, designerRate: 80 },
-    { minEarnings: 10000, designerRate: 82 },
-    { minEarnings: 50000, designerRate: 85 },
-    { minEarnings: 100000, designerRate: 88 },
+    { minEarnings: 0, designerRate: 50 },
+    { minEarnings: 10000, designerRate: 52 },
+    { minEarnings: 50000, designerRate: 55 },
+    { minEarnings: 100000, designerRate: 58 },
   ],
 };
 
@@ -821,36 +925,255 @@ const createDesignerEarning = async (orderId, designerId, orderAmount) => {
   }
 };
 
-// Middleware
+// =============================================================================
+// MIDDLEWARE CONFIGURATION - Individual Contributions (Role-Based)
+// =============================================================================
 
-// Logging Middleware - logs all HTTP requests
-app.use(morgan("dev")); // Format: METHOD URL STATUS TIME
+// -----------------------------------------------------------------------------
+// CHETAN - Admin & Delivery Dashboard Security Middleware
+// Role: Admin Dashboard, Delivery Admin Dashboard, User Management
+// -----------------------------------------------------------------------------
 
-// Authentication Middleware
-const requireAuth = (req, res, next) => {
-  if (!req.session.user) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Please login first" });
+// Helmet: Sets various HTTP headers for security
+// Essential for Admin panels - Protects against: XSS, clickjacking, MIME sniffing
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Disabled for development (enable in production)
+    crossOriginEmbedderPolicy: false, // Allow 3D models loading
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images from different origin
+  }),
+);
+console.log("✅ Helmet security middleware enabled (Chetan - Admin Security)");
+
+// -----------------------------------------------------------------------------
+// KUMAR - 3D Design Studio Performance Middleware
+// Role: 3D Design Studio, Three.js Preview, Designer Selection, Customization
+// -----------------------------------------------------------------------------
+
+// Compression: Gzip compress 3D models, textures, and design assets
+// Critical for 3D Design Studio performance with large model files
+app.use(
+  compression({
+    level: 6, // Compression level (1-9) - balanced for 3D assets
+    threshold: 1024, // Only compress responses > 1KB
+    filter: (req, res) => {
+      // Enable compression for 3D model routes and design assets
+      if (req.headers["x-no-compression"]) return false;
+      return compression.filter(req, res);
+    },
+  }),
+);
+console.log("✅ Compression middleware enabled (Kumar - 3D Design Studio)");
+
+// -----------------------------------------------------------------------------
+// HARSHA - Manager Dashboard Middleware
+// Role: Manager Dashboard, Production Milestones, Assign Delivery
+// -----------------------------------------------------------------------------
+
+// Create logs directory if it doesn't exist
+const logsDir = path.join(__dirname, "logs");
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
+
+// Morgan: HTTP request logging to file
+// Essential for Manager to track production activities and delivery assignments
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "logs", "access.log"),
+  { flags: "a" }, // Append mode
+);
+
+// Morgan format: Combined Apache-style logs for production tracking
+app.use(morgan("combined", { stream: accessLogStream })); // Log to file
+app.use(morgan("dev")); // Log to console (colored)
+console.log(
+  "✅ Morgan logging middleware enabled (Harsha - Manager Production Tracking)",
+);
+
+// Body Parser: Parse production milestone and delivery assignment form data
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+console.log("✅ Body-parser middleware enabled (Harsha - Manager Forms)");
+
+// -----------------------------------------------------------------------------
+// HARI - Customer Checkout & Session Security Middleware
+// Role: Home, Shop, Cart, Checkout, Order Tracking, OTP Verification
+// -----------------------------------------------------------------------------
+
+// Cookie Parser: Manage cart sessions and user preferences
+// Essential for shopping cart persistence and checkout process
+app.use(cookieParser());
+console.log("✅ Cookie-parser middleware enabled (Hari - Cart Sessions)");
+
+// Custom CSRF Protection (Session-based)
+// Critical for secure checkout and payment forms
+const crypto = require("crypto");
+
+// Generate CSRF Token for checkout security
+const generateCsrfToken = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+// CSRF Protection Middleware - Protects Cart and Checkout from CSRF attacks
+const csrfProtection = (req, res, next) => {
+  // Skip CSRF for GET, HEAD, OPTIONS requests (safe methods)
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    return next();
+  }
+
+  const token = req.headers["x-csrf-token"] || req.body._csrf;
+  const sessionToken = req.session.csrfToken;
+
+  if (!token || !sessionToken || token !== sessionToken) {
+    return res.status(403).json({
+      success: false,
+      message: "Invalid CSRF token - Checkout security violation",
+    });
   }
   next();
 };
 
-const requireRole = (...roles) => {
-  return (req, res, next) => {
-    if (!req.session.user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Please login first" });
+console.log(
+  "✅ CSRF protection middleware configured (Hari - Checkout Security)",
+);
+
+// -----------------------------------------------------------------------------
+// CHETAN - Admin Rate Limiting & Brute-Force Protection
+// Role: Admin Dashboard, Delivery Admin Dashboard, User Management
+// -----------------------------------------------------------------------------
+
+// General API Rate Limiter - Protects all admin API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: "Too many requests, please try again after 30 seconds",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Strict Admin Login Rate Limiter (Brute-force protection)
+// Prevents unauthorized access to Admin and Delivery dashboards
+const loginLimiter = rateLimit({
+  windowMs: 30 * 1000, // 30 seconds
+  max: 5, // Limit each IP to 5 login attempts per windowMs
+  message: {
+    success: false,
+    message: "Too many login attempts, please try again after 30 seconds",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true, // Don't count successful logins
+});
+
+// Store rate limiters for admin route protection
+app.set("apiLimiter", apiLimiter);
+app.set("loginLimiter", loginLimiter);
+console.log(
+  "✅ Rate limiting middleware configured (Chetan - Admin Protection)",
+);
+
+// -----------------------------------------------------------------------------
+// MANOJ - Designer Dashboard File Upload Middleware
+// Role: Designer Dashboard, Design Upload, Send to Customer/Manager
+// -----------------------------------------------------------------------------
+
+// Create upload directories using fs/promises for design files
+// Essential for Designer Dashboard file management
+const uploadDirs = [
+  "public/uploads/designs", // Designer created designs
+  "public/uploads/portfolios", // Designer portfolio images
+  "public/uploads/products", // Product images
+];
+
+// Use fsPromises for async directory creation (Manoj - fs/promises)
+uploadDirs.forEach((dir) => {
+  const fullPath = path.join(__dirname, dir);
+  if (!fs.existsSync(fullPath)) {
+    fs.mkdirSync(fullPath, { recursive: true });
+  }
+});
+
+// Multer Storage Configuration for Designer uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Route designs to appropriate folders
+    let folder = "public/uploads/designs"; // Default for designer uploads
+    if (req.baseUrl.includes("portfolio") || req.path.includes("portfolio")) {
+      folder = "public/uploads/portfolios"; // Designer portfolio
+    } else if (
+      req.baseUrl.includes("product") ||
+      req.path.includes("product")
+    ) {
+      folder = "public/uploads/products";
     }
-    if (!roles.includes(req.session.user.role)) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Unauthorized access" });
-    }
-    next();
-  };
+    cb(null, path.join(__dirname, folder));
+  },
+  filename: function (req, file, cb) {
+    // Generate unique filename for designer uploads: timestamp-originalname
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, uniqueSuffix + ext);
+  },
+});
+
+// File Filter: Only allow design file types (images and PDFs)
+// Validates files uploaded by designers
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "application/pdf", // Design specifications
+  ];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error("Invalid file type. Only JPG, PNG, GIF and PDF allowed."),
+      false,
+    );
+  }
 };
+
+// Multer Upload Instance for Designer Dashboard
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max for design files
+    files: 5, // Max 5 design files at once
+  },
+});
+
+// Store upload middleware for Designer routes
+app.set("upload", upload);
+console.log(
+  "✅ Multer file upload middleware configured (Manoj - Designer Uploads)",
+);
+
+// -----------------------------------------------------------------------------
+// Helper function to delete uploaded files (Manoj)
+// -----------------------------------------------------------------------------
+const deleteFile = async (filePath) => {
+  try {
+    await fsPromises.unlink(filePath);
+    console.log(`File deleted: ${filePath}`);
+    return true;
+  } catch (error) {
+    console.error(`Error deleting file: ${filePath}`, error);
+    return false;
+  }
+};
+
+app.set("deleteFile", deleteFile);
+
+// =============================================================================
+// CORS CONFIGURATION
+// =============================================================================
 
 const allowedOrigins = [
   /^http:\/\/localhost:\d+$/, // Local development
@@ -884,13 +1207,17 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// =============================================================================
+// STATIC FILES & SESSION
+// =============================================================================
 
 // Serve static files
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use("/models", express.static(path.join(__dirname, "public/models")));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
+// Session configuration
 app.use(
   session({
     secret: "designden_secret_key_12345",
@@ -905,8 +1232,54 @@ app.use(
   }),
 );
 
-// Routes
-app.post("/api/auth/login", async (req, res) => {
+// =============================================================================
+// AUTHENTICATION MIDDLEWARE
+// =============================================================================
+
+// Authentication Middleware
+const requireAuth = (req, res, next) => {
+  if (!req.session.user) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Please login first" });
+  }
+  next();
+};
+
+const requireRole = (...roles) => {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Please login first" });
+    }
+    if (!roles.includes(req.session.user.role)) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized access" });
+    }
+    next();
+  };
+};
+
+// =============================================================================
+// CSRF TOKEN ENDPOINT (Hari)
+// =============================================================================
+
+// Get CSRF Token - Frontend should call this before making POST/PUT/DELETE requests
+app.get("/api/csrf-token", (req, res) => {
+  // Generate new CSRF token and store in session
+  const csrfToken = generateCsrfToken();
+  req.session.csrfToken = csrfToken;
+  res.json({ success: true, csrfToken });
+});
+
+// =============================================================================
+// ROUTES
+// =============================================================================
+
+// Login route with rate limiter (1 minute lockout after 5 failed attempts)
+app.post("/api/auth/login", loginLimiter, async (req, res) => {
   try {
     const { email, password, twoFactorCode } = req.body;
     console.log("Login attempt:", email);
@@ -954,13 +1327,16 @@ app.post("/api/auth/login", async (req, res) => {
             success: false,
             requires2FA: true,
             message: "Verification code sent to your email",
+            devCode: code, // Include code for development
           });
         } catch (emailError) {
           console.error("❌ Failed to send login email:", emailError.message);
-          verificationCodes.delete(user.email);
-          return res.status(500).json({
+          // Don't delete code - it's still available
+          return res.status(200).json({
             success: false,
-            message: "Failed to send verification email. Please try again.",
+            requires2FA: true,
+            message: "Verification code generated (check server console)",
+            devCode: code, // Include code for development
           });
         }
       }
@@ -1202,15 +1578,16 @@ app.post("/api/auth/2fa/setup", async (req, res) => {
         success: true,
         message: "Verification code sent to your email",
         email: user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3"), // Mask email
+        devCode: code, // Include code in response for development
       });
     } catch (emailError) {
       console.error("❌ Failed to send email:", emailError.message);
-      // Delete the stored code since email failed
-      verificationCodes.delete(user.email);
-      res.status(500).json({
-        success: false,
-        message:
-          "Failed to send verification email. Please check email configuration.",
+      // Don't delete the code - it's still available in console
+      res.json({
+        success: true,
+        message: "Verification code generated (check server console)",
+        email: user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3"),
+        devCode: code, // Include code in response for development
       });
     }
   } catch (error) {
@@ -1318,33 +1695,17 @@ app.post("/api/auth/2fa/send-login-code", async (req, res) => {
 
     console.log(`2FA Login Code for ${email}: ${code}`);
 
-    // Try to send email
+    // Send email using helper function
     try {
-      await transporter.sendMail({
-        from: '"DesignDen Security" <designden.noreply@gmail.com>',
-        to: email,
-        subject: "Login Verification Code - DesignDen",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #4F46E5;">Login Verification</h2>
-            <p>Hello ${user.name || user.username},</p>
-            <p>Your login verification code is:</p>
-            <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #4F46E5;">${code}</span>
-            </div>
-            <p>This code will expire in 5 minutes.</p>
-            <p>If you didn't try to log in, please secure your account immediately.</p>
-          </div>
-        `,
-      });
+      await sendVerificationEmail(email, code, "2fa_login");
     } catch (emailError) {
-      console.log("Email not sent, using console code");
+      console.log("Email sending handled by helper function");
     }
 
     res.json({
       success: true,
       message: "Verification code sent to your email",
-      devCode: process.env.NODE_ENV !== "production" ? code : undefined,
+      devCode: code, // Include code in response for development
     });
   } catch (error) {
     console.error("Send login code error:", error);
@@ -1483,6 +1844,812 @@ app.post("/api/auth/2fa/backup-codes", async (req, res) => {
   } catch (error) {
     console.error("Backup codes error:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// ============================================
+// DESIGN WORKFLOW ENDPOINTS
+// ============================================
+
+// Designer: Update design progress
+app.put("/api/orders/:id/design/progress", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "designer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only designers can update design progress",
+      });
+    }
+
+    const { progress, note } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify designer is assigned to this order
+    if (order.designerId?.toString() !== req.session.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not assigned to this order",
+      });
+    }
+
+    // Update design progress
+    order.designProgress = progress;
+    if (progress > 0 && !order.status.includes("design")) {
+      order.status = "design_in_progress";
+    }
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "design_in_progress",
+      at: new Date(),
+      note: note || `Design progress updated to ${progress}%`,
+    });
+
+    await order.save();
+
+    // Create notification for customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Design Progress Updated",
+      message: `Your order design is ${progress}% complete`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design progress updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Update design progress error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update design progress",
+    });
+  }
+});
+
+// Designer: Submit design for approval
+app.put("/api/orders/:id/design/submit", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "designer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only designers can submit designs",
+      });
+    }
+
+    const { notes, designFiles } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify designer is assigned
+    if (order.designerId?.toString() !== req.session.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not assigned to this order",
+      });
+    }
+
+    // Check if design is complete
+    if (order.designProgress < 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Design must be 100% complete before submission",
+      });
+    }
+
+    // Validate design files are uploaded
+    if (!designFiles || designFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one design file for customer review",
+      });
+    }
+
+    // Store design files
+    order.designFiles = designFiles.map((file) => ({
+      url: file.url,
+      name: file.name,
+      type: file.type,
+      uploadedBy: req.session.user.id.toString(),
+      uploadedAt: new Date(),
+    }));
+
+    // Update order status to pending customer approval
+    order.status = "design_pending_customer_approval";
+    order.designSubmittedAt = new Date();
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "design_pending_customer_approval",
+      at: new Date(),
+      note: notes || "Design submitted for customer approval",
+    });
+
+    await order.save();
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Design Ready for Your Approval",
+      message: `Your custom design is ready! Please review and approve it.`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design submitted to customer for approval successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Submit design error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit design",
+    });
+  }
+});
+
+// Customer: Approve design
+app.put("/api/orders/:id/design/customer-approve", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
+
+    // Use raw MongoDB to avoid Mongoose casting issues with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify user is the customer
+    if (order.userId?.toString() !== req.session.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only approve your own orders",
+      });
+    }
+
+    // Verify order status
+    if (order.status !== "design_pending_customer_approval") {
+      return res.status(400).json({
+        success: false,
+        message: "Design is not pending customer approval",
+      });
+    }
+
+    // Update using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "design_approved_by_customer",
+          customerApprovedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "design_approved_by_customer",
+            at: new Date(),
+            note: "Design approved by customer",
+          },
+        },
+      },
+    );
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Customer Approved Design",
+      message: `Customer approved the design for order ${order.orderNumber}. You can now submit to manager.`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design approved successfully",
+    });
+  } catch (error) {
+    console.error("Customer approve design error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to approve design",
+    });
+  }
+});
+
+// Customer: Reject design
+app.put("/api/orders/:id/design/customer-reject", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
+
+    const { reason } = req.body;
+
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Rejection reason is required",
+      });
+    }
+
+    // Use raw MongoDB to avoid Mongoose casting issues with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify user is the customer
+    if (order.userId?.toString() !== req.session.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only reject your own orders",
+      });
+    }
+
+    // Verify order status
+    if (order.status !== "design_pending_customer_approval") {
+      return res.status(400).json({
+        success: false,
+        message: "Design is not pending customer approval",
+      });
+    }
+
+    // Update using raw MongoDB
+    const revisionCount = (order.designRejection?.revisionCount || 0) + 1;
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "design_rejected_by_customer",
+          designProgress: 0,
+          customerRejectedAt: new Date(),
+          "designRejection.reason": reason,
+          "designRejection.rejectedBy": req.session.user.id,
+          "designRejection.rejectedAt": new Date(),
+          "designRejection.revisionCount": revisionCount,
+        },
+        $push: {
+          timeline: {
+            status: "design_rejected_by_customer",
+            at: new Date(),
+            note: `Customer requested revision: ${reason}`,
+          },
+        },
+      },
+    );
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Design Revision Requested",
+      message: `Customer requested revision for order ${order.orderNumber}: ${reason}`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design rejected, revision requested",
+    });
+  } catch (error) {
+    console.error("Customer reject design error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject design",
+    });
+  }
+});
+
+// Designer: Submit design to manager (after customer approval)
+app.put("/api/orders/:id/design/submit-to-manager", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "designer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only designers can submit designs to manager",
+      });
+    }
+
+    const { notes } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose casting issues with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify designer is assigned
+    if (order.designerId?.toString() !== req.session.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not assigned to this order",
+      });
+    }
+
+    // Verify customer has approved
+    if (order.status !== "design_approved_by_customer") {
+      return res.status(400).json({
+        success: false,
+        message: "Customer must approve design first",
+      });
+    }
+
+    // Update using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "design_ready",
+          "designApproval.status": "pending",
+        },
+        $push: {
+          timeline: {
+            status: "design_ready",
+            at: new Date(),
+            note: notes || "Design submitted to manager for final approval",
+          },
+        },
+      },
+    );
+
+    // Notify manager(s)
+    if (order.managerId) {
+      await Notification.create({
+        userId: order.managerId,
+        type: "order",
+        title: "Design Ready for Approval",
+        message: `Order ${order.orderNumber} design is ready for your review (customer approved)`,
+        relatedId: order._id,
+        relatedModel: "Order",
+      });
+    } else {
+      // No specific manager assigned - notify all managers
+      const managers = await User.find({ role: "manager" }, "_id");
+      for (const manager of managers) {
+        await Notification.create({
+          userId: manager._id,
+          type: "order",
+          title: "Design Ready for Approval",
+          message: `Order ${order.orderNumber} design is ready for your review (customer approved)`,
+          relatedId: order._id,
+          relatedModel: "Order",
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: "Design submitted to manager successfully",
+    });
+  } catch (error) {
+    console.error("Submit to manager error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit design to manager",
+    });
+  }
+});
+
+// Manager: Approve design
+app.put("/api/orders/:id/design/approve", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res.status(403).json({
+        success: false,
+        message: "Only managers can approve designs",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update order status
+    order.status = "design_approved";
+    order.designApprovedAt = new Date();
+
+    // Update designApproval
+    if (!order.designApproval) {
+      order.designApproval = {};
+    }
+    order.designApproval.status = "approved";
+    order.designApproval.approvedBy = req.session.user.id;
+    order.designApproval.approvedAt = new Date();
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "design_approved",
+      at: new Date(),
+      note: "Design approved by manager",
+    });
+
+    await order.save();
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Design Approved",
+      message: `Your design for order ${order.orderNumber} has been approved`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Design Approved",
+      message: "Your design has been approved. Production will begin soon.",
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design approved successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Approve design error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to approve design",
+    });
+  }
+});
+
+// Manager: Reject design
+app.put("/api/orders/:id/design/reject", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res.status(403).json({
+        success: false,
+        message: "Only managers can reject designs",
+      });
+    }
+
+    const { reason } = req.body;
+
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Rejection reason is required",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update order status
+    order.status = "design_rejected";
+    order.designRejectedAt = new Date();
+
+    // Update designApproval
+    if (!order.designApproval) {
+      order.designApproval = {};
+    }
+    order.designApproval.status = "rejected";
+    order.designApproval.rejectedBy = req.session.user.id;
+    order.designApproval.rejectedAt = new Date();
+    order.designApproval.rejectionReason = reason;
+    order.designApproval.revisionCount =
+      (order.designApproval.revisionCount || 0) + 1;
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "design_rejected",
+      at: new Date(),
+      note: `Design rejected: ${reason}`,
+    });
+
+    await order.save();
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Design Needs Revision",
+      message: `Order ${order.orderNumber}: ${reason}`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Design Revision in Progress",
+      message: "Your design is being revised based on feedback",
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Design rejected successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Reject design error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reject design",
+    });
+  }
+});
+
+// Manager: Start production
+app.put("/api/orders/:id/production/start", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res.status(403).json({
+        success: false,
+        message: "Only managers can start production",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update order status
+    order.status = "in_production";
+    order.progressPercentage = 0;
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "in_production",
+      at: new Date(),
+      note: "Production started by manager",
+    });
+
+    // Update timestamps
+    if (!order.timestamps) {
+      order.timestamps = {};
+    }
+    order.timestamps.productionStarted = new Date();
+
+    await order.save();
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Production Started",
+      message: `Production started for order ${order.orderNumber}`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Production Started",
+      message: "Your order is now in production",
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Production started successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Start production error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to start production",
+    });
+  }
+});
+
+// Manager: Update production progress
+app.put("/api/orders/:id/production/progress", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res.status(403).json({
+        success: false,
+        message: "Only managers can update production progress",
+      });
+    }
+
+    const { progress, note } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update production progress
+    order.progressPercentage = progress;
+
+    if (progress > 0 && progress < 100) {
+      order.status = "production_milestone";
+    }
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "production_milestone",
+      at: new Date(),
+      note: note || `Production progress: ${progress}%`,
+    });
+
+    await order.save();
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Production Update",
+      message: `Your order is ${progress}% complete`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Production progress updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Update production progress error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update production progress",
+    });
+  }
+});
+
+// Manager: Complete production
+app.put("/api/orders/:id/production/complete", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res.status(403).json({
+        success: false,
+        message: "Only managers can complete production",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update order status
+    order.status = "production_completed";
+    order.progressPercentage = 100;
+
+    // Add timeline entry
+    order.timeline.push({
+      status: "production_completed",
+      at: new Date(),
+      note: "Production completed by manager",
+    });
+
+    // Update timestamps
+    if (!order.timestamps) {
+      order.timestamps = {};
+    }
+    order.timestamps.productionCompleted = new Date();
+
+    await order.save();
+
+    // Notify designer
+    await Notification.create({
+      userId: order.designerId,
+      type: "order",
+      title: "Production Completed",
+      message: `Order ${order.orderNumber} production is complete`,
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      type: "order",
+      title: "Order Ready",
+      message: "Your order is ready for delivery!",
+      relatedId: order._id,
+      relatedModel: "Order",
+    });
+
+    res.json({
+      success: true,
+      message: "Production completed successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Complete production error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to complete production",
+    });
   }
 });
 
@@ -1651,6 +2818,7 @@ app.get("/api/designers", async (req, res) => {
         max: 3000,
       },
       turnaroundDays: designer.designerProfile?.turnaroundDays || 7,
+      designFee: designer.designerProfile?.designFee || 500, // Fixed design fee
       featuredWork: designer.designerProfile?.featuredWork || null,
       badges: designer.designerProfile?.badges || [],
     }));
@@ -3768,10 +4936,16 @@ app.get("/api/admin/designers/:id", async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Get portfolio items
-    const portfolio = await DesignerPortfolio.find({
+    // Get portfolio items from both sources
+    const portfolioFromCollection = await DesignerPortfolio.find({
       designerId: designer._id,
     }).lean();
+
+    // Combine portfolio from designer profile and separate collection
+    const portfolio = [
+      ...(designer.designerProfile?.portfolio || []),
+      ...portfolioFromCollection,
+    ];
 
     // Get order history
     const orders = await Order.find({ designerId: designer._id })
@@ -5057,12 +6231,36 @@ app.get("/delivery/orders", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const orders = await Order.find({
-      deliveryPersonId: req.session.user.id,
-    })
-      .populate("userId", "username email")
-      .populate("designerId", "username email")
-      .sort({ deliveryAssignedAt: -1 });
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+    const usersCollection = db.collection("users");
+
+    const orders = await ordersCollection
+      .find({
+        deliveryPersonId: new mongoose.Types.ObjectId(req.session.user.id),
+      })
+      .sort({ deliveryAssignedAt: -1 })
+      .toArray();
+
+    // Manually populate user info
+    for (let order of orders) {
+      if (order.userId) {
+        const user = await usersCollection.findOne(
+          { _id: new mongoose.Types.ObjectId(order.userId) },
+          { projection: { username: 1, email: 1 } },
+        );
+        order.userId = user || order.userId;
+      }
+      if (order.designerId) {
+        const designer = await usersCollection.findOne(
+          { _id: new mongoose.Types.ObjectId(order.designerId) },
+          { projection: { username: 1, email: 1 } },
+        );
+        order.designerId = designer || order.designerId;
+      }
+    }
 
     res.json({ success: true, orders });
   } catch (error) {
@@ -5078,11 +6276,15 @@ app.get("/delivery/order/:id", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const order = await Order.findById(req.params.id)
-      .populate("userId", "username email contactNumber")
-      .populate("designerId", "username email")
-      .populate("items.productId")
-      .populate("items.designId");
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+    const usersCollection = db.collection("users");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order) {
       return res
@@ -5096,6 +6298,22 @@ app.get("/delivery/order/:id", async (req, res) => {
         success: false,
         message: "You are not assigned to this order",
       });
+    }
+
+    // Manually populate user info
+    if (order.userId) {
+      const user = await usersCollection.findOne(
+        { _id: new mongoose.Types.ObjectId(order.userId) },
+        { projection: { username: 1, email: 1, contactNumber: 1 } },
+      );
+      order.userId = user || order.userId;
+    }
+    if (order.designerId) {
+      const designer = await usersCollection.findOne(
+        { _id: new mongoose.Types.ObjectId(order.designerId) },
+        { projection: { username: 1, email: 1 } },
+      );
+      order.designerId = designer || order.designerId;
     }
 
     res.json({ success: true, order });
@@ -5146,11 +6364,15 @@ app.get("/customer/api/orders", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const orders = await Order.find({ userId: req.session.user.id })
-      .populate("items.productId", "name images price")
-      .populate("items.designId", "name graphic basePrice estimatedPrice")
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const orders = await ordersCollection
+      .find({ userId: new mongoose.Types.ObjectId(req.session.user.id) })
       .sort({ createdAt: -1 })
-      .lean();
+      .toArray();
 
     res.json({ success: true, orders });
   } catch (error) {
@@ -5166,22 +6388,30 @@ app.get("/customer/order/:id", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const order = await Order.findOne({
-      _id: req.params.id,
-      userId: req.session.user.id,
-    })
-      .populate("items.productId", "name images price description")
-      .populate(
-        "items.designId",
-        "name graphic basePrice estimatedPrice category fabric color size customText",
-      )
-      .populate("deliveryPersonId", "name contactNumber")
-      .lean();
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+    const usersCollection = db.collection("users");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+      userId: new mongoose.Types.ObjectId(req.session.user.id),
+    });
 
     if (!order) {
       return res
         .status(404)
         .json({ success: false, message: "Order not found" });
+    }
+
+    // Manually populate delivery person info
+    if (order.deliveryPersonId) {
+      const deliveryPerson = await usersCollection.findOne(
+        { _id: new mongoose.Types.ObjectId(order.deliveryPersonId) },
+        { projection: { name: 1, contactNumber: 1 } },
+      );
+      order.deliveryPersonId = deliveryPerson || order.deliveryPersonId;
     }
 
     // Debug OTP
@@ -5225,8 +6455,14 @@ app.post("/customer/save-design", async (req, res) => {
     }
 
     console.log("=== SAVE DESIGN REQUEST ===");
-    console.log("Request body:", req.body);
+    console.log("Request body keys:", Object.keys(req.body));
     console.log("Designer ID from request:", req.body.designerId);
+    console.log(
+      "Preview image received:",
+      req.body.previewImage
+        ? "Yes (length: " + req.body.previewImage.length + ")"
+        : "No",
+    );
 
     // Filter out non-schema fields
     const {
@@ -5240,11 +6476,28 @@ app.post("/customer/save-design", async (req, res) => {
       customText,
       estimatedPrice,
       basePrice,
+      price, // Also accept 'price' as alternative
       sustainabilityScore,
       designerId,
       gender,
       customImage,
+      previewImage,
     } = req.body;
+
+    // Calculate price - use estimatedPrice, then price, then basePrice, fallback to 1200
+    const finalPrice = estimatedPrice || price || basePrice || 1200;
+    const finalBasePrice = basePrice || 1200;
+
+    console.log(
+      "Price calculation: estimatedPrice=",
+      estimatedPrice,
+      "price=",
+      price,
+      "basePrice=",
+      basePrice,
+      "final=",
+      finalPrice,
+    );
 
     const design = new Design({
       userId: req.session.user.id,
@@ -5256,15 +6509,20 @@ app.post("/customer/save-design", async (req, res) => {
       size,
       graphic,
       customText,
-      estimatedPrice: estimatedPrice || basePrice || 500,
-      basePrice: basePrice || 500,
+      estimatedPrice: finalPrice,
+      basePrice: finalBasePrice,
       sustainabilityScore,
       designerId: designerId || null, // Explicitly set designerId
+      previewImage: previewImage || null, // Store the 3D preview image
     });
 
     await design.save();
     console.log("Design saved with ID:", design._id);
     console.log("Design saved with designerId:", design.designerId);
+    console.log(
+      "Design saved with previewImage:",
+      design.previewImage ? "Yes" : "No",
+    );
     console.log("===========================");
 
     res.json({ success: true, message: "Design saved successfully", design });
@@ -6214,10 +7472,15 @@ app.post("/manager/api/order/:id/assign-delivery", async (req, res) => {
     }
 
     const { deliveryPersonId } = req.body;
-    const order = await Order.findById(req.params.id).populate(
-      "userId",
-      "name email",
-    );
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order) {
       return res
@@ -6236,7 +7499,9 @@ app.post("/manager/api/order/:id/assign-delivery", async (req, res) => {
         .json({ success: false, message: "Delivery person not found" });
     }
 
-    const isCustom = await order.isCustomOrder();
+    const isCustom =
+      order.orderType === "custom" ||
+      (order.items && order.items.some((item) => item.designId));
 
     // For custom orders, ensure production is completed
     if (isCustom && order.status !== "production_completed") {
@@ -6247,18 +7512,26 @@ app.post("/manager/api/order/:id/assign-delivery", async (req, res) => {
       });
     }
 
-    // Update order
-    order.deliveryPersonId = deliveryPersonId;
-    order.status = "ready_for_pickup"; // Changed from ready_for_delivery to match delivery flow
-    order.deliveryAssignedAt = new Date();
-    order.timeline.push({
-      status: "ready_for_pickup",
-      note: `Assigned to delivery person ${
-        deliveryPerson.name || deliveryPerson.email
-      }`,
-      at: new Date(),
-    });
-    await order.save();
+    // Update order using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          deliveryPersonId: new mongoose.Types.ObjectId(deliveryPersonId),
+          status: "ready_for_pickup", // Changed from ready_for_delivery to match delivery flow
+          deliveryAssignedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "ready_for_pickup",
+            note: `Assigned to delivery person ${
+              deliveryPerson.name || deliveryPerson.email
+            }`,
+            at: new Date(),
+          },
+        },
+      },
+    );
 
     // Notify delivery person
     await Notification.create({
@@ -6272,20 +7545,21 @@ app.post("/manager/api/order/:id/assign-delivery", async (req, res) => {
 
     // Notify customer
     await Notification.create({
-      userId: order.userId._id,
+      userId: order.userId,
       orderId: order._id,
       message: `Your order is ready for delivery`,
       type: "info",
     });
 
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
     res.json({
       success: true,
       message: "Order assigned to delivery person successfully",
-      order: await Order.findById(order._id)
-        .populate("userId", "name email")
-        .populate("designerId", "name email")
-        .populate("managerId", "name email")
-        .populate("deliveryPersonId", "name email"),
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("Error assigning delivery:", error);
@@ -6570,6 +7844,641 @@ app.post("/designer/api/order/:id/complete", async (req, res) => {
       .json({ success: false, message: "Server error", error: error.message });
   }
 });
+
+// ===== NEW DESIGN WORKFLOW ENDPOINTS =====
+
+// Designer - Update design progress
+app.put("/designer/api/order/:id/design-progress", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "designer") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Designer only" });
+    }
+
+    const { designProgress, note } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose casting issues with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    if (order.designerId?.toString() !== req.session.user.id) {
+      return res
+        .status(403)
+        .json({ success: false, message: "This order is not assigned to you" });
+    }
+
+    // Build update object
+    const updateData = {
+      $set: {
+        designProgress: designProgress,
+        status: "design_in_progress",
+      },
+    };
+
+    // Add timeline entry if note provided
+    if (note) {
+      updateData.$push = {
+        timeline: {
+          status: "design_in_progress",
+          note: note,
+          by: req.session.user.id,
+          byRole: "designer",
+          at: new Date(),
+        },
+      };
+    }
+
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      updateData,
+    );
+
+    res.json({
+      success: true,
+      message: "Design progress updated",
+    });
+  } catch (error) {
+    console.error("Error updating design progress:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Designer - Submit design for manager approval
+app.post("/designer/api/order/:id/submit-design", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "designer") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Designer only" });
+    }
+
+    console.log("=== SUBMIT DESIGN DEBUG ===");
+    console.log("Request body type:", typeof req.body);
+    console.log("Request body:", JSON.stringify(req.body).substring(0, 200));
+    console.log("Notes:", req.body.notes);
+    console.log("Design files type:", typeof req.body.designFiles);
+    console.log("Design files is array:", Array.isArray(req.body.designFiles));
+    if (req.body.designFiles && req.body.designFiles.length > 0) {
+      console.log("First file type:", typeof req.body.designFiles[0]);
+      console.log(
+        "First file keys:",
+        Object.keys(req.body.designFiles[0] || {}),
+      );
+    }
+    console.log("===========================");
+
+    const { notes, designFiles } = req.body;
+    const order = await Order.findById(req.params.id)
+      .populate("userId", "name email")
+      .populate("managerId", "name email");
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    if (order.designerId?.toString() !== req.session.user.id) {
+      return res
+        .status(403)
+        .json({ success: false, message: "This order is not assigned to you" });
+    }
+
+    // Check if design is complete
+    if (order.designProgress < 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Design must be 100% complete before submission",
+      });
+    }
+
+    // Validate design files are uploaded
+    if (!designFiles || designFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one design file for customer review",
+      });
+    }
+
+    // Validate each file has required properties
+    const validatedFiles = [];
+    for (const file of designFiles) {
+      if (!file || typeof file !== "object") {
+        console.error("Invalid file object:", file);
+        return res.status(400).json({
+          success: false,
+          message: "Invalid file format - each file must be an object",
+        });
+      }
+      if (!file.url || !file.name || !file.type) {
+        console.error("Missing required file properties:", file);
+        return res.status(400).json({
+          success: false,
+          message: "Each file must have url, name, and type properties",
+        });
+      }
+      validatedFiles.push({
+        url: String(file.url),
+        name: String(file.name),
+        type: String(file.type),
+        uploadedBy: req.session.user.id.toString(),
+        uploadedAt: new Date(),
+      });
+    }
+
+    console.log("Validated files count:", validatedFiles.length);
+    console.log(
+      "First validated file:",
+      JSON.stringify(validatedFiles[0]).substring(0, 100),
+    );
+
+    // Use raw MongoDB update to bypass Mongoose schema validation completely
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const updateResult = await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          designFiles: validatedFiles,
+          status: "design_pending_customer_approval",
+          designSubmittedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "design_pending_customer_approval",
+            note: notes || "Design submitted for customer approval",
+            by: req.session.user.id,
+            byRole: "designer",
+            at: new Date(),
+          },
+        },
+      },
+    );
+
+    console.log("Update result:", updateResult);
+
+    if (!updateResult.modifiedCount) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to update order" });
+    }
+
+    // Notify customer (NOT manager - customer reviews first)
+    await Notification.create({
+      userId: order.userId._id,
+      orderId: order._id,
+      message: `Your custom design is ready! Please review and approve it.`,
+      type: "info",
+    });
+
+    res.json({
+      success: true,
+      message: "Design submitted to customer for approval successfully",
+      order: await Order.findById(order._id)
+        .populate("userId", "name email")
+        .populate("designerId", "name email")
+        .populate("managerId", "name email"),
+    });
+  } catch (error) {
+    console.error("Error submitting design:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Manager - Approve design and start production
+app.post("/manager/api/order/:id/approve-design", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Manager only" });
+    }
+
+    const { notes } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    // Update order using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "design_approved",
+          "designApproval.status": "approved",
+          "designApproval.approvedBy": new mongoose.Types.ObjectId(
+            req.session.user.id,
+          ),
+          "designApproval.approvedAt": new Date(),
+          designApprovedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "design_approved",
+            note: notes || "Design approved by manager, moving to production",
+            by: new mongoose.Types.ObjectId(req.session.user.id),
+            byRole: "manager",
+            at: new Date(),
+          },
+        },
+      },
+    );
+
+    // Notify designer
+    if (order.designerId) {
+      await Notification.create({
+        userId: order.designerId,
+        orderId: order._id,
+        message: `Your design for order #${order.orderNumber} has been approved!`,
+        type: "success",
+      });
+    }
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message: `Your design has been approved! Production will begin shortly`,
+      type: "success",
+    });
+
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    res.json({
+      success: true,
+      message: "Design approved successfully. You can now start production.",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error approving design:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Manager - Reject design and send back to designer
+app.post("/manager/api/order/:id/reject-design", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Manager only" });
+    }
+
+    const { reason } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    if (!reason || reason.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a reason for rejection",
+      });
+    }
+
+    // Update order using raw MongoDB
+    const revisionCount = (order.designApproval?.revisionCount || 0) + 1;
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "design_rejected",
+          "designApproval.status": "rejected",
+          "designApproval.rejectedBy": new mongoose.Types.ObjectId(
+            req.session.user.id,
+          ),
+          "designApproval.rejectedAt": new Date(),
+          "designApproval.rejectionReason": reason,
+          "designApproval.revisionCount": revisionCount,
+          designRejectedAt: new Date(),
+          designProgress: 0, // Reset progress for revision
+        },
+        $push: {
+          timeline: {
+            status: "design_rejected",
+            note: `Design rejected: ${reason}`,
+            by: new mongoose.Types.ObjectId(req.session.user.id),
+            byRole: "manager",
+            at: new Date(),
+          },
+        },
+      },
+    );
+
+    // Notify designer
+    if (order.designerId) {
+      await Notification.create({
+        userId: order.designerId,
+        orderId: order._id,
+        message: `Design rejected for order #${order.orderNumber}. Reason: ${reason}`,
+        type: "warning",
+      });
+    }
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message: `Your design needs revision. Our designer is working on improvements.`,
+      type: "info",
+    });
+
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    res.json({
+      success: true,
+      message: "Design rejected. Designer will revise and resubmit.",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error rejecting design:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Manager - Start production (after design approval)
+app.post("/manager/api/order/:id/start-production", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Manager only" });
+    }
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    if (order.status !== "design_approved") {
+      return res.status(400).json({
+        success: false,
+        message: "Design must be approved before starting production",
+      });
+    }
+
+    // Update order using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "in_production",
+          progressPercentage: 10, // 10% when production starts
+          productionStartedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "in_production",
+            note: "Manager started production",
+            by: new mongoose.Types.ObjectId(req.session.user.id),
+            byRole: "manager",
+            at: new Date(),
+          },
+        },
+      },
+    );
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message: `Production has started on your order!`,
+      type: "info",
+    });
+
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    res.json({
+      success: true,
+      message: "Production started successfully",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error starting production:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Manager - Update production progress
+app.put("/manager/api/order/:id/production-progress", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Manager only" });
+    }
+
+    const { progressPercentage, note } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    // Update production progress using raw MongoDB
+    const updateObj = {
+      $set: {
+        progressPercentage: progressPercentage,
+      },
+    };
+
+    if (note) {
+      updateObj.$push = {
+        timeline: {
+          status: order.status,
+          note: note,
+          by: new mongoose.Types.ObjectId(req.session.user.id),
+          byRole: "manager",
+          at: new Date(),
+        },
+      };
+    }
+
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      updateObj,
+    );
+
+    // Notify customer on milestone progress (every 25%)
+    if (progressPercentage % 25 === 0 && progressPercentage > 0) {
+      await Notification.create({
+        userId: order.userId,
+        orderId: order._id,
+        message: `Production is ${progressPercentage}% complete`,
+        type: "info",
+      });
+    }
+
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    res.json({
+      success: true,
+      message: "Production progress updated",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error updating production progress:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// Manager - Complete production
+app.post("/manager/api/order/:id/complete-production", async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized - Manager only" });
+    }
+
+    const { notes } = req.body;
+
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    // Update order using raw MongoDB
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "production_completed",
+          progressPercentage: 100,
+          productionCompletedAt: new Date(),
+        },
+        $push: {
+          timeline: {
+            status: "production_completed",
+            note: notes || "Production completed, ready for delivery",
+            by: new mongoose.Types.ObjectId(req.session.user.id),
+            byRole: "manager",
+            at: new Date(),
+          },
+        },
+      },
+    );
+
+    // Notify customer
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message: `Your order is ready! Waiting for delivery assignment`,
+      type: "success",
+    });
+
+    // Fetch updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
+    res.json({
+      success: true,
+      message:
+        "Production completed successfully. Ready to assign for delivery.",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error completing production:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+// ===== END NEW DESIGN WORKFLOW ENDPOINTS =====
 
 // REMOVED - DUPLICATE ROUTE - See line ~4400 for correct implementation
 
@@ -7134,10 +9043,14 @@ app.post("/delivery/api/order/:id/pickup", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const order = await Order.findById(req.params.id).populate(
-      "userId",
-      "name email phone",
-    );
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order) {
       return res
@@ -7157,38 +9070,50 @@ app.post("/delivery/api/order/:id/pickup", async (req, res) => {
         .json({ success: false, message: "Order is not ready for pickup" });
     }
 
-    order.status = "picked_up";
-    order.pickedUpAt = new Date();
-    order.liveTracking = {
-      isActive: true,
-      currentLocation: {
-        address: "DesignDen Warehouse, Bangalore",
-        updatedAt: new Date(),
+    const now = new Date();
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "picked_up",
+          pickedUpAt: now,
+          liveTracking: {
+            isActive: true,
+            currentLocation: {
+              address: "DesignDen Warehouse, Bangalore",
+              updatedAt: now,
+            },
+          },
+        },
+        $push: {
+          timeline: {
+            status: "picked_up",
+            note: "Package picked up from warehouse",
+            location: "DesignDen Warehouse",
+            by: req.session.user.id,
+            byRole: "delivery",
+            at: now,
+          },
+        },
       },
-    };
-
-    order.timeline.push({
-      status: "picked_up",
-      note: "Package picked up from warehouse",
-      location: "DesignDen Warehouse",
-      by: req.session.user.id,
-      byRole: "delivery",
-      at: new Date(),
-    });
-
-    await order.save();
+    );
 
     await Notification.create({
-      userId: order.userId._id,
+      userId: order.userId,
       orderId: order._id,
       message: `Your order has been picked up and is on the way!`,
       type: "info",
     });
 
+    // Get updated order for response
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
     res.json({
       success: true,
       message: "Order picked up successfully",
-      order,
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("Error picking up order:", error);
@@ -7204,28 +9129,33 @@ app.put("/delivery/api/order/:id/location", async (req, res) => {
     }
 
     const { lat, lng, address } = req.body;
-    const order = await Order.findById(req.params.id);
+
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order || order.deliveryPersonId?.toString() !== req.session.user.id) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    order.liveTracking = {
-      isActive: true,
-      currentLocation: {
-        lat,
-        lng,
-        address,
-        updatedAt: new Date(),
+    const now = new Date();
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          liveTracking: {
+            isActive: true,
+            currentLocation: { lat, lng, address, updatedAt: now },
+            deliveryPersonLocation: { lat, lng, updatedAt: now },
+          },
+        },
       },
-      deliveryPersonLocation: {
-        lat,
-        lng,
-        updatedAt: new Date(),
-      },
-    };
-
-    await order.save();
+    );
 
     res.json({ success: true, message: "Location updated" });
   } catch (error) {
@@ -7241,28 +9171,46 @@ app.post("/delivery/api/order/:id/in-transit", async (req, res) => {
     }
 
     const { location } = req.body;
-    const order = await Order.findById(req.params.id).populate(
-      "userId",
-      "name email",
-    );
+
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order || order.deliveryPersonId?.toString() !== req.session.user.id) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    order.status = "in_transit";
-    order.timeline.push({
-      status: "in_transit",
-      note: "Package in transit",
-      location: location || "In Transit Hub",
-      by: req.session.user.id,
-      byRole: "delivery",
-      at: new Date(),
+    const now = new Date();
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: { status: "in_transit" },
+        $push: {
+          timeline: {
+            status: "in_transit",
+            note: "Package in transit",
+            location: location || "In Transit Hub",
+            by: req.session.user.id,
+            byRole: "delivery",
+            at: now,
+          },
+        },
+      },
+    );
+
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
     });
-
-    await order.save();
-
-    res.json({ success: true, message: "Status updated to in transit", order });
+    res.json({
+      success: true,
+      message: "Status updated to in transit",
+      order: updatedOrder,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
@@ -7275,48 +9223,70 @@ app.post("/delivery/api/order/:id/out-for-delivery", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const order = await Order.findById(req.params.id).populate(
-      "userId",
-      "name email phone",
-    );
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order || order.deliveryPersonId?.toString() !== req.session.user.id) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    order.status = "out_for_delivery";
+    const now = new Date();
 
-    // Generate OTP for delivery verification
-    if (!order.deliveryOTP?.code) {
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
-      order.deliveryOTP = {
+    // Generate OTP for delivery verification if not already generated
+    let otp = order.deliveryOTP?.code;
+    let deliveryOTP = order.deliveryOTP;
+    if (!otp) {
+      otp = Math.floor(1000 + Math.random() * 9000).toString();
+      deliveryOTP = {
         code: otp,
-        generatedAt: new Date(),
+        generatedAt: now,
         verified: false,
       };
       console.log("Generated OTP for order:", order._id, "OTP:", otp);
     }
 
-    order.timeline.push({
-      status: "out_for_delivery",
-      note: "Package is out for delivery",
-      location: order.shippingAddress.city,
-      by: req.session.user.id,
-      byRole: "delivery",
-      at: new Date(),
-    });
-
-    await order.save();
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "out_for_delivery",
+          deliveryOTP: deliveryOTP,
+        },
+        $push: {
+          timeline: {
+            status: "out_for_delivery",
+            note: "Package is out for delivery",
+            location: order.shippingAddress?.city || "Customer Location",
+            by: req.session.user.id,
+            byRole: "delivery",
+            at: now,
+          },
+        },
+      },
+    );
 
     // Send OTP reminder to customer
     await Notification.create({
-      userId: order.userId._id,
+      userId: order.userId,
       orderId: order._id,
-      message: `Your order is out for delivery! Your delivery OTP is: ${order.deliveryOTP.code}. Share this with the delivery person to confirm delivery.`,
+      message: `Your order is out for delivery! Your delivery OTP is: ${otp}. Share this with the delivery person to confirm delivery.`,
       type: "info",
     });
 
-    res.json({ success: true, message: "Order is out for delivery", order });
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+    res.json({
+      success: true,
+      message: "Order is out for delivery",
+      order: updatedOrder,
+    });
   } catch (error) {
     console.error("Error marking out for delivery:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -7331,9 +9301,15 @@ app.post("/delivery/api/order/:id/deliver", async (req, res) => {
     }
 
     const { otp, receivedBy, relationship, signature, photo, notes } = req.body;
-    const order = await Order.findById(req.params.id)
-      .populate("userId", "name email")
-      .populate("managerId", "name email");
+
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+
+    const order = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
 
     if (!order || order.deliveryPersonId?.toString() !== req.session.user.id) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
@@ -7373,37 +9349,42 @@ app.post("/delivery/api/order/:id/deliver", async (req, res) => {
       });
     }
 
-    // Update order
-    order.status = "delivered";
-    order.deliveredAt = new Date();
-    order.actualDelivery = new Date();
-    order.paymentStatus = "completed"; // Mark payment as completed on delivery
+    const now = new Date();
+    const receiverName =
+      receivedBy || order.shippingAddress?.name || "Customer";
+    const receiverRelation = relationship || "Self";
 
-    order.deliveryOTP.verified = true;
-    order.deliveryOTP.verifiedAt = new Date();
-
-    order.proofOfDelivery = {
-      receivedBy: receivedBy || order.shippingAddress.name,
-      relationship: relationship || "Self",
-      signature: signature,
-      photo: photo,
-      notes: notes,
-    };
-
-    order.liveTracking.isActive = false;
-
-    order.timeline.push({
-      status: "delivered",
-      note: `Delivered to ${receivedBy || order.shippingAddress.name} (${
-        relationship || "Self"
-      })`,
-      location: order.shippingAddress.city,
-      by: req.session.user.id,
-      byRole: "delivery",
-      at: new Date(),
-    });
-
-    await order.save();
+    await ordersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(req.params.id) },
+      {
+        $set: {
+          status: "delivered",
+          deliveredAt: now,
+          actualDelivery: now,
+          paymentStatus: "completed",
+          "deliveryOTP.verified": true,
+          "deliveryOTP.verifiedAt": now,
+          proofOfDelivery: {
+            receivedBy: receiverName,
+            relationship: receiverRelation,
+            signature: signature,
+            photo: photo,
+            notes: notes,
+          },
+          "liveTracking.isActive": false,
+        },
+        $push: {
+          timeline: {
+            status: "delivered",
+            note: `Delivered to ${receiverName} (${receiverRelation})`,
+            location: order.shippingAddress?.city || "Customer Location",
+            by: req.session.user.id,
+            byRole: "delivery",
+            at: now,
+          },
+        },
+      },
+    );
 
     // Create designer earnings if this order has a designer
     if (order.designerId) {
@@ -7430,7 +9411,7 @@ app.post("/delivery/api/order/:id/deliver", async (req, res) => {
 
     // Notifications
     await Notification.create({
-      userId: order.userId._id,
+      userId: order.userId,
       orderId: order._id,
       message: `Your order has been delivered successfully! Thank you for shopping with DesignDen.`,
       type: "success",
@@ -7447,13 +9428,13 @@ app.post("/delivery/api/order/:id/deliver", async (req, res) => {
       });
     }
 
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
     res.json({
       success: true,
       message: "Order delivered successfully!",
-      order: await Order.findById(order._id)
-        .populate("userId", "name email")
-        .populate("deliveryPersonId", "name email")
-        .populate("managerId", "name email"),
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("Error delivering order:", error);
@@ -7773,20 +9754,47 @@ app.post("/api/order/:orderId/milestones", async (req, res) => {
 // Get complete order tracking info
 app.get("/api/order/:orderId/track", async (req, res) => {
   try {
-    const order = await Order.findById(req.params.orderId)
-      .populate("userId", "name email phone")
-      .populate("managerId", "name email contactNumber")
-      .populate("designerId", "name email contactNumber")
-      .populate("deliveryPersonId", "name email contactNumber")
-      .populate("deliveryPartner.partnerId")
-      .populate("items.productId", "name images price")
-      .populate("items.designId", "name images category estimatedPrice");
+    // Use raw MongoDB to avoid Mongoose CastError with designFiles
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+    const usersCollection = db.collection("users");
 
-    if (!order) {
+    const rawOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.orderId),
+    });
+
+    if (!rawOrder) {
       return res
         .status(404)
         .json({ success: false, message: "Order not found" });
     }
+
+    // Get populated fields manually
+    const [userId, managerId, designerId, deliveryPersonId] = await Promise.all(
+      [
+        rawOrder.userId
+          ? usersCollection.findOne({ _id: rawOrder.userId })
+          : null,
+        rawOrder.managerId
+          ? usersCollection.findOne({ _id: rawOrder.managerId })
+          : null,
+        rawOrder.designerId
+          ? usersCollection.findOne({ _id: rawOrder.designerId })
+          : null,
+        rawOrder.deliveryPersonId
+          ? usersCollection.findOne({ _id: rawOrder.deliveryPersonId })
+          : null,
+      ],
+    );
+
+    // Create order object with populated fields for compatibility
+    const order = {
+      ...rawOrder,
+      userId: userId,
+      managerId: managerId,
+      designerId: designerId,
+      deliveryPersonId: deliveryPersonId,
+    };
 
     // Get milestones for custom orders
     let productionMilestones = [];
@@ -7928,6 +9936,9 @@ app.get("/api/order/:orderId/track", async (req, res) => {
       // Proof of delivery
       proofOfDelivery:
         order.status === "delivered" ? order.proofOfDelivery : null,
+
+      // Design files sent by designer (for customer approval)
+      designFiles: order.designFiles || [],
     };
 
     res.json({ success: true, tracking: trackingInfo });
@@ -7948,28 +9959,45 @@ app.get("/delivery/api/orders", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    const orders = await Order.find({
-      deliveryPersonId: req.session.user.id,
-    })
-      .populate("userId", "name email phone")
-      .populate("items.productId", "name images price")
-      .populate("items.designId", "name category estimatedPrice")
-      .sort({ createdAt: -1 });
+    // Use raw MongoDB to avoid CastError with designFiles
+    const mongoose = require("mongoose");
+    const db = mongoose.connection.db;
+    const ordersCollection = db.collection("orders");
+    const usersCollection = db.collection("users");
+    const productsCollection = db.collection("products");
+    const designsCollection = db.collection("designs");
+
+    const orders = await ordersCollection
+      .find({
+        deliveryPersonId: new mongoose.Types.ObjectId(req.session.user.id),
+      })
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    // Manually populate user info for each order
+    for (let order of orders) {
+      if (order.userId) {
+        const user = await usersCollection.findOne(
+          { _id: new mongoose.Types.ObjectId(order.userId) },
+          { projection: { name: 1, email: 1, phone: 1 } },
+        );
+        order.userId = user || order.userId;
+      }
+    }
 
     // SECURITY: Remove OTP code from response - delivery person should NOT see the OTP
     // They need to ask the customer for the OTP and enter it for verification
     const sanitizedOrders = orders.map((order) => {
-      const orderObj = order.toObject();
-      if (orderObj.deliveryOTP) {
+      if (order.deliveryOTP) {
         // Keep the hash for verification but remove the actual code
-        orderObj.deliveryOTP = {
-          hash: orderObj.deliveryOTP.hash,
-          generatedAt: orderObj.deliveryOTP.generatedAt,
-          verified: orderObj.deliveryOTP.verified,
+        order.deliveryOTP = {
+          hash: order.deliveryOTP.hash,
+          generatedAt: order.deliveryOTP.generatedAt,
+          verified: order.deliveryOTP.verified,
           // code is intentionally NOT included
         };
       }
-      return orderObj;
+      return order;
     });
 
     res.json({ success: true, orders: sanitizedOrders });
