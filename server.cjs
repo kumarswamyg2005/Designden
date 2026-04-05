@@ -18,14 +18,10 @@ let redisClient = null;
 let redisAvailable = false;
 
 try {
-  redisClient = new Redis({
-    host: process.env.REDIS_HOST || "127.0.0.1",
-    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-    password: process.env.REDIS_PASSWORD || undefined,
-    lazyConnect: true,
-    connectTimeout: 3000,
-    maxRetriesPerRequest: 1,
-  });
+  const redisConfig = process.env.REDIS_URL
+    ? { url: process.env.REDIS_URL, tls: { rejectUnauthorized: false }, lazyConnect: true, connectTimeout: 5000, maxRetriesPerRequest: 1 }
+    : { host: process.env.REDIS_HOST || "127.0.0.1", port: parseInt(process.env.REDIS_PORT, 10) || 6379, password: process.env.REDIS_PASSWORD || undefined, lazyConnect: true, connectTimeout: 3000, maxRetriesPerRequest: 1 };
+  redisClient = new Redis(redisConfig);
   redisClient.on("connect", () => {
     redisAvailable = true;
     console.log("[Redis] Connected — caching enabled");
