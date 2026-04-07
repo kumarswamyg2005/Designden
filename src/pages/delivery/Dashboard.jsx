@@ -53,7 +53,7 @@ const Dashboard = () => {
 
   const orders = useSelector(selectOrders);
   const loading = useSelector(selectOrdersLoading);
-  const deliveryStats = useSelector(selectDeliveryStatistics);
+  const _deliveryStats = useSelector(selectDeliveryStatistics);
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");

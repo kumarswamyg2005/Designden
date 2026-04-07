@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1776421399967" clover="3.2.0">
-  <project timestamp="1776421399967" name="All files">
-    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
+<coverage generated="1776454181229" clover="3.2.0">
+  <project timestamp="1776454181229" name="All files">
+    <metrics statements="28" coveredstatements="28" conditionals="24" coveredconditionals="22" methods="16" coveredmethods="16" elements="68" coveredelements="66" complexity="0" loc="28" ncloc="28" packages="1" files="2" classes="2"/>
+    <file name="authHelpers.cjs" path="/Users/kumaraswamy/Desktop/design-den-react copy/src/utils/authHelpers.cjs">
+      <metrics statements="12" coveredstatements="12" conditionals="2" coveredconditionals="2" methods="8" coveredmethods="8"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="5" count="5" type="stmt"/>
+      <line num="9" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="13" count="7" type="stmt"/>
+      <line num="14" count="7" type="stmt"/>
+      <line num="18" count="3" type="stmt"/>
+      <line num="22" count="3" type="stmt"/>
+      <line num="26" count="3" type="stmt"/>
+      <line num="30" count="2" type="stmt"/>
+      <line num="34" count="2" type="stmt"/>
+      <line num="35" count="2" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+    </file>
+    <file name="helpers.cjs" path="/Users/kumaraswamy/Desktop/design-den-react copy/src/utils/helpers.cjs">
+      <metrics statements="16" coveredstatements="16" conditionals="22" coveredconditionals="20" methods="8" coveredmethods="8"/>
+      <line num="4" count="6" type="cond" truecount="4" falsecount="0"/>
+      <line num="5" count="3" type="stmt"/>
+      <line num="13" count="6" type="stmt"/>
+      <line num="31" count="6" type="cond" truecount="3" falsecount="0"/>
+      <line num="35" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="36" count="3" type="cond" truecount="3" falsecount="1"/>
+      <line num="40" count="4" type="stmt"/>
+      <line num="44" count="4" type="stmt"/>
+      <line num="48" count="6" type="stmt"/>
+      <line num="49" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="50" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="51" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="52" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="53" count="6" type="stmt"/>
+      <line num="57" count="5" type="stmt"/>
+      <line num="60" count="1" type="stmt"/>
+    </file>
   </project>
 </coverage>

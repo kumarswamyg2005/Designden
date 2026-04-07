@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import "./LogoutAnimation.css";
 
-const LogoutAnimation = ({ isVisible, onComplete, userName = "User" }) => {
+const LogoutAnimation = ({ isVisible, onComplete, userName: _userName = "User" }) => {
   const [phase, setPhase] = useState(0);
   const wasVisibleRef = useRef(false);
 
   useEffect(() => {
     if (isVisible && !wasVisibleRef.current) {
-      wasVisibleRef.current = true;
+      wasVisibleRef.current = true; // eslint-disable-next-line
       setPhase(0);
 
       // Clean, simple, ultra-modern sequence

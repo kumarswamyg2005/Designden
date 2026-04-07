@@ -15,7 +15,7 @@ const SearchBar = ({
   className = "",
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const dispatch = useDispatch();
+  const _dispatch = useDispatch();
 
   // Debounce search
   useEffect(() => {

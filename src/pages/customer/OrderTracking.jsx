@@ -97,7 +97,7 @@ const DELIVERY_STATUSES = [
 const OrderTracking = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
 
   const trackingData = useSelector(selectTrackingData);
   const messages = useSelector(selectMessages);

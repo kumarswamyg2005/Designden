@@ -8,7 +8,7 @@ const Products = () => {
   const { showFlash } = useFlash();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [togglingStock, setTogglingStock] = useState({});
+  const [_togglingStock, _setTogglingStock] = useState({});
 
   useEffect(() => {
     fetchProducts();

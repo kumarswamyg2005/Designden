@@ -15,7 +15,7 @@ import {
 } from "../store/slices/productsSlice";
 import "./FilterPanel.css";
 
-const FilterPanel = ({ type = "products" }) => {
+const FilterPanel = ({ type: _type = "products" }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectFilters);
   const categories = useSelector(selectCategories);

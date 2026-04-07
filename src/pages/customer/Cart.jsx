@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-import { customerAPI } from "../../services/api";
 import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 
@@ -9,7 +8,7 @@ const Cart = () => {
   const navigate = useNavigate();
   const { cart, updateCartItem, removeFromCart, refreshCart } = useCart();
   const { showFlash } = useFlash();
-  const [loading, setLoading] = useState(false);
+  const [_loading, _setLoading] = useState(false);
 
   useEffect(() => {
     refreshCart();
