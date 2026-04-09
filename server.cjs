@@ -1327,16 +1327,17 @@ app.use("/models", express.static(path.join(__dirname, "public/models")));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Session configuration
+const isProd = process.env.NODE_ENV === "production";
 app.use(
   session({
-    secret: "designden_secret_key_12345",
+    secret: process.env.SESSION_SECRET || "designden_secret_key_12345",
     resave: true,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: isProd,
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: isProd ? "none" : "lax",
     },
   }),
 );
