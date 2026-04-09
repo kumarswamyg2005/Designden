@@ -1280,6 +1280,9 @@ const deleteFile = async (filePath) => {
 
 app.set("deleteFile", deleteFile);
 
+// Trust reverse proxy (required on Render/Heroku so secure cookies work over HTTPS)
+app.set("trust proxy", 1);
+
 // =============================================================================
 // CORS CONFIGURATION
 // =============================================================================
