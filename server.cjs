@@ -11107,18 +11107,12 @@ app.get("/delivery/api/statistics", async (req, res) => {
   }
 });
 
-// Initialize sample designers if none exist
+// Initialize sample designers — always runs to insert any missing ones
 async function initializeSampleDesigners() {
   try {
-    const designerCount = await User.countDocuments({
-      role: "designer",
-      approved: true,
-    });
+    console.log("Checking sample designers...");
 
-    if (designerCount < 3) {
-      console.log("Creating sample designers for demo...");
-
-      const sampleDesigners = [
+    const sampleDesigners = [
         {
           email: "priya.designer@example.com",
           password: await bcrypt.hash("password123", 10),
@@ -11294,8 +11288,7 @@ async function initializeSampleDesigners() {
         }
       }
 
-      console.log("Sample designers initialized successfully!");
-    }
+    console.log("Sample designers check complete!");
   } catch (error) {
     console.error("Error initializing sample designers:", error);
   }
