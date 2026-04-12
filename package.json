@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.cjs",
-    "start": "node start.cjs",
+    "start": "node server.cjs",
+    "dev:all": "node start.cjs",
     "test": "jest --config jest.config.cjs",
     "test:coverage": "jest --config jest.config.cjs --coverage",
     "test:report": "jest --config jest.config.cjs --coverage --reporters=default --reporters=jest-junit 2>/dev/null || jest --config jest.config.cjs --coverage"
