@@ -18,15 +18,20 @@ const Dashboard = () => {
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const [dashResponse, userStatsResponse, productsResponse] =
-        await Promise.all([
+      const [dashResult, userStatsResult, productsResult] =
+        await Promise.allSettled([
           adminAPI.getDashboard(),
           api.get("/admin/api/user-stats"),
           api.get("/admin/api/products"),
         ]);
-      setStats(dashResponse.data.stats || {});
-      setUserStats(userStatsResponse.data.stats || {});
-      setProducts(productsResponse.data.products || []);
+      if (dashResult.status === "fulfilled")
+        setStats(dashResult.value.data.stats || {});
+      if (userStatsResult.status === "fulfilled")
+        setUserStats(userStatsResult.value.data.stats || {});
+      if (productsResult.status === "fulfilled")
+        setProducts(productsResult.value.data.products || []);
+      if (dashResult.status === "rejected")
+        showFlash("Failed to load dashboard stats", "error");
     } catch (error) {
       showFlash("Failed to load dashboard", "error");
       console.error("Dashboard error:", error);
