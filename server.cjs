@@ -145,8 +145,24 @@ transporter.verify((error, success) => {
   }
 });
 
-// For storing verification codes in memory
-const verificationCodes = new Map();
+// OTP helpers — backed by MongoDB so codes survive server restarts
+const verificationCodes = {
+  set: async (email, data) => {
+    await OtpCode.findOneAndUpdate(
+      { email },
+      { email, code: data.code, purpose: data.purpose, expiresAt: new Date(data.expiresAt) },
+      { upsert: true, new: true }
+    );
+  },
+  get: async (email) => {
+    const doc = await OtpCode.findOne({ email });
+    if (!doc) return null;
+    return { code: doc.code, purpose: doc.purpose, expiresAt: doc.expiresAt.getTime() };
+  },
+  delete: async (email) => {
+    await OtpCode.deleteOne({ email });
+  },
+};
 
 // Generate 6-digit code
 const generateVerificationCode = () => {
@@ -780,6 +796,15 @@ const designSchema = new mongoose.Schema({
 });
 
 const Design = mongoose.model("Design", designSchema);
+
+// OTP / Verification Code Schema — persistent across server restarts
+const otpSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  code: { type: String, required: true },
+  purpose: { type: String, required: true },
+  expiresAt: { type: Date, required: true, index: { expires: 0 } },
+});
+const OtpCode = mongoose.model("OtpCode", otpSchema);
 
 // Wishlist Schema
 const wishlistSchema = new mongoose.Schema({
@@ -2201,7 +2226,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
       if (!twoFactorCode) {
         // Generate and send code
         const code = generateVerificationCode();
-        verificationCodes.set(user.email, {
+        await verificationCodes.set(user.email, {
           code,
           expiresAt: Date.now() + 5 * 60 * 1000,
           purpose: "2fa_login",
@@ -2233,7 +2258,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
       }
 
       // Verify 2FA code from email
-      const storedData = verificationCodes.get(user.email);
+      const storedData = await verificationCodes.get(user.email);
       if (!storedData || storedData.purpose !== "2fa_login") {
         return res.status(401).json({
           success: false,
@@ -2243,7 +2268,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
       }
 
       if (Date.now() > storedData.expiresAt) {
-        verificationCodes.delete(user.email);
+        await verificationCodes.delete(user.email);
         return res.status(401).json({
           success: false,
           requires2FA: true,
@@ -2251,7 +2276,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
         });
       }
 
-      if (storedData.code !== twoFactorCode) {
+      if (storedData.code !== String(twoFactorCode).trim()) {
         return res.status(401).json({
           success: false,
           requires2FA: true,
@@ -2260,7 +2285,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
       }
 
       // Clear used code
-      verificationCodes.delete(user.email);
+      await verificationCodes.delete(user.email);
     }
 
     // Check if designer/manager is approved
@@ -2452,7 +2477,7 @@ app.post("/api/auth/2fa/setup", async (req, res) => {
     const code = generateVerificationCode();
 
     // Store code with expiration (5 minutes)
-    verificationCodes.set(user.email, {
+    await verificationCodes.set(user.email, {
       code,
       expiresAt: Date.now() + 5 * 60 * 1000,
       purpose: "2fa_setup",
@@ -2511,7 +2536,7 @@ app.post("/api/auth/2fa/verify", async (req, res) => {
     }
 
     // Check stored code
-    const storedData = verificationCodes.get(user.email);
+    const storedData = await verificationCodes.get(user.email);
     if (!storedData || storedData.purpose !== "2fa_setup") {
       return res.status(400).json({
         success: false,
@@ -2521,7 +2546,7 @@ app.post("/api/auth/2fa/verify", async (req, res) => {
 
     // Check expiration
     if (Date.now() > storedData.expiresAt) {
-      verificationCodes.delete(user.email);
+      await verificationCodes.delete(user.email);
       return res.status(400).json({
         success: false,
         message: "Verification code expired. Please request a new one.",
@@ -2529,7 +2554,7 @@ app.post("/api/auth/2fa/verify", async (req, res) => {
     }
 
     // Verify code
-    if (storedData.code !== token) {
+    if (storedData.code !== String(token).trim()) {
       return res.status(400).json({
         success: false,
         message: "Invalid verification code",
@@ -2542,7 +2567,7 @@ app.post("/api/auth/2fa/verify", async (req, res) => {
     await user.save();
 
     // Clear used code
-    verificationCodes.delete(user.email);
+    await verificationCodes.delete(user.email);
 
     // Update session
     req.session.user.twoFactorEnabled = true;
@@ -2578,7 +2603,7 @@ app.post("/api/auth/2fa/send-login-code", async (req, res) => {
     const code = generateVerificationCode();
 
     // Store code
-    verificationCodes.set(email, {
+    await verificationCodes.set(email, {
       code,
       expiresAt: Date.now() + 5 * 60 * 1000,
       purpose: "2fa_login",
