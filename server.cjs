@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const { MongoStore } = require("connect-mongo");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const path = require("path");
@@ -1357,12 +1358,28 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 // Session configuration
 // isProd: true when running on Render (RENDER env var) or NODE_ENV=production
 const isProd = process.env.NODE_ENV === "production" || !!process.env.RENDER;
+
+// MongoDB-backed session store — sessions survive server restarts and spin-downs on Render
+const sessionStore = MongoStore.create({
+  mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/designden",
+  dbName: "designden",
+  collectionName: "sessions",
+  ttl: 24 * 60 * 60, // 24 hours (seconds)
+  autoRemove: "native", // Use MongoDB TTL index to auto-expire
+  touchAfter: 3 * 3600, // Lazy session update: only save if data changed OR 3h passed
+});
+
+sessionStore.on("error", (err) => {
+  console.error("[Session Store] MongoDB session store error:", err);
+});
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "designden_secret_key_12345",
-    resave: true,
+    resave: false,
     saveUninitialized: false,
     proxy: true,
+    store: sessionStore,
     cookie: {
       secure: isProd,
       httpOnly: true,
