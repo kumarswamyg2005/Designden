@@ -11370,6 +11370,16 @@ mongoose.connection.once("open", () => {
   ensureDeliveryUser();
 });
 
+// Serve React frontend in production (Docker / Render)
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.join(__dirname, "dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/")) return next();
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
+
 findFreePort(PREFERRED_PORT).then((PORT) => {
   app.listen(PORT, "0.0.0.0", () => {
     // Write actual port so Vite and start.cjs can read it
