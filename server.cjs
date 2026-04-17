@@ -17,25 +17,46 @@ const Redis = require("ioredis");
 let redisClient = null;
 let redisAvailable = false;
 
-try {
-  const redisConfig = process.env.REDIS_URL
-    ? { url: process.env.REDIS_URL, tls: { rejectUnauthorized: false }, lazyConnect: true, connectTimeout: 5000, maxRetriesPerRequest: 1 }
-    : { host: process.env.REDIS_HOST || "127.0.0.1", port: parseInt(process.env.REDIS_PORT, 10) || 6379, password: process.env.REDIS_PASSWORD || undefined, lazyConnect: true, connectTimeout: 3000, maxRetriesPerRequest: 1 };
-  redisClient = new Redis(redisConfig);
-  redisClient.on("connect", () => {
+(async () => {
+  try {
+    const redisUrl = process.env.REDIS_URL;
+    const redisHost = process.env.REDIS_HOST;
+
+    if (!redisUrl && !redisHost) {
+      console.log("[Redis] No REDIS_URL or REDIS_HOST set — skipping");
+      return;
+    }
+
+    if (redisUrl) {
+      // Upstash / cloud Redis — URL includes credentials and TLS
+      redisClient = new Redis(redisUrl, {
+        maxRetriesPerRequest: 1,
+        connectTimeout: 8000,
+        tls: redisUrl.startsWith("rediss://") ? { rejectUnauthorized: false } : undefined,
+      });
+    } else {
+      redisClient = new Redis({
+        host: redisHost,
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+        password: process.env.REDIS_PASSWORD || undefined,
+        maxRetriesPerRequest: 1,
+        connectTimeout: 5000,
+      });
+    }
+
+    redisClient.on("error", (err) => {
+      redisAvailable = false;
+      console.log("[Redis] Error:", err.message);
+    });
+
+    await redisClient.ping();
     redisAvailable = true;
     console.log("[Redis] Connected — caching enabled");
-  });
-  redisClient.on("error", () => {
+  } catch (err) {
     redisAvailable = false;
-  });
-  redisClient.connect().catch(() => {
-    redisAvailable = false;
-    console.log("[Redis] Not available — running without cache");
-  });
-} catch (_) {
-  console.log("[Redis] Skipping — ioredis not configured");
-}
+    console.log("[Redis] Connection failed:", err.message);
+  }
+})();
 
 async function cacheGet(key) {
   if (!redisAvailable) return null;
@@ -11305,6 +11326,17 @@ app.get("/api/health", async (req, res) => {
     redis: redisAvailable ? "connected" : "unavailable",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
+  });
+});
+
+// Redis debug — check env vars and connection status
+app.get("/api/redis-debug", (req, res) => {
+  res.json({
+    redisAvailable,
+    REDIS_URL_set: !!process.env.REDIS_URL,
+    REDIS_URL_prefix: process.env.REDIS_URL ? process.env.REDIS_URL.substring(0, 20) + "..." : null,
+    REDIS_HOST_set: !!process.env.REDIS_HOST,
+    clientStatus: redisClient ? redisClient.status : "no client",
   });
 });
 
