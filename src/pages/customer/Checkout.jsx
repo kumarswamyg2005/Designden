@@ -39,7 +39,7 @@ const Checkout = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, _setSubmitting] = useState(false);
   const [lookingUpPincode, setLookingUpPincode] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 

@@ -4,7 +4,7 @@
 
 export const logger = {
   log: (message, data = {}) => {
-    if (process.env.NODE_ENV !== "production") {
+    if (typeof process === 'undefined' || process.env.NODE_ENV !== "production") {
       console.log(`[DesignDen] ${message}`, data);
     }
   },

@@ -24,7 +24,7 @@ const Pending = () => {
     }
   };
 
-  const handleAssign = async (orderId, designerId) => {
+  const _handleAssign = async (orderId, designerId) => {
     try {
       await managerAPI.assignOrder(orderId, designerId);
       showFlash('Order assigned successfully', 'success');

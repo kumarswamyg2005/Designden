@@ -29,7 +29,7 @@ const OrderDetails = () => {
     }
   };
 
-  const handleStartProduction = async () => {
+  const _handleStartProduction = async () => {
     try {
       await designerAPI.startProduction(id);
       showFlash("Production started!", "success");
@@ -57,7 +57,7 @@ const OrderDetails = () => {
     }
   };
 
-  const handleCompleteOrder = async () => {
+  const _handleCompleteOrder = async () => {
     if (!window.confirm("Mark this order as completed?")) return;
 
     try {
