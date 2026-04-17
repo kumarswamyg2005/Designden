@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import mensCollectionBanner from "../assets/images/mens-collection-banner.webp";
-import womensCollectionBanner from "../assets/images/womens-collection-banner.webp";
-import sustainableFabric from "../assets/images/sustainable fabric.webp";
-import customEmbroidery from "../assets/images/Custom Embroidery.jpg";
+import mensCollectionBanner from "../assets/images/atelier-craft.jpeg";
+import womensCollectionBanner from "../assets/images/atelier-fitting.jpeg";
+import sustainableFabric from "../assets/images/atelier-craft.jpeg";
+import customEmbroidery from "../assets/images/atelier-fitting.jpeg";
 import ScrollReveal from "../components/ScrollReveal";
 
 const heroMetrics = [
