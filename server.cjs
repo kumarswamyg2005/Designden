@@ -2065,7 +2065,7 @@ Two-factor authentication via email is supported. When enabled:
 };
 
 const openapiSpec = swaggerJSDoc(swaggerOptions);
-const swaggerEnabled = process.env.NODE_ENV !== "production";
+const swaggerEnabled = process.env.SWAGGER_ENABLED !== "false";
 
 if (swaggerEnabled) {
   // Dynamic OpenAPI spec that uses the actual request host
