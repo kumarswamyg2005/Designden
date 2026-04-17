@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -189,7 +190,7 @@ const Dashboard = () => {
     productionCompleted: orders.filter(
       (o) => o.status === "production_completed",
     ).length,
-    readyForDelivery: orders.filter((o) => o.status === "ready_for_delivery")
+    readyForDelivery: orders.filter((o) => o.status === "ready_for_pickup")
       .length,
     outForDelivery: orders.filter((o) => o.status === "out_for_delivery")
       .length,
@@ -210,9 +211,12 @@ const Dashboard = () => {
     return "low";
   }, []);
 
+  const [assignError, setAssignError] = useState("");
+
   // Handle assignment
   const handleAssign = async () => {
     if (!selectedOrder || !selectedPersonId) return;
+    setAssignError("");
 
     try {
       if (assignType === "designer") {
@@ -234,6 +238,7 @@ const Dashboard = () => {
       handleRefresh();
     } catch (error) {
       console.error("Assignment failed:", error);
+      setAssignError(error?.message || "Assignment failed. Please try again.");
     }
   };
 
@@ -249,6 +254,7 @@ const Dashboard = () => {
     setAssignType(null);
     setSelectedPersonId("");
     setShowAssignModal(false);
+    setAssignError("");
   };
 
   const _openSlotModal = (order) => {
@@ -988,6 +994,22 @@ const Dashboard = () => {
                           </button>
                         )}
 
+                        {/* Delivery workflow status */}
+                        {["ready_for_pickup", "picked_up", "in_transit", "out_for_delivery", "delivered"].includes(order.status) && (
+                          <div className="w-100 mt-1">
+                            <small className="text-muted d-block mb-1">
+                              <i className="fas fa-truck me-1"></i>Delivery Status
+                            </small>
+                            <span className={`badge ${
+                              order.status === "delivered" ? "bg-success" :
+                              order.status === "out_for_delivery" ? "bg-info" :
+                              "bg-warning text-dark"
+                            }`}>
+                              {order.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
+                            </span>
+                          </div>
+                        )}
+
                         {/* View Details */}
                         <Link
                           to={`/manager/orders/${order._id}`}
@@ -1090,7 +1112,7 @@ const Dashboard = () => {
       </div>
 
       {/* Design Approval Modal */}
-      {showApprovalModal && selectedOrder && (
+      {showApprovalModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1163,11 +1185,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Design Rejection Modal */}
-      {showRejectModal && selectedOrder && (
+      {showRejectModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1239,11 +1262,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Production Progress Modal */}
-      {showProductionModal && selectedOrder && (
+      {showProductionModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1367,11 +1391,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Complete Production Modal */}
-      {showCompleteProductionModal && selectedOrder && (
+      {showCompleteProductionModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1439,11 +1464,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Assignment Modal */}
-      {showAssignModal && selectedOrder && (
+      {showAssignModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1637,30 +1663,39 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={closeAssignModal}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${
-                    assignType === "designer" ? "btn-purple" : "btn-success"
-                  }`}
-                  onClick={handleAssign}
-                  disabled={!selectedPersonId}
-                >
-                  <i className="fas fa-check me-2"></i>
-                  Assign{" "}
-                  {assignType === "designer" ? "Designer" : "Delivery Partner"}
-                </button>
+              <div className="modal-footer flex-column align-items-stretch gap-2">
+                {assignError && (
+                  <div className="alert alert-danger mb-0 py-2 small w-100">
+                    <i className="fas fa-exclamation-circle me-1"></i>
+                    {assignError}
+                  </div>
+                )}
+                <div className="d-flex gap-2 w-100 justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeAssignModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${
+                      assignType === "designer" ? "btn-purple" : "btn-success"
+                    }`}
+                    onClick={handleAssign}
+                    disabled={!selectedPersonId}
+                  >
+                    <i className="fas fa-check me-2"></i>
+                    Assign{" "}
+                    {assignType === "designer" ? "Designer" : "Delivery Partner"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

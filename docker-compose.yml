@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  # ── MongoDB ──────────────────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: designden-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: designden
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: designden-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ── App server ───────────────────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: designden-app
+    restart: unless-stopped
+    ports:
+      - "5174:5174"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5174
+      MONGODB_URI: mongodb://mongodb:27017/designden
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      API_BASE_URL: http://localhost:5174
+    volumes:
+      - uploads:/app/uploads
+      - ./images:/app/images
+
+volumes:
+  mongo_data:
+  redis_data:
+  uploads:

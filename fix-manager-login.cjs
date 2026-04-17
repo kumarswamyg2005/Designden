@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const UNIFIED_PASSWORD = "Admin@123";
+
 async function fixManagerAccount() {
   try {
     await mongoose.connect("mongodb://localhost:27017/designden");
@@ -14,7 +16,7 @@ async function fixManagerAccount() {
     if (!manager) {
       console.log("❌ Manager account not found. Creating new account...");
 
-      const hashedPassword = await bcrypt.hash("manager123", 10);
+      const hashedPassword = await bcrypt.hash(UNIFIED_PASSWORD, 10);
 
       await mongoose.connection.db.collection("users").insertOne({
         username: "manager",
@@ -32,7 +34,7 @@ async function fixManagerAccount() {
 
       console.log("✅ Manager account created successfully");
       console.log("   Email: manager@designden.com");
-      console.log("   Password: manager123");
+      console.log(`   Password: ${UNIFIED_PASSWORD}`);
     } else {
       console.log("✅ Manager account found");
       console.log("   Email:", manager.email);
@@ -42,10 +44,10 @@ async function fixManagerAccount() {
 
       // Test password
       const isPasswordValid = await bcrypt.compare(
-        "manager123",
+        UNIFIED_PASSWORD,
         manager.password,
       );
-      console.log("   Password 'manager123' valid:", isPasswordValid);
+      console.log(`   Password '${UNIFIED_PASSWORD}' valid:`, isPasswordValid);
 
       // Fix if needed
       let needsUpdate = false;
@@ -58,8 +60,10 @@ async function fixManagerAccount() {
       }
 
       if (!isPasswordValid) {
-        console.log("⚠️  Password doesn't match. Resetting to 'manager123'...");
-        updates.password = await bcrypt.hash("manager123", 10);
+        console.log(
+          `⚠️  Password doesn't match. Resetting to '${UNIFIED_PASSWORD}'...`,
+        );
+        updates.password = await bcrypt.hash(UNIFIED_PASSWORD, 10);
         needsUpdate = true;
       }
 
@@ -79,25 +83,25 @@ async function fixManagerAccount() {
     const accounts = [
       {
         email: "admin@designden.com",
-        password: "admin123",
+        password: UNIFIED_PASSWORD,
         role: "admin",
         approved: true,
       },
       {
         email: "designer@designden.com",
-        password: "designer123",
+        password: UNIFIED_PASSWORD,
         role: "designer",
         approved: true,
       },
       {
-        email: "delivery@designden.com",
-        password: "delivery123",
+        email: "delivery1@designden.com",
+        password: UNIFIED_PASSWORD,
         role: "delivery",
         approved: true,
       },
       {
         email: "customer@designden.com",
-        password: "customer123",
+        password: UNIFIED_PASSWORD,
         role: "customer",
         approved: true,
       },
@@ -154,11 +158,11 @@ async function fixManagerAccount() {
 
     console.log("\n✅ All test accounts are ready!");
     console.log("\n📝 Login Credentials:");
-    console.log("   Admin:    admin@designden.com / admin123");
-    console.log("   Manager:  manager@designden.com / manager123");
-    console.log("   Designer: designer@designden.com / designer123");
-    console.log("   Delivery: delivery@designden.com / delivery123");
-    console.log("   Customer: customer@designden.com / customer123");
+    console.log(`   Admin:    admin@designden.com / ${UNIFIED_PASSWORD}`);
+    console.log(`   Manager:  manager@designden.com / ${UNIFIED_PASSWORD}`);
+    console.log(`   Designer: designer@designden.com / ${UNIFIED_PASSWORD}`);
+    console.log(`   Delivery: delivery1@designden.com / ${UNIFIED_PASSWORD}`);
+    console.log(`   Customer: customer@designden.com / ${UNIFIED_PASSWORD}`);
 
     await mongoose.disconnect();
     process.exit(0);

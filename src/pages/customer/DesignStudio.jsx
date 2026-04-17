@@ -6,9 +6,39 @@ import { useFlash } from "../../context/FlashContext";
 import { useCartAnimation } from "../../hooks/useCartAnimation";
 import ModelViewer from "../../components/ModelViewer";
 import useExitConfirmation from "../../hooks/useExitConfirmation";
+import ScrollReveal from "../../components/ScrollReveal";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
+
+const curatedSwatches = [
+  { name: "Ivory", value: "#F5EFE6" },
+  { name: "Sand", value: "#D7C4A5" },
+  { name: "Slate", value: "#7E8A99" },
+  { name: "Indigo", value: "#314B6B" },
+  { name: "Olive", value: "#70735C" },
+  { name: "Rust", value: "#A0553C" },
+  { name: "Ink", value: "#1F1A17" },
+  { name: "Chalk", value: "#FFFFFF" },
+];
+
+const fabricDescriptions = {
+  Cotton: "Breathable, familiar, and easy to wear every day.",
+  Linen: "Airy texture with a lighter, more artisanal drape.",
+  Silk: "Sharper sheen and a more elevated finish.",
+  Polyester: "More durable and lower cost for practical runs.",
+  Wool: "Warmer hand-feel with stronger structure.",
+  Denim: "Heavier, workwear-adjacent character with more weight.",
+  Fleece: "Soft interior warmth for colder-weather pieces.",
+  Jersey: "Stretch-friendly knit for relaxed comfort.",
+};
+
+const studioPanelTabs = [
+  { id: "brief", label: "Brief", icon: "fa-pen-ruler" },
+  { id: "material", label: "Material", icon: "fa-droplet" },
+  { id: "graphic", label: "Graphic", icon: "fa-image" },
+  { id: "text", label: "Text", icon: "fa-font" },
+];
 
 const DesignStudio = () => {
   const navigate = useNavigate();
@@ -45,6 +75,7 @@ const DesignStudio = () => {
   const [shakeError, setShakeError] = useState(false);
   const [graphics, setGraphics] = useState([]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeStudioPanel, setActiveStudioPanel] = useState("brief");
 
   // Show exit confirmation only when user has made design changes
   useExitConfirmation(
@@ -97,7 +128,6 @@ const DesignStudio = () => {
           withCredentials: true,
         });
         if (response.data.success) {
-          console.log("Graphics loaded:", response.data.graphics);
           setGraphics(response.data.graphics);
         }
       } catch (error) {
@@ -111,9 +141,6 @@ const DesignStudio = () => {
   useEffect(() => {
     const designerId = searchParams.get("designerId");
     if (designerId) {
-      console.log("=== DESIGNER ID FROM URL ===");
-      console.log("Designer ID:", designerId);
-      console.log("===========================");
       setFormData((prev) => ({ ...prev, designerId }));
     }
   }, [searchParams]);
@@ -168,6 +195,11 @@ const DesignStudio = () => {
       graphic: "None",
     }));
     setHasUnsavedChanges(false); // Reset unsaved changes flag
+  };
+
+  const applyColorSwatch = (value) => {
+    setFormData((prev) => ({ ...prev, color: value }));
+    setHasUnsavedChanges(true);
   };
 
   const validateDesign = () => {
@@ -229,13 +261,6 @@ const DesignStudio = () => {
         formAction: action,
         previewImage: previewImage, // Include the 3D preview image
       };
-
-      console.log("=== SAVING DESIGN ===");
-      console.log("Full design data:", designData);
-      console.log("Estimated Price:", estimatedPrice);
-      console.log("Designer ID being saved:", designData.designerId);
-      console.log("Preview image captured:", previewImage ? "Yes" : "No");
-      console.log("====================");
 
       if (action === "save") {
         // Save design and place order
@@ -301,430 +326,491 @@ const DesignStudio = () => {
   };
 
   return (
-    <div className="container my-4">
-      <div className="row mb-4">
-        <div className="col-md-12">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title">Design Studio</h2>
-              <p className="card-text">
-                Create your custom clothing design by selecting fabric, colors,
-                and patterns.
-              </p>
-            </div>
+    <div className="studio-shell">
+      <ScrollReveal className="studio-intro">
+        <section className="studio-intro-card">
+          <p className="editorial-kicker">Design studio</p>
+          <h1>Build your garment in a simple, guided studio.</h1>
+          <p>
+            Set the garment basics first, then fine-tune color, artwork, and
+            text while the 3D preview stays in view.
+          </p>
+
+          <div className="studio-note-grid">
+            <article className="studio-note">
+              <strong>Start with essentials</strong>
+              <span>Category, size, and fabric should stay easy to compare.</span>
+            </article>
+            <article className="studio-note">
+              <strong>Preview clearly</strong>
+              <span>Check the garment shape without bulky visual distraction.</span>
+            </article>
+            <article className="studio-note">
+              <strong>Save when ready</strong>
+              <span>Move the current setup to order, cart, or wishlist anytime.</span>
+            </article>
           </div>
-        </div>
-      </div>
+        </section>
+      </ScrollReveal>
 
-      <div className="row">
-        <div className="col-md-8">
-          <div
-            className={`card shadow-sm ${shakeError ? "shake-animation" : ""}`}
-          >
-            <div className="card-header">
-              <h3>Design Your Clothing</h3>
-            </div>
-            <div className="card-body">
-              <form onSubmit={(e) => handleSubmit(e, "save")}>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Design Name
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+      <div className="row g-4 studio-workspace">
+        <div className="col-xl-7">
+          <ScrollReveal delay="delay-1">
+            <div className={`card studio-form-card ${shakeError ? "shake-animation" : ""}`}>
+              <div className="card-body">
+                <form className="studio-form" onSubmit={(e) => handleSubmit(e, "save")}>
+                  <div className="studio-panel-switcher" role="tablist" aria-label="Design controls">
+                    {studioPanelTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        className={`studio-panel-tab ${
+                          activeStudioPanel === tab.id ? "is-active" : ""
+                        }`}
+                        role="tab"
+                        aria-selected={activeStudioPanel === tab.id}
+                        onClick={() => setActiveStudioPanel(tab.id)}
+                      >
+                        <i className={`fas ${tab.icon}`}></i>
+                        <span>{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="category" className="form-label">
-                      Category
-                    </label>
-                    <select
-                      className="form-select"
-                      id="category"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="T-Shirt">T-Shirt</option>
-                      <option value="Hoodie">Hoodie</option>
-                      <option value="Kurthi">Kurthi</option>
-                      <option value="Dress">Dress</option>
-                      <option value="Jeans">Jeans</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="gender" className="form-label">
-                      Gender
-                    </label>
-                    <select
-                      className="form-select"
-                      id="gender"
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="Men">Men</option>
-                      <option value="Women">Women</option>
-                      <option value="Unisex">Unisex</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Fabric, Color, Pattern - Always visible */}
-                <div className="row mb-3">
-                  <div className="col-md-4">
-                    <label htmlFor="fabric" className="form-label">
-                      Fabric
-                    </label>
-                    <select
-                      className="form-select"
-                      id="fabric"
-                      name="fabric"
-                      value={formData.fabric}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="Cotton">Cotton</option>
-                      <option value="Linen">Linen</option>
-                      <option value="Silk">Silk</option>
-                      <option value="Polyester">Polyester</option>
-                      <option value="Wool">Wool</option>
-                      <option value="Denim">Denim</option>
-                      <option value="Fleece">Fleece</option>
-                      <option value="Jersey">Jersey</option>
-                    </select>
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="color" className="form-label">
-                      Color
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="color"
-                      name="color"
-                      value={formData.color}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="pattern" className="form-label">
-                      Pattern
-                    </label>
-                    <select
-                      className="form-select"
-                      id="pattern"
-                      name="pattern"
-                      value={formData.pattern}
-                      onChange={handleChange}
-                    >
-                      <option value="Solid">Solid</option>
-                      <option value="Striped">Striped</option>
-                      <option value="Checkered">Checkered</option>
-                      <option value="Floral">Floral</option>
-                      <option value="Abstract">Abstract</option>
-                      <option value="Polka Dot">Polka Dot</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="size" className="form-label">
-                      Size
-                    </label>
-                    <select
-                      className="form-select"
-                      id="size"
-                      name="size"
-                      value={formData.size}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="XS">XS</option>
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="XL">XL</option>
-                      <option value="XXL">XXL</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Graphics (Optional)</label>
-                  <div className="row g-2">
-                    <div className="col-3">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input d-none"
-                          type="radio"
-                          name="graphic"
-                          id="graphicNone"
-                          value="None"
-                          checked={formData.graphic === "None"}
-                          onChange={handleChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="graphicNone"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <div
-                            className="border rounded p-2 text-center"
-                            style={{
-                              border:
-                                formData.graphic === "None"
-                                  ? "2px solid #0d6efd"
-                                  : "1px solid #dee2e6",
-                            }}
-                          >
-                            <small>None</small>
-                          </div>
-                        </label>
+                  {activeStudioPanel === "brief" && (
+                    <section className="studio-fieldset" aria-labelledby="studio-brief-title">
+                      <div className="studio-fieldset__header">
+                        <h2 id="studio-brief-title">Design brief</h2>
+                        <p>Name the piece and set the garment foundation first.</p>
                       </div>
-                    </div>
-                    {graphics.map((graphic) => {
-                      const isOutOfStock = graphic.inStock === false;
-                      console.log(
-                        `Graphic ${graphic._id}: inStock=${graphic.inStock}, isOutOfStock=${isOutOfStock}`,
-                      );
-                      return (
-                        <div key={graphic._id} className="col-3">
-                          <div className="form-check">
+
+                      <div className="mb-3">
+                        <label htmlFor="name" className="form-label">
+                          Design name
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="Example: Indigo studio hoodie"
+                          required
+                        />
+                      </div>
+
+                      <div className="row g-3">
+                        <div className="col-md-4">
+                          <label htmlFor="category" className="form-label">
+                            Category
+                          </label>
+                          <select
+                            className="form-select"
+                            id="category"
+                            name="category"
+                            value={formData.category}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="T-Shirt">T-Shirt</option>
+                            <option value="Hoodie">Hoodie</option>
+                            <option value="Kurthi">Kurthi</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Jeans">Jeans</option>
+                          </select>
+                        </div>
+                        <div className="col-md-4">
+                          <label htmlFor="gender" className="form-label">
+                            Gender
+                          </label>
+                          <select
+                            className="form-select"
+                            id="gender"
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="Unisex">Unisex</option>
+                          </select>
+                        </div>
+                        <div className="col-md-4">
+                          <label htmlFor="size" className="form-label">
+                            Size
+                          </label>
+                          <select
+                            className="form-select"
+                            id="size"
+                            name="size"
+                            value={formData.size}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                          </select>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
+                  {activeStudioPanel === "material" && (
+                    <section className="studio-fieldset" aria-labelledby="studio-material-title">
+                      <div className="studio-fieldset__header">
+                        <h2 id="studio-material-title">Material and finish</h2>
+                        <p>Choose fabric, color, and pattern with the final hand-feel in mind.</p>
+                      </div>
+
+                      <div className="row g-3">
+                        <div className="col-md-4">
+                          <label htmlFor="fabric" className="form-label">
+                            Fabric
+                          </label>
+                          <select
+                            className="form-select"
+                            id="fabric"
+                            name="fabric"
+                            value={formData.fabric}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="Cotton">Cotton</option>
+                            <option value="Linen">Linen</option>
+                            <option value="Silk">Silk</option>
+                            <option value="Polyester">Polyester</option>
+                            <option value="Wool">Wool</option>
+                            <option value="Denim">Denim</option>
+                            <option value="Fleece">Fleece</option>
+                            <option value="Jersey">Jersey</option>
+                          </select>
+                        </div>
+                        <div className="col-md-4">
+                          <label htmlFor="pattern" className="form-label">
+                            Pattern
+                          </label>
+                          <select
+                            className="form-select"
+                            id="pattern"
+                            name="pattern"
+                            value={formData.pattern}
+                            onChange={handleChange}
+                          >
+                            <option value="Solid">Solid</option>
+                            <option value="Striped">Striped</option>
+                            <option value="Checkered">Checkered</option>
+                            <option value="Floral">Floral</option>
+                            <option value="Abstract">Abstract</option>
+                            <option value="Polka Dot">Polka Dot</option>
+                          </select>
+                        </div>
+                        <div className="col-md-4">
+                          <label htmlFor="color" className="form-label">
+                            Base color
+                          </label>
+                          <div className="studio-color-row">
                             <input
-                              className="form-check-input d-none"
-                              type="radio"
-                              name="graphic"
-                              id={`graphic${graphic._id}`}
-                              value={graphic.filename}
-                              checked={formData.graphic === graphic.filename}
+                              type="color"
+                              className="form-control form-control-color studio-color-input"
+                              id="color"
+                              name="color"
+                              value={formData.color}
                               onChange={handleChange}
-                              disabled={isOutOfStock}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor={`graphic${graphic._id}`}
-                              style={{
-                                cursor: isOutOfStock
-                                  ? "not-allowed"
-                                  : "pointer",
-                                position: "relative",
-                              }}
-                            >
-                              <img
-                                src={`${API_BASE_URL}${graphic.graphic}`}
-                                alt={graphic.name}
-                                className="img-fluid rounded"
-                                style={{
-                                  border:
-                                    formData.graphic === graphic.filename
-                                      ? "2px solid #0d6efd"
-                                      : "1px solid #dee2e6",
-                                  objectFit: "cover",
-                                  width: "100%",
-                                  aspectRatio: "1/1",
-                                  opacity: isOutOfStock ? 0.5 : 1,
-                                  filter: isOutOfStock
-                                    ? "grayscale(50%)"
-                                    : "none",
-                                }}
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
-                              />
-                              {isOutOfStock && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform:
-                                      "translate(-50%, -50%) rotate(-15deg)",
-                                    backgroundColor: "rgba(220, 53, 69, 0.9)",
-                                    color: "white",
-                                    padding: "4px 12px",
-                                    borderRadius: "4px",
-                                    fontSize: "0.75rem",
-                                    fontWeight: "bold",
-                                    whiteSpace: "nowrap",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                                  }}
-                                >
-                                  OUT OF STOCK
-                                </div>
-                              )}
-                            </label>
+                            <span className="meta-chip">{formData.color}</span>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+
+                      <div className="studio-swatch-grid">
+                        {curatedSwatches.map((swatch) => (
+                          <div key={swatch.value} className="studio-swatch-option">
+                            <button
+                              type="button"
+                              className={`studio-swatch ${
+                                formData.color.toLowerCase() === swatch.value.toLowerCase()
+                                  ? "is-selected"
+                                  : ""
+                              }`}
+                              onClick={() => applyColorSwatch(swatch.value)}
+                              style={{ "--swatch-color": swatch.value }}
+                              title={swatch.name}
+                              aria-label={`Select ${swatch.name}`}
+                              aria-pressed={formData.color.toLowerCase() === swatch.value.toLowerCase()}
+                            ></button>
+                            <span>{swatch.name}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="studio-material-note">
+                        <strong>{formData.fabric}</strong>
+                        <p className="mb-0">
+                          {fabricDescriptions[formData.fabric] ||
+                            "Material details will update here."}
+                        </p>
+                      </div>
+                    </section>
+                  )}
+
+                  {activeStudioPanel === "graphic" && (
+                    <section className="studio-fieldset" aria-labelledby="studio-graphic-title">
+                      <div className="studio-fieldset__header">
+                        <h2 id="studio-graphic-title">Graphic placement</h2>
+                        <p>Select artwork only if it adds to the garment. None is a valid choice.</p>
+                      </div>
+
+                      <div className="studio-graphic-grid">
+                        <div className="form-check p-0 m-0">
+                          <input
+                            className="form-check-input d-none"
+                            type="radio"
+                            name="graphic"
+                            id="graphicNone"
+                            value="None"
+                            checked={formData.graphic === "None"}
+                            onChange={handleChange}
+                          />
+                          <label
+                            className={`studio-graphic-tile ${
+                              formData.graphic === "None" ? "is-selected" : ""
+                            }`}
+                            htmlFor="graphicNone"
+                          >
+                            <div className="d-flex align-items-center justify-content-center h-100 py-4">
+                              <span className="studio-graphic-name">No artwork</span>
+                            </div>
+                          </label>
+                        </div>
+
+                        {graphics.map((graphic) => {
+                          const isOutOfStock = graphic.inStock === false;
+                          return (
+                            <div key={graphic._id} className="form-check p-0 m-0">
+                              <input
+                                className="form-check-input d-none"
+                                type="radio"
+                                name="graphic"
+                                id={`graphic${graphic._id}`}
+                                value={graphic.filename}
+                                checked={formData.graphic === graphic.filename}
+                                onChange={handleChange}
+                                disabled={isOutOfStock}
+                              />
+                              <label
+                                className={`studio-graphic-tile ${
+                                  formData.graphic === graphic.filename
+                                    ? "is-selected"
+                                    : ""
+                                } ${isOutOfStock ? "is-disabled" : ""}`}
+                                htmlFor={`graphic${graphic._id}`}
+                              >
+                                <img
+                                  src={`${API_BASE_URL}${graphic.graphic}`}
+                                  alt={graphic.name}
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                  }}
+                                />
+                                <span className="studio-graphic-name">
+                                  {graphic.name || graphic.filename}
+                                </span>
+                                {isOutOfStock && (
+                                  <span className="studio-graphic-badge">
+                                    Out of stock
+                                  </span>
+                                )}
+                              </label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  )}
+
+                  {activeStudioPanel === "text" && (
+                    <section className="studio-fieldset" aria-labelledby="studio-text-title">
+                      <div className="studio-fieldset__header">
+                        <h2 id="studio-text-title">Custom text</h2>
+                        <p>Use a short line for names, teamwear, or a simple front statement.</p>
+                      </div>
+
+                      <label htmlFor="customText" className="form-label">
+                        Text note
+                      </label>
+                      <textarea
+                        className="form-control"
+                        id="customText"
+                        name="customText"
+                        value={formData.customText}
+                        onChange={handleChange}
+                        rows="4"
+                        placeholder="Add custom text to your design..."
+                      />
+                    </section>
+                  )}
+
+                  <div className="studio-actions">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={(e) => handleSubmit(e, "save")}
+                      disabled={submitting}
+                    >
+                      <i className="fas fa-save me-2"></i>
+                      {submitting ? "Saving..." : "Save and place order"}
+                    </button>
+                    <button
+                      type="button"
+                      id="tour-add-to-cart"
+                      className="btn btn-success"
+                      onClick={(e) => handleSubmit(e, "addToCart")}
+                      disabled={submitting}
+                    >
+                      <i className="fas fa-shopping-cart me-2"></i>
+                      Add to cart
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={(e) => handleSubmit(e, "wishlist")}
+                      disabled={submitting}
+                    >
+                      <i className="fas fa-heart me-2"></i>
+                      Save to wishlist
+                    </button>
                   </div>
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="customText" className="form-label">
-                    Custom Text (Optional)
-                  </label>
-                  <textarea
-                    className="form-control"
-                    id="customText"
-                    name="customText"
-                    value={formData.customText}
-                    onChange={handleChange}
-                    rows="3"
-                    placeholder="Add custom text to your design..."
-                  />
-                </div>
-
-                <div className="d-flex gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={(e) => handleSubmit(e, "save")}
-                    disabled={submitting}
-                  >
-                    <i className="fas fa-save me-2"></i>
-                    {submitting ? "Saving..." : "Save & Place Order"}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={(e) => handleSubmit(e, "addToCart")}
-                    disabled={submitting}
-                  >
-                    <i className="fas fa-shopping-cart me-2"></i>
-                    Add to Cart
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={(e) => handleSubmit(e, "wishlist")}
-                    disabled={submitting}
-                  >
-                    <i className="fas fa-heart me-2"></i>
-                    Save to Wishlist
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
 
-        <div className="col-md-4">
-          <div className="card shadow-sm">
-            <div className="card-header">
-              <h3>3D Preview</h3>
-            </div>
-            <div className="card-body">
-              {/* 3D Model Viewer */}
-              <ModelViewer
-                ref={modelViewerRef}
-                category={formData.category}
-                gender={formData.gender}
-                color={formData.color}
-                graphic={formData.graphic}
-                onReset={handleReset}
-              />
+        <div className="col-xl-5 studio-preview-column">
+          <ScrollReveal delay="delay-2">
+            <div className="card studio-preview-card" id="tour-3d-preview">
+              <div className="card-body">
+                <p className="editorial-kicker mb-1">Live preview</p>
+                <h2>3D preview</h2>
+                <p className="mb-3">
+                  Rotate and review the garment before sending it to cart or order.
+                </p>
 
-              {/* Custom Text Display */}
-              {formData.customText && (
-                <div className="mt-3 p-3 bg-light rounded text-center">
-                  <p className="mb-0 fw-bold">{formData.customText}</p>
-                </div>
-              )}
+                <ModelViewer
+                  ref={modelViewerRef}
+                  category={formData.category}
+                  gender={formData.gender}
+                  color={formData.color}
+                  graphic={formData.graphic}
+                  sceneBackground="#0f172a"
+                  stageColor="#182338"
+                  stageRingColor="#38bdf8"
+                  onReset={handleReset}
+                />
 
-              {/* Selected Options Preview */}
-              <div className="mt-3">
-                <h5>Selected Options:</h5>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Category:</span>
-                    <span className="fw-bold">{formData.category}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Fabric:</span>
-                    <span className="fw-bold">{formData.fabric}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Color:</span>
-                    <span className="fw-bold">{formData.color}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Pattern:</span>
-                    <span className="fw-bold">{formData.pattern}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Size:</span>
-                    <span className="fw-bold">{formData.size}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between">
-                    <span>Graphic:</span>
-                    <span className="fw-bold">{formData.graphic}</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Sustainability Score */}
-              <div className="mt-3 p-3 bg-success bg-opacity-10 rounded">
-                <h6 className="text-success">
-                  <i className="fas fa-leaf me-2"></i>Sustainability Score
-                </h6>
-                <div className="d-flex align-items-center">
-                  <div
-                    className="progress flex-grow-1 me-3"
-                    style={{ height: "20px" }}
-                  >
-                    <div
-                      className={`progress-bar ${
-                        sustainabilityScore >= 70
-                          ? "bg-success"
-                          : sustainabilityScore >= 50
-                            ? "bg-warning"
-                            : "bg-danger"
-                      }`}
-                      role="progressbar"
-                      style={{ width: `${sustainabilityScore}%` }}
-                      aria-valuenow={sustainabilityScore}
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    ></div>
+                {formData.customText && (
+                  <div className="studio-preview-caption">
+                    <strong>Text note</strong>
+                    <p className="mb-0">{formData.customText}</p>
                   </div>
-                  <strong>{sustainabilityScore}/100</strong>
-                </div>
-                <small className="text-muted">
-                  {sustainabilityScore >= 70
-                    ? "Excellent eco-friendly choice!"
-                    : sustainabilityScore >= 50
-                      ? "Good sustainable option"
-                      : "Consider more sustainable fabrics"}
-                </small>
-              </div>
-
-              {/* Estimated Price */}
-              <div className="mt-3 p-3 bg-primary bg-opacity-10 rounded">
-                <h6 className="text-primary">
-                  <i className="fas fa-rupee-sign me-2"></i>Estimated Price
-                </h6>
-                <h4 className="mb-0 text-primary">
-                  ₹{estimatedPrice.toFixed(2)}
-                </h4>
-                <small className="text-muted">
-                  Price varies based on fabric selection
-                </small>
+                )}
               </div>
             </div>
-          </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay="delay-3">
+            <div className="card studio-meta-card mt-4">
+              <div className="card-body">
+                <div className="studio-metric-panel studio-metric-panel--price">
+                  <span className="studio-metric-panel__icon">
+                    <i className="fas fa-indian-rupee-sign"></i>
+                  </span>
+                  <div>
+                    <p className="editorial-kicker mb-1">Estimated price</p>
+                    <h3>₹{estimatedPrice.toFixed(2)}</h3>
+                    <small>Fabric selection is the biggest price driver.</small>
+                  </div>
+                </div>
+
+                <div className="studio-metric-panel studio-metric-panel--sustainability">
+                  <span className="studio-metric-panel__icon">
+                    <i className="fas fa-leaf"></i>
+                  </span>
+                  <div>
+                    <p className="editorial-kicker mb-1">Sustainability score</p>
+                    <strong>{sustainabilityScore}/100</strong>
+                    <div className="studio-progress" aria-hidden="true">
+                      <div
+                        className="studio-progress__bar"
+                        style={{
+                          width: `${sustainabilityScore}%`,
+                          backgroundColor:
+                            sustainabilityScore >= 70
+                              ? "#5F745B"
+                              : sustainabilityScore >= 50
+                                ? "#B07D2E"
+                                : "#A34734",
+                        }}
+                      ></div>
+                    </div>
+                    <small>
+                      {sustainabilityScore >= 70
+                        ? "Excellent eco-friendly choice."
+                        : sustainabilityScore >= 50
+                          ? "Good sustainable option."
+                          : "Consider a more sustainable fabric."}
+                    </small>
+                  </div>
+                </div>
+
+                <dl className="studio-summary-list">
+                  <div className="studio-summary-row">
+                    <dt>Category</dt>
+                    <dd>{formData.category}</dd>
+                  </div>
+                  <div className="studio-summary-row">
+                    <dt>Fabric</dt>
+                    <dd>{formData.fabric}</dd>
+                  </div>
+                  <div className="studio-summary-row">
+                    <dt>Color</dt>
+                    <dd className="studio-summary-color">
+                      <span
+                        className="studio-summary-color__swatch"
+                        style={{ backgroundColor: formData.color }}
+                        aria-hidden="true"
+                      ></span>
+                      {formData.color}
+                    </dd>
+                  </div>
+                  <div className="studio-summary-row">
+                    <dt>Pattern</dt>
+                    <dd>{formData.pattern}</dd>
+                  </div>
+                  <div className="studio-summary-row">
+                    <dt>Size</dt>
+                    <dd>{formData.size}</dd>
+                  </div>
+                  <div className="studio-summary-row">
+                    <dt>Graphic</dt>
+                    <dd>{formData.graphic}</dd>
+                  </div>
+                  {formData.designerId && (
+                    <div className="studio-summary-row">
+                      <dt>Designer</dt>
+                      <dd>Preselected from marketplace</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </div>

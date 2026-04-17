@@ -335,6 +335,8 @@ const Signup = () => {
         );
       } else {
         showSuccess("Account created successfully! Welcome to DesignDen!");
+        // Set flag to trigger Onboarding Tour for brand new customers
+        localStorage.setItem("isNewSignup", "true");
       }
       navigate("/");
     } catch (err) {
@@ -426,23 +428,13 @@ const Signup = () => {
               onClick={() => handleRoleSelect("designer")}
               style={{
                 cursor: "pointer",
-                transition: "transform 0.3s, box-shadow 0.3s",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = "translateY(-10px)";
-                e.currentTarget.style.boxShadow =
-                  "0 20px 40px rgba(102, 126, 234, 0.3)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "";
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
               }}
             >
               <div
                 className="card-body p-5 text-center"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
+                  background: "#efe6da",
                 }}
               >
                 <div
@@ -450,8 +442,7 @@ const Signup = () => {
                   style={{
                     width: "100px",
                     height: "100px",
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    background: "#314b6b",
                   }}
                 >
                   <i className="fas fa-paint-brush fa-3x text-white"></i>
@@ -486,8 +477,7 @@ const Signup = () => {
                 <button
                   className="btn btn-lg w-100 text-white"
                   style={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    background: "#314b6b",
                   }}
                 >
                   <i className="fas fa-rocket me-2"></i>
@@ -536,7 +526,7 @@ const Signup = () => {
                 height: "80px",
                 background:
                   selectedRole === "designer"
-                    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                    ? "#314b6b"
                     : undefined,
               }}
             >
@@ -1029,9 +1019,9 @@ const Signup = () => {
                                 onChange={handleFileUpload}
                                 id="portfolioFileUpload"
                               />
-                              <label
-                                className="input-group-text bg-primary text-white"
-                                htmlFor="portfolioFileUpload"
+                            <label
+                              className="input-group-text bg-primary text-white"
+                              htmlFor="portfolioFileUpload"
                                 style={{ cursor: "pointer" }}
                               >
                                 <i className="fas fa-upload me-2"></i>
@@ -1219,8 +1209,7 @@ const Signup = () => {
                     style={
                       selectedRole === "designer"
                         ? {
-                            background:
-                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            background: "#314b6b",
                             color: "white",
                           }
                         : {}

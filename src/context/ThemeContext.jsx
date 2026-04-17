@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 const ThemeContext = createContext(null);
 
@@ -11,45 +11,22 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [isDark, setIsDark] = useState(() => {
-    // Initialize theme from localStorage
+  useEffect(() => {
+    document.body.classList.remove("dark-theme");
     try {
-      const saved = localStorage.getItem("designden_theme");
-      if (saved === "dark") {
-        document.body.classList.add("dark-theme");
-        return true;
-      }
+      localStorage.setItem("designden_theme", "light");
     } catch (e) {
-      console.error("Failed to load theme:", e);
+      console.error("Failed to persist light theme:", e);
     }
-    return false;
-  });
+  }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-
-    if (newTheme) {
-      document.body.classList.add("dark-theme");
-      try {
-        localStorage.setItem("designden_theme", "dark");
-      } catch (e) {
-        console.error("Failed to save theme:", e);
-      }
-    } else {
-      document.body.classList.remove("dark-theme");
-      try {
-        localStorage.setItem("designden_theme", "light");
-      } catch (e) {
-        console.error("Failed to save theme:", e);
-      }
-    }
-  };
-
-  const value = {
-    isDark,
-    toggleTheme,
-  };
+  const value = useMemo(
+    () => ({
+      isDark: false,
+      toggleTheme: () => {},
+    }),
+    [],
+  );
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

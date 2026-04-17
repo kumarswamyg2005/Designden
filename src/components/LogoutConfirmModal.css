@@ -335,3 +335,50 @@
     padding: 1rem;
   }
 }
+
+/* Editorial light override */
+
+.logout-confirm-overlay.active {
+  background: rgba(31, 26, 23, 0.22);
+  backdrop-filter: none;
+}
+
+.logout-confirm-modal,
+[data-theme="dark"] .logout-confirm-modal {
+  background: #fbf7f2;
+  border: 1px solid rgba(91, 81, 72, 0.14);
+  box-shadow: 0 20px 44px rgba(47, 35, 28, 0.16);
+}
+
+.logout-icon-circle,
+.logout-confirm-btn-confirm,
+.logout-confirm-btn-confirm:hover {
+  background: #a0553c;
+  box-shadow: none;
+}
+
+.logout-confirm-title,
+[data-theme="dark"] .logout-confirm-title {
+  color: #1f1a17;
+}
+
+.logout-confirm-message,
+[data-theme="dark"] .logout-confirm-message {
+  color: #5b5148;
+}
+
+.logout-confirm-username,
+[data-theme="dark"] .logout-confirm-username {
+  color: #314b6b;
+}
+
+.logout-confirm-btn-cancel {
+  background: #efe6da;
+  color: #1f1a17;
+}
+
+.logout-confirm-close,
+[data-theme="dark"] .logout-confirm-close {
+  background: #efe6da;
+  color: #5b5148;
+}

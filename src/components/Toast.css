@@ -89,3 +89,33 @@
     max-width: none;
   }
 }
+
+/* Editorial light override */
+
+.toast-container {
+  background: #fbf7f2;
+  color: #1f1a17;
+  border: 1px solid rgba(91, 81, 72, 0.14);
+  box-shadow: 0 14px 34px rgba(47, 35, 28, 0.16);
+  backdrop-filter: none;
+}
+
+.toast-success {
+  background: rgba(95, 116, 91, 0.12);
+  color: #36503a;
+}
+
+.toast-error {
+  background: rgba(163, 71, 52, 0.12);
+  color: #8e3a29;
+}
+
+.toast-warning {
+  background: rgba(176, 125, 46, 0.12);
+  color: #7f5b20;
+}
+
+.toast-info {
+  background: rgba(49, 75, 107, 0.12);
+  color: #314b6b;
+}

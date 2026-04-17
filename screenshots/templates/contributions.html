@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DesignDen – Team Contributions</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f0f1a;
+      color: #e2e8f0;
+      padding: 40px;
+      min-width: 1400px;
+    }
+
+    /* ─── HEADER ─── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 2px solid #2d3748;
+    }
+
+    .page-header h1 {
+      font-size: 2.6rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      color: #718096;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .meta-badge {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 9999px;
+      padding: 5px 16px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+    }
+
+    .meta-badge span {
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    /* ─── SECTION TITLE ─── */
+    .section-title {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin: 40px 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    /* ─── TEAM OVERVIEW TABLE ─── */
+    .overview-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .overview-table thead tr {
+      background: #16213e;
+    }
+
+    .overview-table th {
+      padding: 13px 18px;
+      font-size: 0.75rem;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+    }
+
+    .overview-table td {
+      padding: 13px 18px;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      border-top: 1px solid #2d3748;
+    }
+
+    .overview-table tr:hover td {
+      background: rgba(102, 126, 234, 0.06);
+    }
+
+    .member-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .loc-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .loc-bar {
+      height: 6px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .loc-text {
+      font-size: 0.75rem;
+      color: #a0aec0;
+      white-space: nowrap;
+    }
+
+    /* ─── MEMBER CARDS ─── */
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .member-card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-card-header {
+      padding: 20px 16px 14px;
+      text-align: center;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 auto 10px;
+    }
+
+    .member-card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .member-card-role {
+      font-size: 0.72rem;
+      color: #718096;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .member-card-body {
+      padding: 14px 16px;
+      flex: 1;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+    }
+
+    .stat-row .key {
+      color: #718096;
+    }
+
+    .stat-row .val {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .focus-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .focus-tag {
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.25);
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+      color: #9f7aea;
+    }
+
+    .achievement-box {
+      margin-top: 12px;
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .achievement-box .ach-label {
+      font-size: 0.65rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .achievement-box .ach-text {
+      font-size: 0.75rem;
+      color: #a0aec0;
+      line-height: 1.4;
+    }
+
+    .highlight-box {
+      padding: 10px 14px;
+      border-top: 1px solid #2d3748;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      color: #a0aec0;
+    }
+
+    .highlight-box .hl-metric {
+      font-weight: 700;
+      color: #4CAF50;
+    }
+
+    /* ─── TECH STACK ─── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .tech-card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+
+    .tech-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .tech-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .tech-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .tech-list {
+      list-style: none;
+    }
+
+    .tech-list li {
+      font-size: 0.75rem;
+      color: #a0aec0;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(45, 55, 72, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tech-list li:last-child {
+      border-bottom: none;
+    }
+
+    .tech-list li::before {
+      content: '▸';
+      color: #667eea;
+      font-size: 0.65rem;
+    }
+
+    /* ─── STATS ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 16px 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    /* ─── DOCS TABLE ─── */
+    .docs-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .docs-table thead tr {
+      background: #16213e;
+    }
+
+    .docs-table th {
+      padding: 12px 18px;
+      font-size: 0.75rem;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+    }
+
+    .docs-table td {
+      padding: 11px 18px;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      border-top: 1px solid #2d3748;
+    }
+
+    .docs-table .author {
+      color: #9f7aea;
+      font-weight: 600;
+    }
+
+    .docs-table .contributors {
+      color: #718096;
+    }
+
+    /* ─── FUTURE ENHANCEMENTS ─── */
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .future-card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .future-card-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .future-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 0.75rem;
+      color: #a0aec0;
+      margin-bottom: 7px;
+      line-height: 1.4;
+    }
+
+    .future-item::before {
+      content: '→';
+      color: #667eea;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ─── CODE SNIPPET ─── */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    .code-kw {
+      color: #7c3aed;
+    }
+
+    .code-fn {
+      color: #667eea;
+    }
+
+    .code-str {
+      color: #4CAF50;
+    }
+
+    .code-cmt {
+      color: #4a5568;
+    }
+
+    .code-num {
+      color: #FFC107;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #2d3748;
+      color: #4a5568;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════ HEADER ══════════════════════════ -->
+  <div class="page-header">
+    <h1>DesignDen — Team Contributions</h1>
+    <p>Custom Clothing E-Commerce Platform · 5 Members · 6 Months · v1.0.0</p>
+    <div class="meta-row">
+      <div class="meta-badge">👥 <span>5</span> Team Members</div>
+      <div class="meta-badge">📅 <span>6</span> Months</div>
+      <div class="meta-badge">📝 <span>15,000+</span> Lines of Code</div>
+      <div class="meta-badge">📄 <span>40+</span> Pages</div>
+      <div class="meta-badge">🔌 <span>100+</span> API Endpoints</div>
+      <div class="meta-badge">🗂️ <span>15</span> DB Collections</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TEAM OVERVIEW TABLE ══════════════ -->
+  <div class="section-title">📊 Team Overview</div>
+  <table class="overview-table">
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Primary Role</th>
+        <th>Focus Areas</th>
+        <th style="width:200px">Lines of Code</th>
+        <th>Files</th>
+        <th>Endpoints</th>
+        <th>Components</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="member-name" style="color:#667eea">Chetan</div>
+        </td>
+        <td>Security &amp; Admin Systems</td>
+        <td>Admin Dashboard · Delivery System · Security</td>
+        <td>
+          <div class="loc-bar-wrap">
+            <div class="loc-bar" style="width:110px"></div>
+            <div class="loc-text">~3,500</div>
+          </div>
+        </td>
+        <td>12</td>
+        <td>18</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="member-name" style="color:#764ba2">Harsha</div>
+        </td>
+        <td>Manager &amp; Production</td>
+        <td>Manager Dashboard · Milestones · Delivery Assign</td>
+        <td>
+          <div class="loc-bar-wrap">
+            <div class="loc-bar" style="width:88px"></div>
+            <div class="loc-text">~2,800</div>
+          </div>
+        </td>
+        <td>10</td>
+        <td>15</td>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="member-name" style="color:#9f7aea">Kumar</div>
+        </td>
+        <td>3D Design &amp; Performance</td>
+        <td>3D Design Studio · Designer Selection · Compression</td>
+        <td>
+          <div class="loc-bar-wrap">
+            <div class="loc-bar" style="width:100px"></div>
+            <div class="loc-text">~3,200</div>
+          </div>
+        </td>
+        <td>15</td>
+        <td>—</td>
+        <td>9</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="member-name" style="color:#4CAF50">Manoj</div>
+        </td>
+        <td>Designer Dashboard &amp; Uploads</td>
+        <td>Designer Features · File Management · Chat</td>
+        <td>
+          <div class="loc-bar-wrap">
+            <div class="loc-bar" style="width:91px"></div>
+            <div class="loc-text">~2,900</div>
+          </div>
+        </td>
+        <td>11</td>
+        <td>16</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="member-name" style="color:#2196F3">Hari</div>
+        </td>
+        <td>Customer Experience &amp; Checkout</td>
+        <td>Home · Shop · Cart · Checkout · Tracking</td>
+        <td>
+          <div class="loc-bar-wrap">
+            <div class="loc-bar" style="width:82px"></div>
+            <div class="loc-text">~2,600</div>
+          </div>
+        </td>
+        <td>13</td>
+        <td>14</td>
+        <td>10</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════════════════════════ MEMBER CARDS ══════════════════════ -->
+  <div class="section-title">🔷 Individual Contributions</div>
+  <div class="members-grid">
+
+    <!-- CHETAN -->
+    <div class="member-card">
+      <div class="member-card-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">C</div>
+        <div class="member-card-name">Chetan</div>
+        <div class="member-card-role">Security &amp; Admin Systems Lead</div>
+      </div>
+      <div class="member-card-body">
+        <div class="stat-row"><span class="key">Lines of Code</span><span class="val">~3,500</span></div>
+        <div class="stat-row"><span class="key">Files Created</span><span class="val">12</span></div>
+        <div class="stat-row"><span class="key">API Endpoints</span><span class="val">18</span></div>
+        <div class="stat-row"><span class="key">Components</span><span class="val">8</span></div>
+        <div class="focus-tags">
+          <div class="focus-tag">Admin Dashboard</div>
+          <div class="focus-tag">Delivery Admin</div>
+          <div class="focus-tag">User Approvals</div>
+          <div class="focus-tag">Rate Limiting</div>
+          <div class="focus-tag">Helmet Security</div>
+          <div class="focus-tag">Session Mgmt</div>
+        </div>
+        <div class="achievement-box">
+          <div class="ach-label">Achievement</div>
+          <div class="ach-text">5-layer security architecture. Zero incidents in production.</div>
+        </div>
+      </div>
+      <div class="highlight-box">Impact: <span class="hl-metric">99.9%</span> uptime · Custom rate limiting per role
+      </div>
+    </div>
+
+    <!-- HARSHA -->
+    <div class="member-card">
+      <div class="member-card-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#764ba2,#9f7aea)">H</div>
+        <div class="member-card-name">Harsha</div>
+        <div class="member-card-role">Manager &amp; Production Systems Lead</div>
+      </div>
+      <div class="member-card-body">
+        <div class="stat-row"><span class="key">Lines of Code</span><span class="val">~2,800</span></div>
+        <div class="stat-row"><span class="key">Files Created</span><span class="val">10</span></div>
+        <div class="stat-row"><span class="key">API Endpoints</span><span class="val">15</span></div>
+        <div class="stat-row"><span class="key">Components</span><span class="val">7</span></div>
+        <div class="focus-tags">
+          <div class="focus-tag">Manager Dashboard</div>
+          <div class="focus-tag">Milestones</div>
+          <div class="focus-tag">Delivery Assign</div>
+          <div class="focus-tag">Stock Mgmt</div>
+          <div class="focus-tag">Payouts</div>
+          <div class="focus-tag">Morgan Logging</div>
+        </div>
+        <div class="achievement-box">
+          <div class="ach-label">Achievement</div>
+          <div class="ach-text">8-stage production milestone system with progress tracking.</div>
+        </div>
+      </div>
+      <div class="highlight-box">Impact: <span class="hl-metric">40%</span> reduction in production delays</div>
+    </div>
+
+    <!-- KUMAR -->
+    <div class="member-card">
+      <div class="member-card-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#9f7aea,#667eea)">K</div>
+        <div class="member-card-name">Kumar</div>
+        <div class="member-card-role">3D Design Studio &amp; Performance Lead</div>
+      </div>
+      <div class="member-card-body">
+        <div class="stat-row"><span class="key">Lines of Code</span><span class="val">~3,200</span></div>
+        <div class="stat-row"><span class="key">Files Created</span><span class="val">15</span></div>
+        <div class="stat-row"><span class="key">3D Models</span><span class="val">8 types</span></div>
+        <div class="stat-row"><span class="key">Components</span><span class="val">9</span></div>
+        <div class="focus-tags">
+          <div class="focus-tag">Three.js</div>
+          <div class="focus-tag">3D Studio</div>
+          <div class="focus-tag">OrbitControls</div>
+          <div class="focus-tag">Designer Select</div>
+          <div class="focus-tag">Compression</div>
+          <div class="focus-tag">11 Dragon Graphics</div>
+        </div>
+        <div class="achievement-box">
+          <div class="ach-label">Achievement</div>
+          <div class="ach-text">Real-time 3D customisation engine with procedural models.</div>
+        </div>
+      </div>
+      <div class="highlight-box">Impact: <span class="hl-metric">60%</span> increase in custom orders</div>
+    </div>
+
+    <!-- MANOJ -->
+    <div class="member-card">
+      <div class="member-card-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#4CAF50,#00BCD4)">M</div>
+        <div class="member-card-name">Manoj</div>
+        <div class="member-card-role">Designer Dashboard &amp; File Upload Lead</div>
+      </div>
+      <div class="member-card-body">
+        <div class="stat-row"><span class="key">Lines of Code</span><span class="val">~2,900</span></div>
+        <div class="stat-row"><span class="key">Files Created</span><span class="val">11</span></div>
+        <div class="stat-row"><span class="key">API Endpoints</span><span class="val">16</span></div>
+        <div class="stat-row"><span class="key">Upload Handlers</span><span class="val">5</span></div>
+        <div class="focus-tags">
+          <div class="focus-tag">Designer Dash</div>
+          <div class="focus-tag">Multer Uploads</div>
+          <div class="focus-tag">Chat System</div>
+          <div class="focus-tag">Portfolio</div>
+          <div class="focus-tag">Earnings</div>
+          <div class="focus-tag">Base64 Preview</div>
+        </div>
+        <div class="achievement-box">
+          <div class="ach-label">Achievement</div>
+          <div class="ach-text">50MB file upload with instant Base64 previews and validation.</div>
+        </div>
+      </div>
+      <div class="highlight-box">Impact: <span class="hl-metric">95%</span> designer satisfaction rate</div>
+    </div>
+
+    <!-- HARI -->
+    <div class="member-card">
+      <div class="member-card-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#2196F3,#00BCD4)">H</div>
+        <div class="member-card-name">Hari</div>
+        <div class="member-card-role">Customer Experience &amp; Checkout Lead</div>
+      </div>
+      <div class="member-card-body">
+        <div class="stat-row"><span class="key">Lines of Code</span><span class="val">~2,600</span></div>
+        <div class="stat-row"><span class="key">Files Created</span><span class="val">13</span></div>
+        <div class="stat-row"><span class="key">API Endpoints</span><span class="val">14</span></div>
+        <div class="stat-row"><span class="key">Components</span><span class="val">10</span></div>
+        <div class="focus-tags">
+          <div class="focus-tag">Home Page</div>
+          <div class="focus-tag">Shop</div>
+          <div class="focus-tag">Cart</div>
+          <div class="focus-tag">Checkout</div>
+          <div class="focus-tag">CSRF Protection</div>
+          <div class="focus-tag">Order Tracking</div>
+        </div>
+        <div class="achievement-box">
+          <div class="ach-label">Achievement</div>
+          <div class="ach-text">Secure multi-step checkout with animated cart and OTP delivery.</div>
+        </div>
+      </div>
+      <div class="highlight-box">Impact: <span class="hl-metric">100%</span> payment success rate</div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════ TECH STACK ══════════════════════════ -->
+  <div class="section-title">📚 Technology Stack Distribution</div>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-card-header">
+        <div class="tech-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">C</div>
+        <div class="tech-name">Chetan</div>
+      </div>
+      <ul class="tech-list">
+        <li>Helmet (Security Headers)</li>
+        <li>Express Rate Limit</li>
+        <li>Session Management</li>
+        <li>Admin Panel Components</li>
+        <li>CORS Configuration</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-header">
+        <div class="tech-avatar" style="background:linear-gradient(135deg,#764ba2,#9f7aea)">H</div>
+        <div class="tech-name">Harsha</div>
+      </div>
+      <ul class="tech-list">
+        <li>Morgan (HTTP Logging)</li>
+        <li>Body Parser</li>
+        <li>Production Systems</li>
+        <li>Manager Interface</li>
+        <li>Milestone Schemas</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-header">
+        <div class="tech-avatar" style="background:linear-gradient(135deg,#9f7aea,#667eea)">K</div>
+        <div class="tech-name">Kumar</div>
+      </div>
+      <ul class="tech-list">
+        <li>Three.js</li>
+        <li>@react-three/fiber</li>
+        <li>@react-three/drei</li>
+        <li>Compression (gzip)</li>
+        <li>OrbitControls</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-header">
+        <div class="tech-avatar" style="background:linear-gradient(135deg,#4CAF50,#00BCD4)">M</div>
+        <div class="tech-name">Manoj</div>
+      </div>
+      <ul class="tech-list">
+        <li>Multer (File Upload)</li>
+        <li>fs/promises</li>
+        <li>Designer Dashboard</li>
+        <li>Chat System</li>
+        <li>Base64 Encoding</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-header">
+        <div class="tech-avatar" style="background:linear-gradient(135deg,#2196F3,#00BCD4)">H</div>
+        <div class="tech-name">Hari</div>
+      </div>
+      <ul class="tech-list">
+        <li>React Router</li>
+        <li>Cookie Parser</li>
+        <li>CSRF Protection</li>
+        <li>Cart System</li>
+        <li>Checkout Flow</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ PROJECT STATS ══════════════════════ -->
+  <div class="section-title">🎯 Achievement Metrics</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">15K+</div>
+      <div class="stat-label">Lines of Code</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">35+</div>
+      <div class="stat-label">Components</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">40+</div>
+      <div class="stat-label">Pages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">100+</div>
+      <div class="stat-label">API Endpoints</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">15</div>
+      <div class="stat-label">DB Collections</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">User Roles</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">16</div>
+      <div class="stat-label">Order Statuses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">8</div>
+      <div class="stat-label">Prod Milestones</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ DOCS TABLE ══════════════════════════ -->
+  <div class="section-title">📝 Documentation Contributions</div>
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th>Document</th>
+        <th>Primary Author</th>
+        <th>Contributors</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>README.md</td>
+        <td class="author">Kumar</td>
+        <td class="contributors">All Team</td>
+      </tr>
+      <tr>
+        <td>API Documentation</td>
+        <td class="author">Harsha</td>
+        <td class="contributors">Manoj, Hari</td>
+      </tr>
+      <tr>
+        <td>MIDDLEWARE_DOCUMENTATION.html</td>
+        <td class="author">All</td>
+        <td class="contributors">Team Effort</td>
+      </tr>
+      <tr>
+        <td>Database Schema</td>
+        <td class="author">Chetan</td>
+        <td class="contributors">Harsha</td>
+      </tr>
+      <tr>
+        <td>Security Guidelines</td>
+        <td class="author">Chetan</td>
+        <td class="contributors">All Team</td>
+      </tr>
+      <tr>
+        <td>3D Model Documentation</td>
+        <td class="author">Kumar</td>
+        <td class="contributors">—</td>
+      </tr>
+      <tr>
+        <td>User Guides</td>
+        <td class="author">Hari</td>
+        <td class="contributors">All Team</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════════════════════════ FUTURE ENHANCEMENTS ════════════════ -->
+  <div class="section-title">🚀 Future Enhancements (Proposed)</div>
+  <div class="future-grid">
+    <div class="future-card">
+      <div class="future-card-title" style="color:#667eea">Chetan · Security</div>
+      <div class="future-item">Two-factor authentication (TOTP/SMS)</div>
+      <div class="future-item">Advanced fraud detection</div>
+      <div class="future-item">Real-time threat monitoring</div>
+    </div>
+    <div class="future-card">
+      <div class="future-card-title" style="color:#764ba2">Harsha · Operations</div>
+      <div class="future-item">AI-based production time estimation</div>
+      <div class="future-item">Automated designer assignment</div>
+      <div class="future-item">Predictive inventory management</div>
+    </div>
+    <div class="future-card">
+      <div class="future-card-title" style="color:#9f7aea">Kumar · 3D Experience</div>
+      <div class="future-item">AR/VR try-on feature</div>
+      <div class="future-item">AI-powered design suggestions</div>
+      <div class="future-item">Custom 3D model upload</div>
+    </div>
+    <div class="future-card">
+      <div class="future-card-title" style="color:#4CAF50">Manoj · Designer Tools</div>
+      <div class="future-item">Video call integration</div>
+      <div class="future-item">Collaborative design board</div>
+      <div class="future-item">AI design assistant</div>
+    </div>
+    <div class="future-card">
+      <div class="future-card-title" style="color:#2196F3">Hari · Customer UX</div>
+      <div class="future-item">Social media integration</div>
+      <div class="future-item">Wishlist sharing</div>
+      <div class="future-item">Loyalty rewards program</div>
+    </div>
+  </div>
+
+  <div class="footer">DesignDen · Team Contributions · v1.0 · March 2026</div>
+
+</body>
+
+</html>

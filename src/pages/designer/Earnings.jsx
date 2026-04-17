@@ -149,7 +149,7 @@ const DesignerEarnings = () => {
           <div
             className="earnings-card"
             style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: "#314b6b",
             }}
           >
             <h3>₹{summary.totalEarned.toLocaleString()}</h3>
@@ -160,7 +160,7 @@ const DesignerEarnings = () => {
           <div
             className="earnings-card"
             style={{
-              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+              background: "#a0553c",
             }}
           >
             <h3>₹{summary.availableBalance.toLocaleString()}</h3>
@@ -171,7 +171,7 @@ const DesignerEarnings = () => {
           <div
             className="earnings-card"
             style={{
-              background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+              background: "#5a7386",
             }}
           >
             <h3>₹{summary.processing.toLocaleString()}</h3>
@@ -182,7 +182,7 @@ const DesignerEarnings = () => {
           <div
             className="earnings-card"
             style={{
-              background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+              background: "#5f745b",
             }}
           >
             <h3>₹{summary.paid.toLocaleString()}</h3>

@@ -122,16 +122,16 @@ export const AuthProvider = ({ children }) => {
             justifyContent: "center",
             alignItems: "center",
             height: "100vh",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "#f6f1e8",
           }}
         >
-          <div style={{ textAlign: "center", color: "white" }}>
+          <div style={{ textAlign: "center", color: "#1f1a17" }}>
             <div
               style={{
                 width: "50px",
                 height: "50px",
-                border: "4px solid rgba(255,255,255,0.3)",
-                borderTop: "4px solid white",
+                border: "4px solid rgba(31, 26, 23, 0.14)",
+                borderTop: "4px solid #314b6b",
                 borderRadius: "50%",
                 animation: "spin 1s linear infinite",
                 margin: "0 auto 1rem",
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
             />
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             <h2 style={{ margin: 0, fontWeight: 600 }}>DesignDen</h2>
-            <p style={{ opacity: 0.8, marginTop: "0.5rem" }}>Loading...</p>
+            <p style={{ opacity: 0.72, marginTop: "0.5rem" }}>Loading...</p>
           </div>
         </div>
       </AuthContext.Provider>

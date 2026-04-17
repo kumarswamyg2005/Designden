@@ -6,46 +6,46 @@ async function resetPasswords() {
     await mongoose.connect("mongodb://localhost:27017/designden");
     console.log("MongoDB connected");
 
-    const newHash = await bcrypt.hash("Admin@123", 10);
+    const unifiedPassword = "Admin@123";
+    const newHash = await bcrypt.hash(unifiedPassword, 10);
 
-    // Reset admin
-    await mongoose.connection.db
-      .collection("users")
-      .updateOne(
-        { email: "admin@designden.com" },
-        { $set: { password: newHash } },
-      );
-    console.log("✅ admin@designden.com password reset to: Admin@123");
+    // All known demo users in this repository
+    const demoEmails = [
+      "admin@designden.com",
+      "manager@designden.com",
+      "designer@designden.com",
+      "customer@designden.com",
+      "delivery1@designden.com",
+      "priya.designer@example.com",
+      "rahul.designer@example.com",
+      "anita.designer@example.com",
+      "kiran.designer@example.com",
+    ];
 
-    // Reset designer
-    await mongoose.connection.db
-      .collection("users")
-      .updateOne(
-        { email: "designer@designden.com" },
-        { $set: { password: newHash } },
+    let updated = 0;
+    for (const email of demoEmails) {
+      const result = await mongoose.connection.db.collection("users").updateOne(
+        { email },
+        {
+          $set: {
+            password: newHash,
+            approved: true,
+            twoFactorEnabled: false,
+          },
+        },
       );
-    console.log("✅ designer@designden.com password reset to: Admin@123");
 
-    // Reset manager
-    await mongoose.connection.db
-      .collection("users")
-      .updateOne(
-        { email: "manager@designden.com" },
-        { $set: { password: newHash } },
-      );
-    console.log("✅ manager@designden.com password reset to: Admin@123");
-
-    // Reset customer
-    await mongoose.connection.db
-      .collection("users")
-      .updateOne(
-        { email: "customer@designden.com" },
-        { $set: { password: newHash } },
-      );
-    console.log("✅ customer@designden.com password reset to: Admin@123");
+      if (result.matchedCount > 0) {
+        updated += 1;
+        console.log(`✅ ${email} password reset to: ${unifiedPassword}`);
+      } else {
+        console.log(`ℹ️  ${email} not found (skipped)`);
+      }
+    }
 
     await mongoose.disconnect();
-    console.log("\nDone! All passwords are now: Admin@123");
+    console.log(`\nDone! Updated ${updated} account(s).`);
+    console.log(`All reset accounts now use password: ${unifiedPassword}`);
     process.exit(0);
   } catch (err) {
     console.error("Error:", err);

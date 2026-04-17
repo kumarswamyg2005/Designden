@@ -200,10 +200,10 @@ const Products = () => {
           <div
             className="card shadow-sm"
             style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: "#efe6da",
             }}
           >
-            <div className="card-body text-white">
+            <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <h2 className="card-title mb-1">
@@ -498,11 +498,10 @@ const Products = () => {
               <div
                 className="modal-header"
                 style={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  background: "#efe6da",
                 }}
               >
-                <h5 className="modal-title text-white">
+                <h5 className="modal-title">
                   <i
                     className={`fas ${editingItem ? "fa-edit" : "fa-plus-circle"} me-2`}
                   ></i>

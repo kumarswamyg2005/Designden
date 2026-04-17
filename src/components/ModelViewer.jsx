@@ -21,6 +21,9 @@ const ModelViewer = forwardRef(
       pattern = "Solid",
       onReset,
       useProceduralModel = false,
+      sceneBackground = "#f8fbfd",
+      stageColor = "#dbe8ed",
+      stageRingColor = "#7cb3ad",
     },
     ref,
   ) => {
@@ -30,9 +33,12 @@ const ModelViewer = forwardRef(
     const rendererRef = useRef(null);
     const controlsRef = useRef(null);
     const modelRef = useRef(null);
-    const initialCameraPosition = useRef(new THREE.Vector3(0, 0.5, 3));
-    const initialCameraTarget = useRef(new THREE.Vector3(0, 0, 0));
+    const initialCameraPosition = useRef(new THREE.Vector3(0, 0.7, 3.2));
+    const initialCameraTarget = useRef(new THREE.Vector3(0, 0.55, 0));
     const initialModelRotation = useRef(new THREE.Euler(0, 0, 0));
+    const sceneBackgroundRef = useRef(sceneBackground);
+    const stageColorRef = useRef(stageColor);
+    const stageRingColorRef = useRef(stageRingColor);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -57,7 +63,7 @@ const ModelViewer = forwardRef(
 
       // Create scene
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf8f9fa);
+      scene.background = new THREE.Color(sceneBackgroundRef.current);
       sceneRef.current = scene;
 
       // Create camera
@@ -67,14 +73,20 @@ const ModelViewer = forwardRef(
         0.1,
         1000,
       );
-      camera.position.set(0, 0.5, 3);
-      camera.lookAt(0, 0, 0);
+      camera.position.copy(initialCameraPosition.current);
+      camera.lookAt(initialCameraTarget.current);
       cameraRef.current = camera;
 
       // Create renderer
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.03;
       renderer.domElement.style.cursor = "grab";
       container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
@@ -88,16 +100,46 @@ const ModelViewer = forwardRef(
       });
 
       // Add lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
       scene.add(ambientLight);
 
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
+      const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xdbe8ed, 0.95);
+      scene.add(hemisphereLight);
 
-      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
-      directionalLight2.position.set(-1, -1, -1);
-      scene.add(directionalLight2);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.25);
+      keyLight.position.set(2.2, 2.4, 3);
+      scene.add(keyLight);
+
+      const fillLight = new THREE.DirectionalLight(0xe5edff, 0.7);
+      fillLight.position.set(-2, 1.2, 2.4);
+      scene.add(fillLight);
+
+      const rimLight = new THREE.DirectionalLight(0xffffff, 0.45);
+      rimLight.position.set(0, 2.4, -2.6);
+      scene.add(rimLight);
+
+      const stage = new THREE.Mesh(
+        new THREE.CircleGeometry(2.1, 64),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(stageColorRef.current),
+        }),
+      );
+      stage.rotation.x = -Math.PI / 2;
+      stage.position.set(0, -1.08, 0);
+      scene.add(stage);
+
+      const stageRing = new THREE.Mesh(
+        new THREE.RingGeometry(1.7, 2.28, 64),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(stageRingColorRef.current),
+          transparent: true,
+          opacity: 0.22,
+          side: THREE.DoubleSide,
+        }),
+      );
+      stageRing.rotation.x = -Math.PI / 2;
+      stageRing.position.set(0, -1.075, 0);
+      scene.add(stageRing);
 
       // Add controls
       const controls = new OrbitControls(camera, renderer.domElement);
@@ -107,6 +149,7 @@ const ModelViewer = forwardRef(
       controls.minDistance = 1;
       controls.maxDistance = 5;
       controls.maxPolarAngle = Math.PI / 2;
+      controls.target.copy(initialCameraTarget.current);
       controlsRef.current = controls;
 
       // Animation loop
@@ -246,7 +289,6 @@ const ModelViewer = forwardRef(
         modelFilePath,
         (gltf) => {
           if (!isMounted) return;
-          console.log("3D model loaded successfully");
 
           setLoading(false);
 
@@ -340,9 +382,7 @@ const ModelViewer = forwardRef(
           const textureLoader = new THREE.TextureLoader();
           const graphicTexture = textureLoader.load(
             `/images/graphics/${graphic}`,
-            () => {
-              console.log("Graphic texture loaded:", graphic);
-            },
+            undefined,
             undefined,
             (error) => {
               console.error("Failed to load graphic texture:", error);
@@ -368,9 +408,7 @@ const ModelViewer = forwardRef(
               const textureLoader = new THREE.TextureLoader();
               const graphicTexture = textureLoader.load(
                 `/images/graphics/${graphic}`,
-                () => {
-                  console.log("Graphic texture loaded:", graphic);
-                },
+                undefined,
                 undefined,
                 (error) => {
                   console.error("Failed to load graphic texture:", error);
@@ -426,51 +464,21 @@ const ModelViewer = forwardRef(
     };
 
     return (
-      <div
-        ref={containerRef}
-        style={{
-          width: "100%",
-          height: "450px",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          overflow: "hidden",
-          backgroundColor: "#f8f9fa",
-          position: "relative",
-        }}
-      >
+      <div ref={containerRef} className="model-viewer-shell">
         {loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              textAlign: "center",
-              zIndex: 10,
-            }}
-          >
+          <div className="model-viewer-overlay model-viewer-overlay--loading">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading 3D model...</span>
             </div>
-            <p className="mt-2 text-muted small">Loading 3D model...</p>
+            <p className="mt-2 small">Loading 3D model...</p>
           </div>
         )}
 
         {error && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              textAlign: "center",
-              padding: "20px",
-              zIndex: 10,
-            }}
-          >
+          <div className="model-viewer-overlay model-viewer-overlay--error">
             <i className="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
-            <p className="text-muted">Failed to load 3D model</p>
-            <small className="text-muted">
+            <p>Failed to load 3D model</p>
+            <small>
               Please check your internet connection
             </small>
           </div>
@@ -478,41 +486,17 @@ const ModelViewer = forwardRef(
 
         {!loading && !error && (
           <>
-            <div
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                zIndex: 5,
-              }}
-            >
+            <div className="model-viewer-controls">
               <button
                 type="button"
                 className="btn btn-sm btn-outline-primary"
                 onClick={handleReset}
                 title="Reset View"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #0d6efd",
-                }}
               >
                 <i className="fas fa-sync-alt me-1"></i> Reset
               </button>
             </div>
-            <div
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
-                color: "white",
-                padding: "8px 16px",
-                borderRadius: "20px",
-                fontSize: "12px",
-                zIndex: 5,
-              }}
-            >
+            <div className="model-viewer-hint">
               <i className="fas fa-hand-pointer me-2"></i>
               Drag to rotate • Scroll to zoom
             </div>

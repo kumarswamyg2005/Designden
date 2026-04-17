@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DesignDen – Wireframes</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f0f1a;
+      color: #e2e8f0;
+      padding: 40px;
+      min-width: 1400px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 2px solid #2d3748;
+    }
+
+    .page-header h1 {
+      font-size: 2.6rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      color: #718096;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 9999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+    }
+
+    .badge span {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    /* ─── Screen section ─── */
+    .screen-section {
+      margin-bottom: 50px;
+      break-inside: avoid;
+    }
+
+    .screen-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .screen-label .number {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .screen-label h2 {
+      font-size: 1.25rem;
+      color: #e2e8f0;
+    }
+
+    .screen-frame {
+      background: #1a1a2e;
+      border: 1px solid #2d3748;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Simulated browser bar */
+    .browser-bar {
+      background: #16213e;
+      border-bottom: 1px solid #2d3748;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.red {
+      background: #F44336;
+    }
+
+    .browser-dot.yellow {
+      background: #FFC107;
+    }
+
+    .browser-dot.green {
+      background: #4CAF50;
+    }
+
+    .browser-url {
+      margin-left: 12px;
+      background: #0f0f1a;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      padding: 4px 14px;
+      font-size: 0.75rem;
+      color: #718096;
+      flex: 1;
+    }
+
+    .wireframe-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Reusable navbar ─── */
+    .nav-bar {
+      background: #16213e;
+      border-bottom: 1px solid #2d3748;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      color: #a0aec0;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .nav-link.active {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    .btn {
+      border-radius: 8px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #667eea;
+      color: #667eea;
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+    }
+
+    .page-content {
+      padding: 28px;
+    }
+
+    /* ─── Screen 1: Home ─── */
+    .hero {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      border-radius: 12px;
+      padding: 48px 32px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #a0aec0;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .feature-card {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-card h3 {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 0.75rem;
+      color: #718096;
+    }
+
+    .how-it-works {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .how-it-works h2 {
+      font-size: 1rem;
+      color: #667eea;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+      text-align: center;
+    }
+
+    .step-arrow {
+      color: #667eea;
+      font-size: 1.2rem;
+    }
+
+    /* ─── Screen 2: 3D Studio ─── */
+    .studio-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid #2d3748;
+    }
+
+    .studio-3d {
+      background: #0d1117;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      border-right: 1px solid #2d3748;
+      min-height: 380px;
+    }
+
+    .model-placeholder {
+      width: 180px;
+      height: 220px;
+      border: 2px dashed #2d3748;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #4a5568;
+      font-size: 0.8rem;
+    }
+
+    .model-placeholder .shirt-icon {
+      font-size: 3rem;
+    }
+
+    .studio-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 4px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: #718096;
+      margin-bottom: 5px;
+    }
+
+    .form-select {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 7px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      width: 100%;
+    }
+
+    .fabric-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .fabric-chip {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      color: #a0aec0;
+    }
+
+    .fabric-chip.selected {
+      background: rgba(102, 126, 234, 0.2);
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid #2d3748;
+      flex-shrink: 0;
+    }
+
+    .size-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-btn {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.75rem;
+      color: #a0aec0;
+    }
+
+    .size-btn.active {
+      background: rgba(102, 126, 234, 0.2);
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .price-label {
+      font-size: 0.78rem;
+      color: #718096;
+    }
+
+    .price-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #4CAF50;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ─── Screen 3: Cart ─── */
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      border-top: 1px solid #2d3748;
+      padding: 24px;
+    }
+
+    .cart-item {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .cart-img {
+      width: 70px;
+      height: 70px;
+      background: #0d1117;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+
+    .cart-info {
+      flex: 1;
+    }
+
+    .cart-info .item-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .cart-info .item-meta {
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      background: #0f0f1a;
+      border: 1px solid #2d3748;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      cursor: pointer;
+    }
+
+    .qty-val {
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .cart-price {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    .cart-summary {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px;
+      align-self: start;
+    }
+
+    .summary-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 16px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+    }
+
+    .summary-row .label {
+      color: #718096;
+    }
+
+    .summary-row .value {
+      color: #e2e8f0;
+    }
+
+    .summary-divider {
+      border: none;
+      border-top: 1px solid #2d3748;
+      margin: 12px 0;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .summary-total .label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .summary-total .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #4CAF50;
+    }
+
+    /* ─── Screen 4: Checkout ─── */
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      border-top: 1px solid #2d3748;
+      padding: 24px;
+    }
+
+    .steps-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 24px;
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 14px 20px;
+      grid-column: 1 / -1;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #718096;
+      flex: 1;
+    }
+
+    .step-item.done {
+      color: #4CAF50;
+    }
+
+    .step-item.active {
+      color: #667eea;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .step-item.done .step-num {
+      background: #4CAF50;
+      color: #fff;
+    }
+
+    .step-item.active .step-num {
+      background: #667eea;
+      color: #fff;
+    }
+
+    .step-sep {
+      width: 40px;
+      height: 2px;
+      background: #2d3748;
+      margin: 0 8px;
+    }
+
+    .checkout-form {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .form-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .input-group label {
+      font-size: 0.72rem;
+      color: #718096;
+    }
+
+    .input-group input {
+      background: #0f0f1a;
+      border: 1px solid #2d3748;
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+    }
+
+    .payment-methods {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .payment-opt {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+      cursor: pointer;
+    }
+
+    .payment-opt.selected {
+      background: rgba(102, 126, 234, 0.15);
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    /* ─── Screen 5: Designer Dashboard ─── */
+    .stat-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    .tabs-bar {
+      display: flex;
+      gap: 2px;
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #718096;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .order-card {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .order-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .order-id {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .status-pill {
+      border-radius: 9999px;
+      padding: 3px 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-inprogress {
+      background: rgba(33, 150, 243, 0.15);
+      color: #2196F3;
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.15);
+      color: #FFC107;
+    }
+
+    .status-assigned {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    .status-completed {
+      background: rgba(76, 175, 80, 0.15);
+      color: #4CAF50;
+    }
+
+    .order-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: #718096;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar-wrap {
+      height: 6px;
+      background: #0f0f1a;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ─── Screen 6: Manager Dashboard ─── */
+    /* reuses stat-grid-4, order-card, tabs-bar */
+
+    /* ─── Screen 7: Admin Analytics ─── */
+    .revenue-chart {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .chart-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 16px;
+    }
+
+    .chart-area {
+      height: 120px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(180deg, #667eea, #764ba2);
+      opacity: 0.85;
+    }
+
+    .bar-label {
+      font-size: 0.65rem;
+      color: #4a5568;
+    }
+
+    /* ─── Screen 8: Order Tracking ─── */
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 16px;
+      bottom: 0;
+      width: 2px;
+      background: #2d3748;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      padding-left: 16px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -15px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2d3748;
+      border: 2px solid #4a5568;
+    }
+
+    .timeline-item.done::before {
+      background: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .timeline-item.current::before {
+      background: #667eea;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+
+    .timeline-item .tl-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .timeline-item .tl-date {
+      font-size: 0.72rem;
+      color: #718096;
+      margin-top: 2px;
+    }
+
+    .timeline-item .tl-sub {
+      font-size: 0.72rem;
+      color: #a0aec0;
+      margin-top: 4px;
+    }
+
+    /* ─── Screen 9: Chat ─── */
+    .chat-layout {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 480px;
+    }
+
+    .chat-header {
+      background: #16213e;
+      border-bottom: 1px solid #2d3748;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .chat-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .chat-role {
+      font-size: 0.72rem;
+      color: #4CAF50;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4CAF50;
+      margin-left: auto;
+    }
+
+    .chat-messages {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg {
+      max-width: 65%;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .msg.incoming {
+      align-self: flex-start;
+    }
+
+    .msg.outgoing {
+      align-self: flex-end;
+    }
+
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+    }
+
+    .msg.incoming .msg-bubble {
+      background: #16213e;
+      border: 1px solid #2d3748;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.outgoing .msg-bubble {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25));
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 0.65rem;
+      color: #4a5568;
+    }
+
+    .chat-input-row {
+      background: #16213e;
+      border-top: 1px solid #2d3748;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #0f0f1a;
+      border: 1px solid #2d3748;
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+    }
+
+    /* ─── Color palette section ─── */
+    .section-title {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+
+    .swatch-card {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #2d3748;
+    }
+
+    .swatch-color {
+      height: 60px;
+    }
+
+    .swatch-info {
+      background: #16213e;
+      padding: 8px 10px;
+    }
+
+    .swatch-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .swatch-hex {
+      font-size: 0.68rem;
+      font-family: monospace;
+      color: #718096;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid #2d3748;
+      color: #4a5568;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════ HEADER ═══ -->
+  <div class="page-header">
+    <h1>DesignDen — Wireframes & UI</h1>
+    <p>Custom Clothing E-Commerce Platform · Bootstrap 5.3 + Custom Theme · Mobile-First</p>
+    <div class="badge-row">
+      <div class="badge"><span>9</span> Screen Layouts</div>
+      <div class="badge"><span>5</span> User Roles</div>
+      <div class="badge"><span>Bootstrap 5.3</span></div>
+      <div class="badge"><span>Three.js</span> 3D Studio</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 1: HOME ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">1</div>
+      <h2>Home Page (Landing)</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen</div>
+          <div class="nav-links">
+            <div class="nav-link active">Home</div>
+            <div class="nav-link">Shop</div>
+            <div class="nav-link">Marketplace</div>
+            <button class="btn btn-primary btn-sm">Login</button>
+          </div>
+        </div>
+        <div class="page-content">
+          <div class="hero">
+            <h1>Connect With Talented Designers</h1>
+            <p>Browse hundreds of skilled freelance fashion designers ready to bring your custom clothing vision to life
+            </p>
+            <div class="hero-btns">
+              <button class="btn btn-primary">Browse Designers</button>
+              <button class="btn btn-outline">Create a Design</button>
+              <button class="btn btn-outline">Join as Designer</button>
+            </div>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">👥</div>
+              <h3>Talented Designers</h3>
+              <p>Skilled professionals from around India</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">💰</div>
+              <h3>Fair Pricing</h3>
+              <p>Competitive rates, transparent fees</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">⭐</div>
+              <h3>Quality Guaranteed</h3>
+              <p>Review-backed designer profiles</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔒</div>
+              <h3>Secure Payments</h3>
+              <p>Encrypted checkout, OTP delivery</p>
+            </div>
+          </div>
+          <div class="how-it-works">
+            <h2>HOW IT WORKS</h2>
+            <div class="steps">
+              <div class="step">1. Browse Designers</div>
+              <div class="step-arrow">→</div>
+              <div class="step">2. Place Order</div>
+              <div class="step-arrow">→</div>
+              <div class="step">3. Track Progress</div>
+              <div class="step-arrow">→</div>
+              <div class="step">4. Receive Product</div>
+              <div class="step-arrow">→</div>
+              <div class="step">5. Leave Review</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 2: 3D STUDIO ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">2</div>
+      <h2>3D Design Studio</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/studio</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen</div>
+          <div class="nav-links">
+            <div class="nav-link">Home</div>
+            <div class="nav-link">Shop</div>
+            <div class="nav-link">Cart (2)</div>
+            <button class="btn btn-outline btn-sm">Logout</button>
+          </div>
+        </div>
+        <div class="studio-layout">
+          <div class="studio-3d">
+            <div class="model-placeholder">
+              <div class="shirt-icon">👕</div>
+              <div>3D Model Viewer</div>
+              <div style="font-size:0.7rem; color:#2d3748">Three.js · OrbitControls</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-outline btn-sm">Reset View</button>
+              <button class="btn btn-outline btn-sm">Capture</button>
+            </div>
+            <div style="font-size:0.75rem;color:#4a5568">Color: #FFFFFF</div>
+          </div>
+          <div class="studio-panel">
+            <div class="panel-title">Customization Panel</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Category</label>
+                <select class="form-select">
+                  <option>T-Shirt</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Gender</label>
+                <select class="form-select">
+                  <option>Men</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:#718096;display:block;margin-bottom:6px">Fabric</label>
+              <div class="fabric-options">
+                <div class="fabric-chip selected">Cotton</div>
+                <div class="fabric-chip">Silk</div>
+                <div class="fabric-chip">Linen</div>
+                <div class="fabric-chip">Polyester</div>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:#718096;display:block;margin-bottom:6px">Color</label>
+              <div class="color-picker-row">
+                <div class="color-swatch" style="background:#667eea"></div>
+                <div class="form-select" style="padding:7px 10px;width:auto">🎨 Color Picker</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Pattern</label>
+                <select class="form-select">
+                  <option>Solid</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Graphic</label>
+                <select class="form-select">
+                  <option>Dragon 1</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:0.72rem;color:#718096;display:block;margin-bottom:6px">Size</label>
+              <div class="size-row">
+                <div class="size-btn">S</div>
+                <div class="size-btn active">M</div>
+                <div class="size-btn">L</div>
+                <div class="size-btn">XL</div>
+              </div>
+            </div>
+            <div class="price-row">
+              <div>
+                <div class="price-label">Total Price</div>
+                <div class="price-value">₹1,200.00</div>
+                <div style="font-size:0.7rem;color:#718096;margin-top:3px">Sustainability: 75/100</div>
+              </div>
+              <div class="action-row" style="flex-direction:column;gap:8px">
+                <button class="btn btn-primary btn-sm">Add to Cart</button>
+                <button class="btn btn-outline btn-sm">Save Design</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 3: CART ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">3</div>
+      <h2>Shopping Cart</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/cart</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen</div>
+          <div class="nav-links">
+            <div class="nav-link">Home</div>
+            <div class="nav-link">Shop</div>
+            <div class="nav-link active">Cart (3)</div>
+            <div class="nav-link">Profile ▾</div>
+          </div>
+        </div>
+        <div class="cart-layout">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:#e2e8f0;margin-bottom:16px">Shopping Cart (3 items)</div>
+            <div class="cart-item">
+              <div class="cart-img">👕</div>
+              <div class="cart-info">
+                <div class="item-name">Custom T-Shirt — Blue Cotton</div>
+                <div class="item-meta">Size: M · Fabric: Cotton · Pattern: Solid</div>
+                <div class="qty-ctrl">
+                  <div class="qty-btn">−</div>
+                  <div class="qty-val">1</div>
+                  <div class="qty-btn">+</div>
+                </div>
+              </div>
+              <div class="cart-price">₹1,200.00</div>
+            </div>
+            <div class="cart-item">
+              <div class="cart-img">🧥</div>
+              <div class="cart-info">
+                <div class="item-name">Premium Hoodie — Black Polyester</div>
+                <div class="item-meta">Size: L · Fabric: Polyester · Graphic: Dragon</div>
+                <div class="qty-ctrl">
+                  <div class="qty-btn">−</div>
+                  <div class="qty-val">1</div>
+                  <div class="qty-btn">+</div>
+                </div>
+              </div>
+              <div class="cart-price">₹2,400.00</div>
+            </div>
+            <div class="cart-item">
+              <div class="cart-img">👗</div>
+              <div class="cart-info">
+                <div class="item-name">Silk Dress — Red</div>
+                <div class="item-meta">Size: S · Fabric: Silk · Pattern: Floral</div>
+                <div class="qty-ctrl">
+                  <div class="qty-btn">−</div>
+                  <div class="qty-val">2</div>
+                  <div class="qty-btn">+</div>
+                </div>
+              </div>
+              <div class="cart-price">₹8,000.00</div>
+            </div>
+          </div>
+          <div class="cart-summary">
+            <div class="summary-title">Cart Summary</div>
+            <div class="summary-row"><span class="label">Subtotal (4 items)</span><span class="value">₹11,600.00</span>
+            </div>
+            <div class="summary-row"><span class="label">Shipping</span><span class="value"
+                style="color:#4CAF50">FREE</span></div>
+            <div class="summary-row"><span class="label">Tax (18%)</span><span class="value">₹2,088.00</span></div>
+            <hr class="summary-divider">
+            <div class="summary-total"><span class="label">Total</span><span class="value">₹13,688.00</span></div>
+            <button class="btn btn-primary" style="width:100%">Proceed to Checkout →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 4: CHECKOUT ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">4</div>
+      <h2>Checkout Page</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/checkout 🔒</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen 🔒 SECURE CHECKOUT</div>
+        </div>
+        <div class="checkout-layout">
+          <div class="steps-bar">
+            <div class="step-item done">
+              <div class="step-num">✓</div> Address
+            </div>
+            <div class="step-sep"></div>
+            <div class="step-item active">
+              <div class="step-num">2</div> Payment
+            </div>
+            <div class="step-sep"></div>
+            <div class="step-item">
+              <div class="step-num">3</div> Review
+            </div>
+            <div class="step-sep"></div>
+            <div class="step-item">
+              <div class="step-num">4</div> Confirm
+            </div>
+          </div>
+          <div>
+            <div class="checkout-form">
+              <div class="form-title">Shipping Address</div>
+              <div class="input-row">
+                <div class="input-group"><label>Full Name</label><input type="text" value="John Doe" /></div>
+                <div class="input-group"><label>Email</label><input type="text" value="john@email.com" /></div>
+              </div>
+              <div class="input-row">
+                <div class="input-group"><label>Phone</label><input type="text" value="+91 9876543210" /></div>
+                <div class="input-group"><label>Pincode</label><input type="text" value="400001" /></div>
+              </div>
+              <div class="input-row">
+                <div class="input-group"><label>City</label><input type="text" value="Mumbai" /></div>
+                <div class="input-group"><label>State</label><input type="text" value="Maharashtra" /></div>
+              </div>
+              <div style="margin-top:16px">
+                <div class="form-title">Payment Method</div>
+                <div class="payment-methods">
+                  <div class="payment-opt selected">Credit/Debit Card</div>
+                  <div class="payment-opt">UPI</div>
+                  <div class="payment-opt">Net Banking</div>
+                  <div class="payment-opt">Cash on Delivery</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:16px;justify-content:flex-end">
+              <button class="btn btn-outline">← Back to Cart</button>
+              <button class="btn btn-primary">Place Order →</button>
+            </div>
+          </div>
+          <div class="cart-summary">
+            <div class="summary-title">Order Summary</div>
+            <div class="summary-row"><span class="label">Items</span><span class="value">3</span></div>
+            <div class="summary-row"><span class="label">Subtotal</span><span class="value">₹11,600.00</span></div>
+            <div class="summary-row"><span class="label">Tax</span><span class="value">₹2,088.00</span></div>
+            <hr class="summary-divider">
+            <div class="summary-total"><span class="label">Total</span><span class="value">₹13,688.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 5: DESIGNER DASHBOARD ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">5</div>
+      <h2>Designer Dashboard</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/designer/dashboard</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen Designer Dashboard</div>
+          <div class="nav-links">
+            <div class="nav-link">Profile ▾</div>
+          </div>
+        </div>
+        <div class="page-content">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-size:1.1rem;font-weight:600;color:#e2e8f0">Welcome back, Sarah Designer! 👋</div>
+              <div style="font-size:0.75rem;color:#718096;margin-top:4px">Availability:</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div class="status-pill status-completed">● Available</div>
+              <div class="status-pill status-pending">Busy</div>
+              <div class="status-pill" style="background:#16213e;color:#718096">Not Accepting</div>
+            </div>
+          </div>
+          <div class="stat-grid-4">
+            <div class="stat-card">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#2196F3">8</div>
+              <div class="stat-label">Active Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#FFC107">4</div>
+              <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#4CAF50">₹45.2K</div>
+              <div class="stat-label">Earnings This Month</div>
+            </div>
+          </div>
+          <div class="tabs-bar">
+            <div class="tab active">Orders</div>
+            <div class="tab">Portfolio</div>
+            <div class="tab">Earnings</div>
+            <div class="tab">Messages</div>
+            <div class="tab">Settings</div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">Order #DD-20260215-0042</div>
+              <div class="status-pill status-inprogress">DESIGN IN PROGRESS</div>
+            </div>
+            <div class="order-meta">
+              <div>Customer: John Doe</div>
+              <div>Due: 5 days</div>
+              <div>Item: Custom T-Shirt</div>
+              <div>Progress: 50%</div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:50%"></div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-outline btn-sm">View Details</button>
+              <button class="btn btn-primary btn-sm">Update Progress</button>
+              <button class="btn btn-outline btn-sm">Chat</button>
+            </div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">Order #DD-20260214-0035</div>
+              <div class="status-pill status-assigned">DESIGNER ACCEPTED</div>
+            </div>
+            <div class="order-meta">
+              <div>Customer: Jane Smith</div>
+              <div>Due: 10 days</div>
+              <div>Item: Silk Dress</div>
+              <div>Progress: 0%</div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:0%"></div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-primary btn-sm">Start Design</button>
+              <button class="btn btn-outline btn-sm">View Details</button>
+            </div>
+          </div>
+          <div class="order-card" style="border-color:#FFC107">
+            <div class="order-header">
+              <div class="order-id">🔔 NEW — Order #DD-20260215-0048</div>
+              <div class="status-pill status-pending">ASSIGNED TO DESIGNER</div>
+            </div>
+            <div class="order-meta">
+              <div>Customer: Mike Brown</div>
+              <div>Deadline: 15 days</div>
+              <div>Type: Custom Hoodie</div>
+              <div>Budget: ₹3,500</div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-primary btn-sm">Accept Order</button>
+              <button class="btn btn-outline btn-sm" style="border-color:#F44336;color:#F44336">Reject</button>
+              <button class="btn btn-outline btn-sm">View Requirements</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 6: MANAGER DASHBOARD ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">6</div>
+      <h2>Manager Dashboard</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/manager/dashboard</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen Manager Dashboard</div>
+          <div class="nav-links">
+            <div class="nav-link">Admin ▾</div>
+          </div>
+        </div>
+        <div class="page-content">
+          <div style="font-size:0.85rem;color:#718096;margin-bottom:20px">Manager Control Panel — Production &amp;
+            Delivery</div>
+          <div class="stat-grid-4">
+            <div class="stat-card">
+              <div class="stat-value">45</div>
+              <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#FFC107">18</div>
+              <div class="stat-label">Pending Assign</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#2196F3">12</div>
+              <div class="stat-label">In Production</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#4CAF50">8</div>
+              <div class="stat-label">Ready Delivery</div>
+            </div>
+          </div>
+          <div class="tabs-bar">
+            <div class="tab active">All Orders</div>
+            <div class="tab">Pending Assign</div>
+            <div class="tab">Production</div>
+            <div class="tab">Delivery</div>
+            <div class="tab">Design Approval</div>
+            <div class="tab">Payouts</div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">PENDING DESIGN APPROVAL</div>
+              <div class="status-pill status-pending">DESIGN READY</div>
+            </div>
+            <div class="order-meta">
+              <div>Order #DD-20260215-0042</div>
+              <div>Designer: Sarah Designer</div>
+              <div>Customer: John Doe</div>
+              <div>Submitted: 2 hrs ago · 3 files</div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-outline btn-sm">View Design</button>
+              <button class="btn btn-primary btn-sm">Approve</button>
+              <button class="btn btn-outline btn-sm" style="border-color:#F44336;color:#F44336">Reject</button>
+              <button class="btn btn-outline btn-sm">Request Changes</button>
+            </div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">PRODUCTION IN PROGRESS</div>
+              <div class="status-pill status-inprogress">STITCHING (50%)</div>
+            </div>
+            <div class="order-meta">
+              <div>Order #DD-20260210-0028</div>
+              <div>Started: 3 days ago</div>
+              <div>Due: 7 days</div>
+              <div>Milestone: 4/8</div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:50%"></div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-primary btn-sm">Update Progress</button>
+              <button class="btn btn-outline btn-sm">View Timeline</button>
+            </div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">READY FOR DELIVERY ASSIGNMENT</div>
+              <div class="status-pill status-completed">PRODUCTION COMPLETED</div>
+            </div>
+            <div class="order-meta">
+              <div>Order #DD-20260208-0015</div>
+              <div>Customer: Alice Johnson</div>
+              <div>Location: Mumbai 400001</div>
+              <div>Delivery By: 20 Feb 2026</div>
+            </div>
+            <div class="action-btns">
+              <button class="btn btn-primary btn-sm">Assign Delivery ▾</button>
+              <button class="btn btn-outline btn-sm">Generate OTP</button>
+              <button class="btn btn-outline btn-sm">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 7: ADMIN ANALYTICS ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">7</div>
+      <h2>Admin Analytics Dashboard</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/admin/analytics</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen Admin Analytics</div>
+          <div class="nav-links">
+            <div class="nav-link">Super Admin ▾</div>
+          </div>
+        </div>
+        <div class="page-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <div style="font-size:0.9rem;color:#718096">System Overview — Last 30 Days</div>
+            <button class="btn btn-outline btn-sm">📅 Date Range</button>
+          </div>
+          <div class="stat-grid-4" style="margin-bottom:20px">
+            <div class="stat-card">
+              <div class="stat-value">₹2.5L</div>
+              <div class="stat-label">Revenue</div>
+              <div style="font-size:0.7rem;color:#4CAF50;margin-top:4px">+15%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#2196F3">342</div>
+              <div class="stat-label">Orders</div>
+              <div style="font-size:0.7rem;color:#4CAF50;margin-top:4px">+22%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#764ba2">28</div>
+              <div class="stat-label">Designers</div>
+              <div style="font-size:0.7rem;color:#4CAF50;margin-top:4px">+8%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#FFC107">156</div>
+              <div class="stat-label">Customers</div>
+              <div style="font-size:0.7rem;color:#4CAF50;margin-top:4px">+35%</div>
+            </div>
+          </div>
+          <div class="revenue-chart">
+            <div class="chart-title">Revenue Trend</div>
+            <div class="chart-area">
+              <div class="bar-item">
+                <div class="bar" style="height:60px"></div>
+                <div class="bar-label">Jan</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:75px"></div>
+                <div class="bar-label">Feb</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:68px"></div>
+                <div class="bar-label">Mar</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:90px"></div>
+                <div class="bar-label">Apr</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:82px"></div>
+                <div class="bar-label">May</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:110px"></div>
+                <div class="bar-label">Jun</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:95px"></div>
+                <div class="bar-label">Jul</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:105px"></div>
+                <div class="bar-label">Aug</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:88px"></div>
+                <div class="bar-label">Sep</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar" style="height:120px"></div>
+                <div class="bar-label">Oct</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabs-bar">
+            <div class="tab active">Overview</div>
+            <div class="tab">Orders</div>
+            <div class="tab">Users</div>
+            <div class="tab">Products</div>
+            <div class="tab">Approvals</div>
+            <div class="tab">Feedback</div>
+            <div class="tab">Payouts</div>
+          </div>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">PENDING APPROVALS</div>
+              <div style="font-size:0.78rem;color:#718096">5 items</div>
+            </div>
+            <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #2d3748;">
+              <div style="font-size:0.82rem;color:#e2e8f0;margin-bottom:4px">Designer: Emily Rose</div>
+              <div style="font-size:0.72rem;color:#718096">Experience: 5 years · Portfolio: 12 items · Applied: 2 days
+                ago</div>
+              <div class="action-btns" style="margin-top:8px">
+                <button class="btn btn-outline btn-sm">View Profile</button>
+                <button class="btn btn-primary btn-sm">Approve</button>
+                <button class="btn btn-outline btn-sm" style="border-color:#F44336;color:#F44336">Reject</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.82rem;color:#e2e8f0;margin-bottom:4px">Manager: Robert Smith</div>
+              <div style="font-size:0.72rem;color:#718096">Experience: 3 years · Certifications: MBA · Applied: 1 day
+                ago</div>
+              <div class="action-btns" style="margin-top:8px">
+                <button class="btn btn-outline btn-sm">View Profile</button>
+                <button class="btn btn-primary btn-sm">Approve</button>
+                <button class="btn btn-outline btn-sm" style="border-color:#F44336;color:#F44336">Reject</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 8: ORDER TRACKING ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">8</div>
+      <h2>Order Tracking (Customer View)</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/orders/DD-20260215-0042</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="nav-bar">
+          <div class="nav-logo">DesignDen</div>
+          <div class="nav-links">
+            <div class="nav-link">Home</div>
+            <div class="nav-link active">Orders</div>
+          </div>
+        </div>
+        <div class="page-content">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-size:1.1rem;font-weight:600;color:#e2e8f0">Track Order #DD-20260215-0042</div>
+              <div style="font-size:0.8rem;color:#2196F3;margin-top:4px">Status: IN_PRODUCTION (62%)</div>
+              <div style="font-size:0.75rem;color:#718096;margin-top:2px">Estimated Delivery: 25 Feb 2026</div>
+            </div>
+            <div>
+              <div class="progress-bar-wrap" style="width:200px;height:10px;border-radius:9999px">
+                <div class="progress-bar-fill" style="width:62%"></div>
+              </div>
+              <div style="font-size:0.7rem;color:#718096;text-align:right;margin-top:4px">62% complete</div>
+            </div>
+          </div>
+
+          <div style="background:#16213e;border:1px solid #2d3748;border-radius:12px;padding:24px;margin-bottom:24px">
+            <div style="font-size:0.9rem;font-weight:600;color:#667eea;margin-bottom:20px">Order Timeline</div>
+            <div class="timeline">
+              <div class="timeline-item done">
+                <div class="tl-title">Order Placed</div>
+                <div class="tl-date">15 Feb 2026, 10:30 AM</div>
+              </div>
+              <div class="timeline-item done">
+                <div class="tl-title">Assigned to Manager</div>
+                <div class="tl-date">15 Feb 2026, 10:35 AM</div>
+              </div>
+              <div class="timeline-item done">
+                <div class="tl-title">Designer Assigned</div>
+                <div class="tl-date">15 Feb 2026, 2:00 PM</div>
+                <div class="tl-sub">Designer: Sarah Designer</div>
+              </div>
+              <div class="timeline-item done">
+                <div class="tl-title">Design Phase Complete</div>
+                <div class="tl-date">18 Feb 2026, 5:30 PM</div>
+              </div>
+              <div class="timeline-item done">
+                <div class="tl-title">Design Approved</div>
+                <div class="tl-date">18 Feb 2026, 6:00 PM</div>
+              </div>
+              <div class="timeline-item current">
+                <div class="tl-title">Production Started</div>
+                <div class="tl-date">19 Feb 2026, 9:00 AM</div>
+                <div class="tl-sub">Current: Assembly (62%) · Updated 2 hrs ago</div>
+              </div>
+              <div class="timeline-item">
+                <div class="tl-title">Quality Check</div>
+                <div class="tl-date" style="color:#4a5568">Expected: 22 Feb 2026</div>
+              </div>
+              <div class="timeline-item">
+                <div class="tl-title">Ready for Pickup</div>
+                <div class="tl-date" style="color:#4a5568">Expected: 23 Feb 2026</div>
+              </div>
+              <div class="timeline-item">
+                <div class="tl-title">Out for Delivery</div>
+                <div class="tl-date" style="color:#4a5568">Expected: 24 Feb 2026</div>
+              </div>
+              <div class="timeline-item">
+                <div class="tl-title">Delivered</div>
+                <div class="tl-date" style="color:#4a5568">Expected: 25 Feb 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-outline">Chat with Designer</button>
+            <button class="btn btn-outline">View Design Files</button>
+            <button class="btn btn-outline" style="border-color:#F44336;color:#F44336">Cancel Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SCREEN 9: CHAT ═══ -->
+  <div class="screen-section">
+    <div class="screen-label">
+      <div class="number">9</div>
+      <h2>Designer-Customer Chat Interface</h2>
+    </div>
+    <div class="screen-frame">
+      <div class="browser-bar">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+        <div class="browser-url">designden.com/chat/DD-20260215-0042</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="chat-layout">
+          <div class="chat-header">
+            <div class="avatar">SD</div>
+            <div>
+              <div class="chat-name">Sarah Designer</div>
+              <div class="chat-role">🟢 Online · Designer</div>
+            </div>
+            <div style="margin-left:auto;font-size:0.75rem;color:#718096">Order #DD-20260215-0042</div>
+          </div>
+          <div class="chat-messages">
+            <div class="msg incoming">
+              <div class="msg-bubble">Hi! I'd like to discuss the design.</div>
+              <div class="msg-time">10:30 AM ✓✓</div>
+            </div>
+            <div class="msg outgoing">
+              <div class="msg-bubble">Hello! Of course. What would you like to change?</div>
+              <div class="msg-time">10:32 AM ✓✓</div>
+            </div>
+            <div class="msg incoming">
+              <div class="msg-bubble">Can we make the sleeves longer?</div>
+              <div class="msg-time">10:35 AM ✓✓</div>
+            </div>
+            <div class="msg outgoing">
+              <div class="msg-bubble">Absolutely! Here's the updated design preview:<br>
+                <div
+                  style="margin-top:8px;background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.3);border-radius:8px;padding:8px;font-size:0.75rem;color:#667eea">
+                  📎 design_v2.png</div>
+              </div>
+              <div class="msg-time">10:40 AM ✓✓</div>
+            </div>
+            <div class="msg incoming">
+              <div class="msg-bubble">Perfect! Love it ❤️</div>
+              <div class="msg-time">10:42 AM ✓✓</div>
+            </div>
+            <div class="msg outgoing">
+              <div class="msg-bubble">Great! I'll proceed with production.</div>
+              <div class="msg-time">10:45 AM ✓</div>
+            </div>
+          </div>
+          <div>
+            <div class="chat-input-row">
+              <button class="btn btn-outline btn-sm">📎</button>
+              <div class="chat-input">Type your message here...</div>
+              <button class="btn btn-primary btn-sm">Send →</button>
+            </div>
+            <div style="display:flex;gap:8px;padding:10px 16px;background:#16213e;border-top:1px solid #2d3748">
+              <button class="btn btn-outline btn-sm">Request Update</button>
+              <button class="btn btn-outline btn-sm">Approve Design</button>
+              <button class="btn btn-outline btn-sm">Report Issue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ COLOR PALETTE ═══ -->
+  <div class="section-title">Color Palette</div>
+  <div class="palette-grid">
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#667eea"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Primary</div>
+        <div class="swatch-hex">#667eea</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#764ba2"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Secondary</div>
+        <div class="swatch-hex">#764ba2</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#4CAF50"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Success</div>
+        <div class="swatch-hex">#4CAF50</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#FF9800"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Warning</div>
+        <div class="swatch-hex">#FF9800</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#F44336"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Danger</div>
+        <div class="swatch-hex">#F44336</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#2196F3"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Info</div>
+        <div class="swatch-hex">#2196F3</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#FFC107"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Pending</div>
+        <div class="swatch-hex">#FFC107</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#00BCD4"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Approved</div>
+        <div class="swatch-hex">#00BCD4</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#FF5722"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Rejected</div>
+        <div class="swatch-hex">#FF5722</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#9f7aea"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Accent</div>
+        <div class="swatch-hex">#9f7aea</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#1a202c"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface</div>
+        <div class="swatch-hex">#1a202c</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#0f0f1a"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Background</div>
+        <div class="swatch-hex">#0f0f1a</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">DesignDen · Wireframes & UI Documentation · v1.0 · March 2026</div>
+
+</body>
+
+</html>

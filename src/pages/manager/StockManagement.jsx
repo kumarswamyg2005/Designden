@@ -3,6 +3,18 @@ import { useFlash } from "../../context/FlashContext";
 import { formatPrice } from "../../utils/currency";
 import api from "../../services/api";
 
+const createEmptyProduct = () => ({
+  name: "",
+  description: "",
+  category: "Tshirt",
+  gender: "Male",
+  price: "",
+  stockQuantity: "",
+  sizes: ["S", "M", "L", "XL"],
+  colors: ["Black", "White"],
+  images: ["/images/casual-tshirt.jpeg"],
+});
+
 const StockManagement = () => {
   const { showFlash } = useFlash();
   const [products, setProducts] = useState([]);
@@ -11,27 +23,28 @@ const StockManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    description: "",
-    category: "Tshirt",
-    gender: "Male",
-    price: "",
-    stockQuantity: "",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black", "White"],
-    images: ["/images/casual-tshirt.jpeg"],
-  });
+  const [newProduct, setNewProduct] = useState(createEmptyProduct);
+  const [addingProduct, setAddingProduct] = useState(false);
+  const [stockDrafts, setStockDrafts] = useState({});
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
       const response = await api.get("/manager/api/products");
-      setProducts(response.data.products || []);
+      const fetchedProducts = response.data.products || [];
+      setProducts(fetchedProducts);
+      setStockDrafts(
+        fetchedProducts.reduce((drafts, product) => {
+          drafts[product._id] = String(product.stockQuantity ?? 0);
+          return drafts;
+        }, {}),
+      );
     } catch (error) {
       console.error("Failed to load products:", error);
       showFlash(
@@ -39,64 +52,144 @@ const StockManagement = () => {
         "error"
       );
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
   const updateStock = async (productId, stockQuantity, inStock) => {
     try {
       setUpdating(productId);
-      await api.put(`/manager/api/product/${productId}/stock`, {
+      const response = await api.put(`/manager/api/product/${productId}/stock`, {
         stockQuantity: parseInt(stockQuantity),
         inStock,
       });
+      const updatedProduct = response.data.product;
+      if (updatedProduct) {
+        setProducts((prev) =>
+          prev.map((product) =>
+            product._id === productId
+              ? { ...product, ...updatedProduct }
+              : product,
+          ),
+        );
+        setStockDrafts((prev) => ({
+          ...prev,
+          [productId]: String(updatedProduct.stockQuantity ?? 0),
+        }));
+      }
       showFlash("Stock updated successfully", "success");
-      fetchProducts();
     } catch (error) {
-      showFlash("Failed to update stock", "error");
+      showFlash(
+        error.response?.data?.message || "Failed to update stock",
+        "error",
+      );
     } finally {
       setUpdating(null);
     }
   };
 
-  const handleStockChange = (productId, newStock) => {
-    const product = products.find((p) => p._id === productId);
-    if (product) {
-      updateStock(productId, newStock, newStock > 0);
+  const handleStockDraftChange = (productId, newStock) => {
+    if (newStock !== "" && (!/^\d+$/.test(newStock) || Number(newStock) < 0)) {
+      return;
     }
+
+    setStockDrafts((prev) => ({
+      ...prev,
+      [productId]: newStock,
+    }));
+  };
+
+  const handleStockSave = (productId) => {
+    if (updating === productId) return;
+
+    const product = products.find((p) => p._id === productId);
+    const rawStock = stockDrafts[productId];
+    const parsedStock = Number.parseInt(rawStock, 10);
+
+    if (!product) return;
+
+    if (!Number.isInteger(parsedStock) || parsedStock < 0) {
+      showFlash("Please enter a valid stock quantity", "error");
+      setStockDrafts((prev) => ({
+        ...prev,
+        [productId]: String(product.stockQuantity ?? 0),
+      }));
+      return;
+    }
+
+    if (parsedStock === (product.stockQuantity ?? 0)) {
+      return;
+    }
+
+    updateStock(productId, parsedStock, parsedStock > 0);
   };
 
   const toggleInStock = (productId) => {
     const product = products.find((p) => p._id === productId);
     if (product) {
-      updateStock(productId, product.stockQuantity, !product.inStock);
+      const nextStock = product.inStock
+        ? product.stockQuantity
+        : Math.max(product.stockQuantity || 0, 1);
+      updateStock(productId, nextStock, !product.inStock);
     }
   };
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+
+    if (addingProduct) return;
+
+    const price = Number.parseFloat(newProduct.price);
+    const stockQuantity = Number.parseInt(newProduct.stockQuantity, 10);
+
+    if (!newProduct.name.trim()) {
+      showFlash("Product name is required", "error");
+      return;
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      showFlash("Please enter a valid product price", "error");
+      return;
+    }
+
+    if (!Number.isInteger(stockQuantity) || stockQuantity < 0) {
+      showFlash("Please enter a valid starting stock quantity", "error");
+      return;
+    }
+
     try {
-      await api.post("/manager/api/product", {
+      setAddingProduct(true);
+      const response = await api.post("/manager/api/product", {
         ...newProduct,
-        price: parseFloat(newProduct.price),
-        stockQuantity: parseInt(newProduct.stockQuantity),
+        name: newProduct.name.trim(),
+        description: newProduct.description.trim(),
+        price,
+        stockQuantity,
       });
+      const createdProduct = response.data.product;
+
+      if (createdProduct?._id) {
+        setProducts((prev) => [createdProduct, ...prev]);
+        setStockDrafts((prev) => ({
+          ...prev,
+          [createdProduct._id]: String(createdProduct.stockQuantity ?? 0),
+        }));
+      } else {
+        fetchProducts({ silent: true });
+      }
+
       showFlash("Product added successfully", "success");
       setShowAddModal(false);
-      setNewProduct({
-        name: "",
-        description: "",
-        category: "Tshirt",
-        gender: "Male",
-        price: "",
-        stockQuantity: "",
-        sizes: ["S", "M", "L", "XL"],
-        colors: ["Black", "White"],
-        images: ["/images/casual-tshirt.jpeg"],
-      });
-      fetchProducts();
+      setNewProduct(createEmptyProduct());
     } catch (error) {
-      showFlash("Failed to add product", "error");
+      showFlash(
+        error.response?.data?.message || "Failed to add product",
+        "error",
+      );
+    } finally {
+      setAddingProduct(false);
     }
   };
 
@@ -108,7 +201,10 @@ const StockManagement = () => {
       showFlash("Product deleted successfully", "success");
       fetchProducts();
     } catch (error) {
-      showFlash("Failed to delete product", "error");
+      showFlash(
+        error.response?.data?.message || "Failed to delete product",
+        "error",
+      );
     }
   };
 
@@ -157,6 +253,7 @@ const StockManagement = () => {
                 <p className="mb-0">Manage inventory and stock levels</p>
               </div>
               <button
+                type="button"
                 className="btn btn-light"
                 onClick={() => setShowAddModal(true)}
               >
@@ -297,17 +394,36 @@ const StockManagement = () => {
                         <strong>{formatPrice(product.price)}</strong>
                       </td>
                       <td>
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          style={{ width: "100px" }}
-                          value={product.stockQuantity || 0}
-                          onChange={(e) =>
-                            handleStockChange(product._id, e.target.value)
-                          }
-                          min="0"
-                          disabled={updating === product._id}
-                        />
+                        <div className="d-flex align-items-center gap-2">
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            style={{ width: "100px" }}
+                            value={
+                              stockDrafts[product._id] ??
+                              String(product.stockQuantity || 0)
+                            }
+                            onChange={(e) =>
+                              handleStockDraftChange(product._id, e.target.value)
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleStockSave(product._id);
+                              }
+                            }}
+                            min="0"
+                            disabled={updating === product._id}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => handleStockSave(product._id)}
+                            disabled={updating === product._id}
+                          >
+                            Save
+                          </button>
+                        </div>
                       </td>
                       <td>
                         {product.inStock && product.stockQuantity > 0 ? (
@@ -493,9 +609,13 @@ const StockManagement = () => {
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={addingProduct}
+                  >
                     <i className="fas fa-plus me-2"></i>
-                    Add Product
+                    {addingProduct ? "Adding..." : "Add Product"}
                   </button>
                 </div>
               </form>

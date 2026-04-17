@@ -153,10 +153,10 @@ const AdminDesigners = () => {
           <div
             className="card shadow-sm"
             style={{
-              background: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+              background: "#efe6da",
             }}
           >
-            <div className="card-body text-white">
+            <div className="card-body">
               <h2 className="mb-1">
                 <i className="fas fa-palette me-2"></i>
                 Designer Management

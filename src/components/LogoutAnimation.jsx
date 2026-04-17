@@ -6,29 +6,23 @@ const LogoutAnimation = ({ isVisible, onComplete, userName = "User" }) => {
   const wasVisibleRef = useRef(false);
 
   useEffect(() => {
-    console.log("LogoutAnimation: isVisible =", isVisible);
-
     if (isVisible && !wasVisibleRef.current) {
-      console.log("LogoutAnimation: Starting animation");
       wasVisibleRef.current = true;
       setPhase(0);
 
-      // Smooth animation sequence
-      const timer1 = setTimeout(() => setPhase(1), 50);
-      const timer2 = setTimeout(() => setPhase(2), 400);
-      const timer3 = setTimeout(() => setPhase(3), 800);
-      const timer4 = setTimeout(() => setPhase(4), 1200);
-      const timer5 = setTimeout(() => {
-        console.log("LogoutAnimation: Animation complete, calling onComplete");
+      // Clean, simple, ultra-modern sequence
+      const t1 = setTimeout(() => setPhase(1), 50);    // Fade in blur
+      const t2 = setTimeout(() => setPhase(2), 300);   // Show box + spinner
+      const t3 = setTimeout(() => setPhase(3), 1500);  // Show checkmark
+      const t4 = setTimeout(() => {
         if (onComplete) onComplete();
-      }, 2800);
+      }, 2200);
 
       return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-        clearTimeout(timer3);
-        clearTimeout(timer4);
-        clearTimeout(timer5);
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearTimeout(t4);
       };
     } else if (!isVisible && wasVisibleRef.current) {
       wasVisibleRef.current = false;
@@ -41,80 +35,36 @@ const LogoutAnimation = ({ isVisible, onComplete, userName = "User" }) => {
   if (!isVisible) return null;
 
   return (
-    <div className={`logout-overlay ${phase >= 1 ? "active" : ""}`}>
-      {/* Floating particles background */}
-      <div className="logout-particles">
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className={`particle particle-${i + 1}`} />
-        ))}
-      </div>
-
-      <div className={`logout-card ${phase >= 1 ? "show" : ""}`}>
-        {/* Glowing background effect */}
-        <div className="card-glow" />
-
-        {/* Success Icon */}
-        <div className={`logout-icon-wrapper ${phase >= 2 ? "animate" : ""}`}>
-          <div className="icon-bg" />
-          <div className="icon-ring" />
-          <div className="icon-ring ring-2" />
-
-          <div className={`success-icon ${phase >= 3 ? "show" : ""}`}>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path
-                d="M5 13l4 4L19 7"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="check-path"
-              />
-            </svg>
-          </div>
+    <div className={`clean-logout-overlay ${phase >= 1 ? "active" : ""}`}>
+      <div className={`clean-logout-box ${phase >= 2 ? "show" : ""}`}>
+        
+        <div className="clean-icon-area">
+          {phase < 3 ? (
+            <div className="clean-spinner">
+              <svg viewBox="0 0 50 50">
+                <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="4"></circle>
+              </svg>
+            </div>
+          ) : (
+            <div className="clean-check-wrapper show">
+              <svg className="clean-check" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          )}
         </div>
 
-        {/* Message */}
-        <div className={`logout-message ${phase >= 3 ? "show" : ""}`}>
-          <h2>Goodbye!</h2>
-          <p>
-            See you soon, <span className="user-name">{userName}</span>
-          </p>
+        <div className="clean-text-area">
+          <h3>{phase < 3 ? "Signing Out" : "Done"}</h3>
+          <p>{phase < 3 ? "See you next time..." : "Securely logged out."}</p>
         </div>
 
-        {/* Animated wave divider */}
-        <div className={`wave-divider ${phase >= 4 ? "show" : ""}`}>
-          <svg viewBox="0 0 200 20" preserveAspectRatio="none">
-            <path
-              d="M0,10 C30,5 70,15 100,10 C130,5 170,15 200,10"
-              stroke="url(#waveGradient)"
-              strokeWidth="2"
-              fill="none"
-              className="wave-path"
-            />
-            <defs>
-              <linearGradient
-                id="waveGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
-              >
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="50%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#8b5cf6" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Progress indicator */}
-        <div className={`logout-progress ${phase >= 4 ? "animate" : ""}`}>
-          <div className="progress-track">
-            <div className="progress-fill" />
-            <div className="progress-glow" />
-          </div>
-          <span className="progress-text">Signing out...</span>
-        </div>
       </div>
     </div>
   );

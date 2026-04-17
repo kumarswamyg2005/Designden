@@ -68,6 +68,22 @@ const Dashboard = () => {
   const getStatusBadgeClass = (status) => {
     const statusMap = {
       pending: "bg-warning text-dark",
+      assigned_to_manager: "bg-info",
+      assigned_to_designer: "bg-primary",
+      designer_accepted: "bg-primary",
+      design_in_progress: "bg-primary",
+      design_pending_customer_approval: "bg-warning text-dark",
+      design_approved_by_customer: "bg-success",
+      design_rejected_by_customer: "bg-danger",
+      design_ready: "bg-info",
+      design_approved: "bg-success",
+      design_rejected: "bg-danger",
+      in_production: "bg-primary",
+      production_completed: "bg-success",
+      ready_for_pickup: "bg-info",
+      picked_up: "bg-info",
+      in_transit: "bg-info",
+      out_for_delivery: "bg-warning text-dark",
       "in-production": "bg-primary",
       completed: "bg-success",
       shipped: "bg-info",
@@ -75,6 +91,31 @@ const Dashboard = () => {
       cancelled: "bg-danger",
     };
     return statusMap[status] || "bg-secondary";
+  };
+
+  const getStatusLabel = (status) => {
+    const labelMap = {
+      pending: "Pending",
+      assigned_to_manager: "Processing",
+      assigned_to_designer: "Assigned to Designer",
+      designer_accepted: "Designer Working",
+      design_in_progress: "Design In Progress",
+      design_pending_customer_approval: "⚠️ Design Awaiting Your Approval",
+      design_approved_by_customer: "Design Approved",
+      design_rejected_by_customer: "Revision Requested",
+      design_ready: "Design Under Manager Review",
+      design_approved: "Design Approved — Going to Production",
+      design_rejected: "Design Needs Revision",
+      in_production: "In Production",
+      production_completed: "Production Done",
+      ready_for_pickup: "Out for Delivery Soon",
+      picked_up: "Picked Up",
+      in_transit: "In Transit",
+      out_for_delivery: "Out for Delivery",
+      delivered: "Delivered",
+      cancelled: "Cancelled",
+    };
+    return labelMap[status] || status?.replace(/_/g, " ") || status;
   };
 
   if (loading) {
@@ -93,9 +134,9 @@ const Dashboard = () => {
     <div className="container my-4">
       <div className="row mb-4">
         <div className="col-md-12">
-          <div className="card shadow-sm">
+          <div className="card shadow-sm glass-card hover-tilt">
             <div className="card-body">
-              <h2 className="card-title">Welcome, {user?.username}</h2>
+              <h2 className="card-title neon-text">Welcome, {user?.username}</h2>
               <p className="card-text">
                 Manage your designs and orders from your personal dashboard.
               </p>
@@ -114,7 +155,7 @@ const Dashboard = () => {
 
       <div className="row">
         <div className="col-md-12">
-          <div className="card shadow-sm">
+          <div className="card shadow-sm glass-card">
             <div className="card-header">
               <h3>Your Orders</h3>
             </div>
@@ -158,15 +199,15 @@ const Dashboard = () => {
                                 order.status
                               )}`}
                             >
-                              {order.status.replace("-", " ").toUpperCase()}
+                              {getStatusLabel(order.status)}
                             </span>
                           </td>
                           <td>
                             <Link
                               to={`/customer/order/${order._id}`}
-                              className="btn btn-sm btn-outline-primary"
+                              className={`btn btn-sm ${order.status === "design_pending_customer_approval" ? "btn-warning" : "btn-outline-primary"}`}
                             >
-                              View Details
+                              {order.status === "design_pending_customer_approval" ? "Review Design" : "View Details"}
                             </Link>
                           </td>
                         </tr>
@@ -182,7 +223,7 @@ const Dashboard = () => {
 
       <div className="row mt-4">
         <div className="col-md-12">
-          <div className="card shadow-sm">
+          <div className="card shadow-sm glass-card">
             <div className="card-header d-flex justify-content-between align-items-center">
               <h3 className="mb-0">Your Wishlist</h3>
               <Link
@@ -208,7 +249,7 @@ const Dashboard = () => {
                       : null;
                     return (
                       <div className="col-md-4 mb-3" key={item._id}>
-                        <div className="card h-100">
+                        <div className="card h-100 glass-card hover-tilt">
                           {graphicPath ? (
                             <img
                               src={`http://localhost:3000${graphicPath}`}

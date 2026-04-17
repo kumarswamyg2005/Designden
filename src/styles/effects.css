@@ -1,0 +1,537 @@
+/* ==========================================================
+   DESIGN DEN — Visual Effects Library
+   Hover · Loader · 3D Motion · Entrance · Micro · Parallax · Cursor
+   ========================================================== */
+
+/* ─── 2. PAGE LOADER ──────────────────────────────────────── */
+
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99997;
+  height: 3px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.page-loader__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #7C6AF5 0%, #00D4C8 40%, #B8AFFC 70%, #7C6AF5 100%);
+  background-size: 300% 100%;
+  animation: loaderMove 1.2s linear infinite;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 10px rgba(0, 212, 200, 0.7), 0 0 4px rgba(124, 106, 245, 0.5);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left;
+}
+
+.page-loader--done {
+  animation: loaderFadeOut 0.45s ease-out forwards;
+}
+.page-loader--done .page-loader__bar {
+  animation: none;
+}
+
+@keyframes loaderMove {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes loaderFadeOut {
+  0%   { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(0); }
+}
+
+/* ─── 3. 3D CARD HOVER MOTION ────────────────────────────── */
+
+/* Deep 3D tilt class — add to special feature cards */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.4s ease;
+}
+.card-3d:hover {
+  transform: perspective(900px) rotateX(4deg) rotateY(-5deg) translateY(-10px);
+  box-shadow: 24px 24px 60px rgba(0, 0, 0, 0.5),
+    -6px -6px 20px rgba(124, 106, 245, 0.15) !important;
+}
+
+/* Enhanced hover-tilt — 3D depth without mouse tracking */
+.hover-tilt {
+  will-change: transform;
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.38s ease !important;
+}
+.hover-tilt:hover {
+  transform: perspective(900px) translateY(-8px) rotateX(2deg) scale(1.01) !important;
+  box-shadow: 0 22px 44px rgba(124, 106, 245, 0.18),
+    0 8px 18px rgba(0, 0, 0, 0.3) !important;
+}
+.dark-theme .hover-tilt:hover {
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.5),
+    0 8px 18px rgba(124, 106, 245, 0.25) !important;
+}
+
+/* ─── 4. PARALLAX LAYERS ─────────────────────────────────── */
+
+/* Decorative gradient layer on hero — moves at 40% scroll speed */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.07) 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 90%, rgba(129, 140, 248, 0.04) 0%, transparent 50%);
+  transform: translateY(calc(var(--scroll-y, 0) * 0.3px));
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Hero section blobs fade on scroll (set via JS in GlobalEffects) */
+.hero-section .bg-blob {
+  will-change: transform, opacity;
+  transition: opacity 0.1s linear;
+}
+
+/* Shop/banner images — subtle parallax zoom + vertical shift */
+.shop-section .card .position-relative,
+.shop-section .card .img-fluid {
+  overflow: hidden;
+}
+.shop-section .card img.img-fluid {
+  transform: scale(1.08) translateY(calc(var(--scroll-y, 0) * -0.012px));
+  transition: transform 0.08s linear;
+  will-change: transform;
+}
+
+/* ─── 5. BUTTON RIPPLE MICRO-INTERACTION ─────────────────── */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: rippleAnim 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ─── 6. BUTTON ENHANCED HOVER + ACTIVE ─────────────────── */
+
+.btn-primary {
+  transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(124, 106, 245, 0.45) !important;
+}
+.btn-primary:active {
+  transform: translateY(0px) scale(0.97) !important;
+  transition-duration: 0.08s !important;
+}
+
+.btn-success:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(34, 201, 122, 0.4) !important;
+  transition: all 0.22s ease !important;
+}
+.btn-success:active {
+  transform: scale(0.97) !important;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(240, 91, 108, 0.4) !important;
+  transition: all 0.22s ease !important;
+}
+
+.btn-outline-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(124, 106, 245, 0.3) !important;
+  transition: all 0.22s ease !important;
+}
+
+/* ─── 7. SCROLL REVEAL VARIANTS ──────────────────────────── */
+
+/* Base: fade up (already in styles.css as .fade-in-up) */
+
+/* Slide from left */
+.reveal-left {
+  animation: revealLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+@keyframes revealLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Slide from right */
+.reveal-right {
+  animation: revealRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+@keyframes revealRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Zoom in */
+.reveal-zoom {
+  animation: revealZoom 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+@keyframes revealZoom {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Flip in (for feature icons / stat cards) */
+.reveal-flip {
+  animation: revealFlip 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+@keyframes revealFlip {
+  from { opacity: 0; transform: perspective(600px) rotateX(25deg) translateY(20px); }
+  to   { opacity: 1; transform: perspective(600px) rotateX(0deg) translateY(0); }
+}
+
+/* Extra delays */
+.delay-4 { animation-delay: 0.8s; }
+.delay-5 { animation-delay: 1.0s; }
+
+/* ─── 8. ICON MICRO-ANIMATIONS ───────────────────────────── */
+
+/* Bounce on card hover */
+.card:hover .fa-users,
+.card:hover .fa-hand-holding-usd,
+.card:hover .fa-star,
+.card:hover .fa-shield-alt,
+.card:hover .fa-palette,
+.card:hover .fa-rocket,
+.card:hover .fa-search,
+.card:hover .fa-check-circle {
+  animation: iconBounce 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes iconBounce {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-9px) scale(1.1); }
+  55%  { transform: translateY(-5px) scale(1.05); }
+  75%  { transform: translateY(-2px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Stat card icons pulse on page load */
+.dash-stat-icon {
+  animation: iconPulse 3.5s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); }
+  50%       { transform: scale(1.06); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22); }
+}
+
+/* ─── 9. NAVBAR UNDERLINE SLIDE ──────────────────────────── */
+
+.navbar .nav-link {
+  position: relative;
+}
+.navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 52%;
+  right: 52%;
+  height: 2px;
+  background: var(--color-primary, #7C6AF5);
+  border-radius: 2px;
+  transition: left 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              right 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.navbar .nav-link:hover::after {
+  left: 8%;
+  right: 8%;
+}
+.navbar .nav-link.active::after {
+  left: 8%;
+  right: 8%;
+  background: var(--color-primary, #7C6AF5);
+  opacity: 0.9;
+}
+
+/* ─── 10. PRODUCT CARD — IMAGE ZOOM + LIFT ───────────────── */
+
+.product-card {
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.35s ease !important;
+  overflow: hidden;
+}
+.product-card img {
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center center;
+}
+.product-card:hover {
+  transform: translateY(-9px) !important;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.12) !important;
+}
+.product-card:hover img {
+  transform: scale(1.07) !important;
+}
+
+/* ─── 11. HERO NEON TEXT — ANIMATED GRADIENT ─────────────── */
+
+.neon-text {
+  background: linear-gradient(135deg, #7C6AF5, #6B58E8, #00D4C8, #B8AFFC, #7C6AF5) !important;
+  background-size: 300% 300% !important;
+  animation: gradientFlow 6s ease infinite !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  text-shadow: none !important;
+}
+@keyframes gradientFlow {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+/* Glow pulsing text */
+.dark-theme .neon-text {
+  background: none !important;
+  -webkit-text-fill-color: #F0EEF9 !important;
+  color: #F0EEF9 !important;
+  animation: neonGlow 3s ease-in-out infinite !important;
+  text-shadow: none !important;
+}
+@keyframes neonGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(124, 106, 245, 0.8), 0 0 22px rgba(124, 106, 245, 0.4); }
+  50%       { text-shadow: 0 0 18px rgba(0, 212, 200, 1),    0 0 40px rgba(124, 106, 245, 0.6); }
+}
+
+/* ─── 12. BADGE PULSE ────────────────────────────────────── */
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50%       { box-shadow: 0 0 0 5px transparent; }
+}
+
+span.badge.bg-success, .badge-pulse {
+  animation: successPulse 2.8s ease-in-out infinite;
+}
+@keyframes successPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 201, 122, 0.45); }
+  50%       { box-shadow: 0 0 0 5px rgba(34, 201, 122, 0); }
+}
+
+/* ─── 13. PROGRESS BAR SHIMMER ───────────────────────────── */
+
+.progress-bar {
+  background: linear-gradient(
+    90deg,
+    #7C6AF5 0%,
+    #00D4C8 45%,
+    #7C6AF5 100%
+  ) !important;
+  background-size: 250% 100% !important;
+  animation: progressGlow 2s linear infinite !important;
+}
+@keyframes progressGlow {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -150% 0; }
+}
+
+/* ─── 14. MODAL & DROPDOWN ENTRANCE ─────────────────────── */
+
+.modal.show .modal-dialog {
+  animation: modalIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalIn {
+  from { transform: translateY(-28px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0)     scale(1);    opacity: 1; }
+}
+
+.dropdown-menu.show {
+  animation: dropdownIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes dropdownIn {
+  from { transform: translateY(-10px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0)     scale(1);    opacity: 1; }
+}
+
+/* ─── 15. FORM INPUT FOCUS GLOW ──────────────────────────── */
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 3px rgba(124, 106, 245, 0.18),
+              0 1px 4px rgba(0, 0, 0, 0.2) !important;
+  border-color: var(--color-primary, #7C6AF5) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.dark-theme .form-control:focus,
+.dark-theme .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(124, 106, 245, 0.25),
+              0 1px 4px rgba(0, 0, 0, 0.4) !important;
+  border-color: var(--color-primary, #7C6AF5) !important;
+}
+
+/* ─── 16. GLASS CARD ENHANCED HOVER ─────────────────────── */
+
+.glass-card {
+  transition: transform 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.32s ease,
+    border-color 0.32s ease !important;
+}
+.glass-card:hover {
+  border-color: rgba(124, 106, 245, 0.35) !important;
+  box-shadow: 0 18px 50px rgba(124, 106, 245, 0.18),
+              0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+.dark-theme .glass-card:hover {
+  border-color: rgba(124, 106, 245, 0.35) !important;
+  box-shadow: 0 18px 50px rgba(124, 106, 245, 0.25),
+              0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ─── 17. FLOATING ANIMATION ─────────────────────────────── */
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+.float-element {
+  animation: floatUpDown 3.5s ease-in-out infinite;
+}
+
+/* ─── 18. NEON BUTTON GLOW PULSE ─────────────────────────── */
+
+.neon-btn {
+  animation: neonBtnPulse 3s ease-in-out infinite !important;
+  transition: all 0.3s ease !important;
+}
+@keyframes neonBtnPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(124, 106, 245, 0.4); }
+  50%       { box-shadow: 0 0 28px rgba(124, 106, 245, 0.7), 0 0 8px rgba(0, 212, 200, 0.5); }
+}
+.neon-btn:hover {
+  box-shadow: 0 0 32px rgba(124, 106, 245, 0.8), 0 0 10px rgba(0, 212, 200, 0.6) !important;
+  transform: translateY(-3px) !important;
+}
+
+.neon-btn-outline {
+  transition: all 0.3s ease !important;
+}
+.neon-btn-outline:hover {
+  box-shadow: 0 0 22px rgba(124, 106, 245, 0.5) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* ─── 19. SKELETON / SHIMMER LOADING ────────────────────── */
+
+.shimmer-block {
+  background: linear-gradient(90deg, #1A1E2A 25%, #1F2436 50%, #1A1E2A 75%);
+  background-size: 800px 100%;
+  animation: shimmerSlide 1.5s infinite;
+  border-radius: 6px;
+}
+.dark-theme .shimmer-block {
+  background: linear-gradient(90deg, #1A1E2A 25%, #1F2436 50%, #1A1E2A 75%);
+  background-size: 800px 100%;
+  animation: shimmerSlide 1.5s infinite;
+}
+@keyframes shimmerSlide {
+  from { background-position: -800px 0; }
+  to   { background-position:  800px 0; }
+}
+
+/* ─── 20. DASH STAT CARD — ENTRANCE STAGGER ─────────────── */
+
+.dash-stat-card {
+  animation: statCardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.dash-stat-card:nth-child(1) { animation-delay: 0.05s; }
+.dash-stat-card:nth-child(2) { animation-delay: 0.12s; }
+.dash-stat-card:nth-child(3) { animation-delay: 0.19s; }
+.dash-stat-card:nth-child(4) { animation-delay: 0.26s; }
+
+@keyframes statCardIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+/* ─── 21. TESTIMONIAL CARD HOVER ─────────────────────────── */
+
+.testimonials-section .card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+.testimonials-section .card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.1) !important;
+}
+.dark-theme .testimonials-section .card:hover {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ─── 22. TRENDING CARD — IMAGE ZOOM ────────────────────── */
+
+.trending-section .card {
+  overflow: hidden;
+  transition: transform 0.35s ease, box-shadow 0.35s ease !important;
+}
+.trending-section .card img.card-img-top {
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center center;
+}
+.trending-section .card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+.trending-section .card:hover img.card-img-top {
+  transform: scale(1.08) !important;
+}
+
+/* ─── 23. DESIGNER CARD (MARKETPLACE) ───────────────────── */
+
+.designer-card,
+[class*="designer"] .card {
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.35s ease !important;
+}
+[class*="designer"] .card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 44px rgba(124, 106, 245, 0.2) !important;
+}
+
+/* ─── 24. PARALLAX UTILITY CLASSES ───────────────────────── */
+
+/* Use these classes for manually tagged parallax elements */
+.parallax-slow   { transform: translateY(calc(var(--scroll-y, 0) * 0.15px)); will-change: transform; }
+.parallax-medium { transform: translateY(calc(var(--scroll-y, 0) * 0.30px)); will-change: transform; }
+.parallax-fast   { transform: translateY(calc(var(--scroll-y, 0) * 0.50px)); will-change: transform; }
+
+/* ─── 25. DASHBOARD ITEM CARD HOVER ──────────────────────── */
+
+.dash-item-card {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.3s ease !important;
+}
+.dash-item-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.13) !important;
+}
+.dark-theme .dash-item-card:hover {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+}

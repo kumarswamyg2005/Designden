@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DesignDen – Database Schema</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f0f1a;
+      color: #e2e8f0;
+      padding: 40px;
+      min-width: 1600px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #2d3748;
+    }
+
+    .page-header h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      color: #718096;
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 9999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+    }
+
+    .badge span {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .diagram-wrapper {
+      background: #1a1a2e;
+      border: 1px solid #2d3748;
+      border-radius: 16px;
+      padding: 40px 32px;
+      overflow-x: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .summary-section {
+      margin-top: 40px;
+    }
+
+    .summary-section h2 {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .collection-card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .collection-card .name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+
+    .collection-card .purpose {
+      font-size: 0.78rem;
+      color: #718096;
+    }
+
+    .indexes-section {
+      margin-top: 40px;
+    }
+
+    .indexes-section h2 {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .index-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .index-pill {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-family: 'Courier New', monospace;
+      color: #9f7aea;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #2d3748;
+      color: #4a5568;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-header">
+    <h1>DesignDen — Database Schema</h1>
+    <p>Entity Relationship Diagram · MongoDB Collections</p>
+    <div class="badge-row">
+      <div class="badge"><span>15</span> Collections</div>
+      <div class="badge"><span>5</span> User Roles</div>
+      <div class="badge"><span>16</span> Order Statuses</div>
+      <div class="badge"><span>8</span> Production Milestones</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="mermaid">
+      erDiagram
+      USERS ||--o{ ORDERS : places
+      USERS ||--o{ DESIGNS : creates
+      USERS ||--o{ MESSAGES : sends
+      USERS ||--o{ NOTIFICATIONS : receives
+      USERS ||--o{ CARTS : has
+      USERS ||--o{ WISHLISTS : maintains
+      USERS ||--o{ REVIEWS : writes
+      USERS ||--o{ FEEDBACKS : submits
+      USERS ||--o{ DESIGNER_PORTFOLIOS : owns
+      USERS ||--o{ DESIGNER_EARNINGS : earns
+      USERS ||--o{ DESIGNER_PAYOUT_REQUESTS : requests
+
+      ORDERS ||--o{ DESIGNS : contains
+      ORDERS ||--o{ PRODUCTION_MILESTONES : tracks
+      ORDERS ||--o{ MESSAGES : discusses
+      ORDERS }o--|| DELIVERY_PARTNERS : "delivered by"
+
+      PRODUCTS ||--o{ CART_ITEMS : "added to"
+      PRODUCTS ||--o{ WISHLIST_ITEMS : "saved in"
+      PRODUCTS ||--o{ REVIEWS : "reviewed in"
+
+      CARTS ||--o{ CART_ITEMS : contains
+      WISHLISTS ||--o{ WISHLIST_ITEMS : contains
+
+      USERS {
+      ObjectId _id PK
+      string email UK
+      string password
+      string role "customer|designer|manager|admin|delivery"
+      string name
+      string phone
+      object address
+      boolean isApproved
+      boolean isAvailable
+      date createdAt
+      }
+
+      ORDERS {
+      ObjectId _id PK
+      ObjectId customerId FK
+      ObjectId designerId FK
+      ObjectId deliveryPartnerId FK
+      string orderType "shop|custom"
+      string status "16_states"
+      array items
+      number totalAmount
+      string deliveryOtp
+      date createdAt
+      }
+
+      PRODUCTS {
+      ObjectId _id PK
+      string name
+      string category
+      number price
+      number stock
+      array images
+      boolean isActive
+      }
+
+      DESIGNS {
+      ObjectId _id PK
+      ObjectId orderId FK
+      ObjectId customerId FK
+      ObjectId designerId FK
+      object customization
+      array designFiles
+      string status "pending|in_progress|completed|approved|rejected"
+      date createdAt
+      }
+
+      MESSAGES {
+      ObjectId _id PK
+      ObjectId orderId FK
+      ObjectId senderId FK
+      ObjectId recipientId FK
+      string content
+      string type "text|image|file"
+      boolean isRead
+      date createdAt
+      }
+
+      CARTS {
+      ObjectId _id PK
+      ObjectId userId FK
+      date createdAt
+      }
+
+      CART_ITEMS {
+      ObjectId _id PK
+      ObjectId cartId FK
+      ObjectId productId FK
+      number quantity
+      number price
+      }
+
+      WISHLISTS {
+      ObjectId _id PK
+      ObjectId userId FK
+      date createdAt
+      }
+
+      WISHLIST_ITEMS {
+      ObjectId _id PK
+      ObjectId wishlistId FK
+      ObjectId productId FK
+      date addedAt
+      }
+
+      NOTIFICATIONS {
+      ObjectId _id PK
+      ObjectId userId FK
+      string type
+      string message
+      boolean isRead
+      date createdAt
+      }
+
+      REVIEWS {
+      ObjectId _id PK
+      ObjectId productId FK
+      ObjectId userId FK
+      number rating "1-5"
+      string comment
+      date createdAt
+      }
+
+      FEEDBACKS {
+      ObjectId _id PK
+      ObjectId userId FK
+      string category
+      string message
+      string status "pending|reviewed"
+      date createdAt
+      }
+
+      DESIGNER_PORTFOLIOS {
+      ObjectId _id PK
+      ObjectId designerId FK
+      string title
+      string description
+      array images
+      date createdAt
+      }
+
+      DESIGNER_EARNINGS {
+      ObjectId _id PK
+      ObjectId designerId FK
+      ObjectId orderId FK
+      number amount
+      number commission "80%"
+      string status "pending|completed"
+      date createdAt
+      }
+
+      DESIGNER_PAYOUT_REQUESTS {
+      ObjectId _id PK
+      ObjectId designerId FK
+      number amount
+      string status "pending|approved|rejected|paid"
+      string bankDetails
+      date requestedAt
+      }
+
+      PRODUCTION_MILESTONES {
+      ObjectId _id PK
+      ObjectId orderId FK
+      string milestone "8_stages"
+      string status "pending|in_progress|completed"
+      date completedAt
+      }
+
+      DELIVERY_PARTNERS {
+      ObjectId _id PK
+      string name
+      string phone
+      string vehicleNumber
+      boolean isActive
+      array currentDeliveries
+      }
+    </div>
+  </div>
+
+  <div class="summary-section">
+    <h2>Collections Summary</h2>
+    <div class="grid">
+      <div class="collection-card">
+        <div class="name">users</div>
+        <div class="purpose">User accounts — 5 roles</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">orders</div>
+        <div class="purpose">Order tracking — 16 statuses</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">products</div>
+        <div class="purpose">Shop inventory</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">designs</div>
+        <div class="purpose">Custom design data</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">messages</div>
+        <div class="purpose">Chat system</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">carts</div>
+        <div class="purpose">Shopping carts</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">wishlists</div>
+        <div class="purpose">Saved items</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">notifications</div>
+        <div class="purpose">User alerts</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">reviews</div>
+        <div class="purpose">Product reviews</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">feedbacks</div>
+        <div class="purpose">Customer feedback</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">designer_portfolios</div>
+        <div class="purpose">Designer showcase</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">designer_earnings</div>
+        <div class="purpose">Commission tracking</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">designer_payout_requests</div>
+        <div class="purpose">Payout management</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">production_milestones</div>
+        <div class="purpose">Progress tracking</div>
+      </div>
+      <div class="collection-card">
+        <div class="name">delivery_partners</div>
+        <div class="purpose">Delivery system</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="indexes-section">
+    <h2>Indexes</h2>
+    <div class="index-list">
+      <div class="index-pill">users.email (unique)</div>
+      <div class="index-pill">orders.customerId</div>
+      <div class="index-pill">orders.designerId</div>
+      <div class="index-pill">orders.status</div>
+      <div class="index-pill">designs.orderId</div>
+      <div class="index-pill">messages.orderId</div>
+      <div class="index-pill">cart_items.cartId</div>
+      <div class="index-pill">reviews.productId</div>
+      <div class="index-pill">designer_earnings.designerId</div>
+      <div class="index-pill">production_milestones.orderId</div>
+    </div>
+  </div>
+
+  <div class="footer">DesignDen · Database Schema · March 2026</div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#667eea',
+        primaryTextColor: '#e2e8f0',
+        primaryBorderColor: '#764ba2',
+        lineColor: '#4a5568',
+        sectionBkgColor: '#1a202c',
+        altSectionBkgColor: '#2d3748',
+        gridColor: '#2d3748',
+        secondaryColor: '#1a202c',
+        tertiaryColor: '#2d3748',
+        background: '#0f0f1a',
+        mainBkg: '#1a202c',
+        nodeBkgColor: '#1a202c',
+        nodeTextColor: '#e2e8f0',
+        edgeLabelBackground: '#1a202c',
+        attributeBackgroundColorEven: '#1a1a2e',
+        attributeBackgroundColorOdd: '#16213e'
+      },
+      er: {
+        diagramPadding: 30,
+        layoutDirection: 'TB',
+        minEntityWidth: 100,
+        minEntityHeight: 75,
+        entityPadding: 15,
+        useMaxWidth: false
+      }
+    });
+  </script>
+</body>
+
+</html>
