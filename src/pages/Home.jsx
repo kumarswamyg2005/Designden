@@ -4,408 +4,400 @@ import mensCollectionBanner from "../assets/images/mens-collection-banner.webp";
 import womensCollectionBanner from "../assets/images/womens-collection-banner.webp";
 import sustainableFabric from "../assets/images/sustainable fabric.webp";
 import customEmbroidery from "../assets/images/Custom Embroidery.jpg";
+import ScrollReveal from "../components/ScrollReveal";
+
+const heroMetrics = [
+  { value: "Curated", label: "designer directory" },
+  { value: "Material-first", label: "studio workflow" },
+  { value: "Trackable", label: "production journey" },
+];
+
+const studioHighlights = [
+  {
+    icon: "fa-ruler-combined",
+    title: "Fit starts with the garment, not the effect",
+    copy:
+      "Choose silhouette, fabric, pattern, and graphic decisions in an order that mirrors real apparel work.",
+  },
+  {
+    icon: "fa-file-invoice",
+    title: "Pricing stays legible",
+    copy:
+      "Customers can see how fabric and designer decisions shape cost instead of guessing behind a decorative interface.",
+  },
+  {
+    icon: "fa-user-check",
+    title: "Designers remain visible",
+    copy:
+      "Profiles, ratings, and specialization cues are treated like editorial identity, not anonymous marketplace cards.",
+  },
+];
+
+const processSteps = [
+  {
+    number: "01",
+    title: "Start with the brief",
+    copy:
+      "Browse designers or open the studio with a clear garment intent, material preference, and delivery context.",
+  },
+  {
+    number: "02",
+    title: "Shape the piece",
+    copy:
+      "Choose fabric, fit, color, and graphics with a live 3D preview and pricing guidance that stays easy to compare.",
+  },
+  {
+    number: "03",
+    title: "Track the making",
+    copy:
+      "Move from order to delivery with clearer order details, designer communication, and more confidence in the process.",
+  },
+];
 
 const Home = () => {
   const { user } = useAuth();
 
   return (
-    <>
-      <div className="hero-section text-center py-5 mb-5">
+    <div className="editorial-home">
+      <section className="atelier-hero">
         <div className="container">
-          <h1 className="display-4 fw-bold">Connect with Talented Designers</h1>
-          <p className="lead mb-4">
-            Browse hundreds of skilled freelance fashion designers ready to
-            bring your custom clothing vision to life. Quality designs, fair
-            pricing, and transparent collaboration.
-          </p>
-          <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <Link
-              to="/marketplace"
-              className="btn btn-primary btn-lg px-4 gap-3"
-            >
-              <i className="fas fa-search me-2"></i>
-              Browse Designers
-            </Link>
-            <Link
-              to={user ? "/customer/design-studio" : "/signup"}
-              className="btn btn-outline-primary btn-lg px-4"
-            >
-              <i className="fas fa-palette me-2"></i>
-              Create a Design
-            </Link>
-            {!user && (
-              <Link
-                to="/signup?role=designer"
-                className="btn btn-success btn-lg px-4"
-              >
-                <i className="fas fa-user-plus me-2"></i>
-                Join as Designer
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
+          <div className="row g-4 align-items-end">
+            <div className="col-lg-6">
+              <ScrollReveal className="hero-copy">
+                <span className="hero-eyebrow">
+                  <i className="fas fa-scissors"></i>
+                  Custom clothing, handled with care
+                </span>
+                <h1 className="hero-title">
+                  Work with designers who understand fabric, fit, and finish.
+                </h1>
+                <p>
+                  DesignDen connects customers with fashion designers through a
+                  calmer, more material-aware experience. The platform is built
+                  to make garment decisions feel intentional instead of
+                  overwhelming.
+                </p>
 
-      {/* Marketplace Features */}
-      <div className="features-section py-5 bg-light">
-        <div className="container">
-          <h2 className="text-center mb-5">Why Choose Our Marketplace?</h2>
-          <div className="row g-4">
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <i className="fas fa-users fa-3x text-primary mb-3"></i>
-                  <h3 className="card-title h5">Talented Designers</h3>
-                  <p className="card-text">
-                    Connect with vetted, experienced fashion designers from
-                    around the world
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <i className="fas fa-hand-holding-usd fa-3x text-success mb-3"></i>
-                  <h3 className="card-title h5">Fair Pricing</h3>
-                  <p className="card-text">
-                    Transparent pricing with upfront designer fees shown before
-                    you order
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <i className="fas fa-star fa-3x text-warning mb-3"></i>
-                  <h3 className="card-title h5">Quality Guaranteed</h3>
-                  <p className="card-text">
-                    Read reviews and ratings to find the perfect designer for
-                    your project
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <i className="fas fa-shield-alt fa-3x text-info mb-3"></i>
-                  <h3 className="card-title h5">Secure Payments</h3>
-                  <p className="card-text">
-                    Safe and secure payment processing with timely payouts for
-                    designers
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works */}
-      <div id="features" className="py-5">
-        <div className="container">
-          <h2 className="text-center mb-5">How It Works</h2>
-          <div className="row g-4">
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <div
-                    className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
-                    style={{ width: "60px", height: "60px", fontSize: "24px" }}
+                <div className="hero-actions">
+                  <Link to="/marketplace" className="btn btn-primary btn-lg">
+                    Browse designers
+                  </Link>
+                  <Link
+                    to={user ? "/customer/design-studio" : "/signup"}
+                    className="btn btn-outline-primary btn-lg"
                   >
-                    1
-                  </div>
-                  <h3 className="card-title">Browse & Connect</h3>
-                  <p className="card-text">
-                    Explore our marketplace of talented designers. Filter by
-                    specialization, rating, price range, and availability to
-                    find your perfect match.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <div
-                    className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
-                    style={{ width: "60px", height: "60px", fontSize: "24px" }}
-                  >
-                    2
-                  </div>
-                  <h3 className="card-title">Design & Collaborate</h3>
-                  <p className="card-text">
-                    Create your custom design using our interactive studio. Work
-                    directly with your chosen designer through our messaging
-                    system.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <div
-                    className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
-                    style={{ width: "60px", height: "60px", fontSize: "24px" }}
-                  >
-                    3
-                  </div>
-                  <h3 className="card-title">Receive & Review</h3>
-                  <p className="card-text">
-                    Track your order from production to delivery. Once complete,
-                    leave a review to help other customers and support great
-                    designers.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* For Designers CTA */}
-      <div
-        className="bg-gradient text-white py-5"
-        style={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        }}
-      >
-        <div className="container text-center">
-          <h2 className="display-5 fw-bold mb-3">
-            Are You a Fashion Designer?
-          </h2>
-          <p className="lead mb-4">
-            Join our marketplace and showcase your talent to thousands of
-            potential customers. Set your own design fee and earn directly – you
-            keep what you charge!
-          </p>
-          <div className="row justify-content-center mb-4">
-            <div className="col-md-3 col-6 mb-3">
-              <h3 className="display-6 fw-bold">100%</h3>
-              <p>Your Fee, Your Earnings</p>
-            </div>
-            <div className="col-md-3 col-6 mb-3">
-              <h3 className="display-6 fw-bold">₹500+</h3>
-              <p>Min. Design Fee</p>
-            </div>
-            <div className="col-md-3 col-6 mb-3">
-              <h3 className="display-6 fw-bold">24/7</h3>
-              <p>Support</p>
-            </div>
-          </div>
-          <Link
-            to="/signup?role=designer"
-            className="btn btn-light btn-lg px-5"
-          >
-            <i className="fas fa-rocket me-2"></i>
-            Start Earning Today
-          </Link>
-        </div>
-      </div>
-
-      <div className="shop-section py-5 bg-light">
-        <div className="container">
-          <div className="text-center mb-5">
-            <h2>Shop Ready-Made Designs</h2>
-            <p className="lead">
-              Browse our collection of pre-designed clothing for men and women
-            </p>
-          </div>
-          <div className="row g-4 mb-4">
-            <div className="col-md-6">
-              <div className="card h-100 overflow-hidden">
-                <div className="position-relative">
-                  <img
-                    src={mensCollectionBanner}
-                    className="img-fluid w-100"
-                    alt="Men's Collection"
-                  />
-                  <div className="position-absolute bottom-0 start-0 p-4">
+                    Open design studio
+                  </Link>
+                  {!user && (
                     <Link
-                      to="/shop?gender=Men"
+                      to="/signup?role=designer"
                       className="btn btn-light btn-lg"
                     >
-                      Shop Men
+                      Join as designer
                     </Link>
-                  </div>
+                  )}
                 </div>
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="card h-100 overflow-hidden">
-                <div className="position-relative">
-                  <img
-                    src={womensCollectionBanner}
-                    className="img-fluid w-100"
-                    alt="Women's Collection"
-                  />
-                  <div className="position-absolute bottom-0 start-0 p-4">
-                    <Link
-                      to="/shop?gender=Women"
-                      className="btn btn-light btn-lg"
-                    >
-                      Shop Women
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="trending-section py-5">
-        <div className="container">
-          <h2 className="text-center mb-5">Latest Trends</h2>
-          <div className="row g-4">
-            <div className="col-md-3">
-              <div className="card h-100">
-                <img
-                  src={sustainableFabric}
-                  className="card-img-top"
-                  alt="Sustainable Fabrics"
-                />
-                <div className="card-body">
-                  <h5 className="card-title">Sustainable Fabrics</h5>
-                  <p className="card-text">
-                    Eco-friendly materials that look good and feel great.
-                  </p>
+                <div className="hero-metrics">
+                  {heroMetrics.map((metric) => (
+                    <div key={metric.label} className="hero-metric">
+                      <dt>{metric.value}</dt>
+                      <dd>{metric.label}</dd>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              </ScrollReveal>
             </div>
-            <div className="col-md-3">
-              <div className="card h-100">
-                <img
-                  src="https://cdn.vectorstock.com/i/1000v/63/42/graphic-geometric-bold-lines-seamless-pattern-vector-46396342.jpg"
-                  className="card-img-top"
-                  alt="Bold Patterns"
-                />
-                <div className="card-body">
-                  <h5 className="card-title">Bold Patterns</h5>
-                  <p className="card-text">
-                    Stand out with eye-catching geometric designs.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100">
-                <img
-                  src="https://www.trendstop.com/wp-content/uploads/2021/05/13macrotheme1-920x600-c-default.jpg"
-                  className="card-img-top"
-                  alt="Vintage Revival"
-                />
-                <div className="card-body">
-                  <h5 className="card-title">Vintage Revival</h5>
-                  <p className="card-text">
-                    Classic styles reimagined for the modern wardrobe.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100">
-                <img
-                  src={customEmbroidery}
-                  className="card-img-top"
-                  alt="Custom Embroidery"
-                />
-                <div className="card-body">
-                  <h5 className="card-title">Custom Embroidery</h5>
-                  <p className="card-text">
-                    Personalized details that make your clothing unique.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="testimonials-section py-5 bg-light">
-        <div className="container">
-          <h2 className="text-center mb-5">What Our Customers Say</h2>
-          <div className="row g-4">
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <div className="d-flex mb-3">
-                    <div className="text-warning">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      ))}
+            <div className="col-lg-6">
+              <ScrollReveal delay="delay-1">
+                <div className="hero-visual-grid">
+                  <article className="atelier-photo-card atelier-photo-card--tall">
+                    <img src={womensCollectionBanner} alt="Women's custom collection" />
+                    <div className="atelier-photo-card__body">
+                      <strong>Women&apos;s custom collection</strong>
+                      <p>
+                        Softer editorial presentation, stronger garment focus,
+                        and clearer seasonal direction.
+                      </p>
                     </div>
-                  </div>
-                  <p className="card-text">
-                    &quot;The quality of my custom shirt exceeded my
-                    expectations. The fabric is premium and the fit is
-                    perfect!&quot;
-                  </p>
-                  <div className="d-flex align-items-center">
-                    <div className="ms-3">
-                      <h6 className="mb-0">John D.</h6>
-                      <small className="text-muted">Customer since 2022</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <div className="d-flex mb-3">
-                    <div className="text-warning">
-                      {[...Array(4)].map((_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      ))}
-                      <i className="fas fa-star-half-alt"></i>
-                    </div>
-                  </div>
-                  <p className="card-text">
-                    &quot;The design studio is so intuitive! I created a dress
-                    exactly how I imagined it, and the final product was
-                    stunning.&quot;
-                  </p>
-                  <div className="d-flex align-items-center">
-                    <div className="ms-3">
-                      <h6 className="mb-0">Sarah M.</h6>
-                      <small className="text-muted">Customer since 2023</small>
-                    </div>
+                  </article>
+
+                  <div className="d-grid gap-3">
+                    <article className="atelier-photo-card">
+                      <img src={mensCollectionBanner} alt="Men's custom collection" />
+                      <div className="atelier-photo-card__body">
+                        <strong>Men&apos;s custom collection</strong>
+                        <p>
+                          Tailored around wardrobe staples, teamwear, and
+                          cleaner designer collaboration.
+                        </p>
+                      </div>
+                    </article>
+
+                    <article className="atelier-note-card">
+                      <div className="atelier-note-card__body">
+                        <span className="editorial-kicker">Atelier note</span>
+                        <strong>Less startup polish. More garment confidence.</strong>
+                        <p>
+                          The new direction removes the usual glowing AI-era UI
+                          patterns and brings the product closer to a modern
+                          fashion showroom.
+                        </p>
+                      </div>
+                    </article>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <div className="d-flex mb-3">
-                    <div className="text-warning">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      ))}
-                    </div>
-                  </div>
-                  <p className="card-text">
-                    &quot;I ordered custom shirts for my entire team. The
-                    process was smooth, and everyone loves their personalized
-                    clothing!&quot;
-                  </p>
-                  <div className="d-flex align-items-center">
-                    <div className="ms-3">
-                      <h6 className="mb-0">Michael T.</h6>
-                      <small className="text-muted">Customer since 2021</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <ScrollReveal>
+            <div className="editorial-section__intro">
+              <span className="editorial-kicker">Why this feels different</span>
+              <h2>A custom clothing experience that reads as crafted, not generated.</h2>
+              <p>
+                The strongest digital fashion products make decisions feel
+                guided. Typography carries the identity, imagery carries the
+                mood, and the interface keeps the garment in focus.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="atelier-grid atelier-grid--three">
+            {studioHighlights.map((item, index) => (
+              <ScrollReveal key={item.title} delay={`delay-${Math.min(index + 1, 3)}`}>
+                <article className="atelier-panel">
+                  <span className="atelier-panel__icon">
+                    <i className={`fas ${item.icon}`}></i>
+                  </span>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <div className="atelier-proof-grid">
+            <ScrollReveal>
+              <article className="atelier-proof-card">
+                <span className="editorial-kicker">Studio-led interface</span>
+                <h2>The platform now speaks in fabric, silhouette, and production language.</h2>
+                <p>
+                  Instead of relying on gradients and floating decoration,
+                  DesignDen can lean on tangible cues: swatches, materials,
+                  profile credibility, and stronger order clarity.
+                </p>
+                <img src={customEmbroidery} alt="Custom embroidery detail" />
+              </article>
+            </ScrollReveal>
+
+            <div className="atelier-proof-list">
+              <ScrollReveal delay="delay-1">
+                <article className="atelier-proof-item">
+                  <strong>Designer profiles feel curated</strong>
+                  <p>
+                    Ratings, specialization, price range, and turnaround are
+                    easier to scan without turning every detail into a badge.
+                  </p>
+                </article>
+              </ScrollReveal>
+              <ScrollReveal delay="delay-2">
+                <article className="atelier-proof-item">
+                  <strong>Studio controls stay task-first</strong>
+                  <p>
+                    The customer should move from garment to material to
+                    embellishment in a sequence that makes sense.
+                  </p>
+                </article>
+              </ScrollReveal>
+              <ScrollReveal delay="delay-3">
+                <article className="atelier-proof-item">
+                  <strong>Light mode strengthens trust</strong>
+                  <p>
+                    Warm neutrals, ink text, and restrained accent colors create
+                    a calmer shopping and ordering environment.
+                  </p>
+                </article>
+              </ScrollReveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <ScrollReveal>
+            <div className="editorial-section__intro">
+              <span className="editorial-kicker">How it works</span>
+              <h2>A clearer flow from brief to garment.</h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="atelier-process-grid">
+            {processSteps.map((step, index) => (
+              <ScrollReveal key={step.number} delay={`delay-${Math.min(index + 1, 3)}`}>
+                <article className="atelier-step">
+                  <span className="atelier-step__number">{step.number}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.copy}</p>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <ScrollReveal>
+            <div className="editorial-section__intro">
+              <span className="editorial-kicker">Collections</span>
+              <h2>Start from a ready direction, then personalize the piece.</h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="atelier-collections">
+            <ScrollReveal delay="delay-1">
+              <article className="atelier-collection-card">
+                <img src={mensCollectionBanner} alt="Men's collection" />
+                <div className="atelier-collection-card__body">
+                  <p className="editorial-kicker">For men</p>
+                  <h3>Sharper essentials and everyday custom pieces</h3>
+                  <p>
+                    Teamwear, statement graphics, and made-to-order staples with
+                    cleaner browsing and pricing.
+                  </p>
+                  <Link to="/shop?gender=Men" className="btn btn-light mt-2 align-self-start">
+                    Shop men
+                  </Link>
+                </div>
+              </article>
+            </ScrollReveal>
+
+            <ScrollReveal delay="delay-2">
+              <article className="atelier-collection-card">
+                <img src={womensCollectionBanner} alt="Women's collection" />
+                <div className="atelier-collection-card__body">
+                  <p className="editorial-kicker">For women</p>
+                  <h3>Designer-led custom clothing with softer editorial cues</h3>
+                  <p>
+                    Move from inspiration to garment details with a calmer
+                    studio flow and stronger visual hierarchy.
+                  </p>
+                  <Link
+                    to="/shop?gender=Women"
+                    className="btn btn-light mt-2 align-self-start"
+                  >
+                    Shop women
+                  </Link>
+                </div>
+              </article>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <ScrollReveal>
+            <div className="editorial-section__intro">
+              <span className="editorial-kicker">Material cues</span>
+              <h2>Texture, sustainability, and detail should carry the mood.</h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="atelier-material-grid">
+            <ScrollReveal delay="delay-1">
+              <article className="atelier-material-card">
+                <img src={sustainableFabric} alt="Sustainable fabrics" />
+                <div className="atelier-material-card__body">
+                  <h3>Sustainable fabrics</h3>
+                  <p>
+                    Sustainability works better when it is visible in the
+                    interface and easy to compare during design decisions.
+                  </p>
+                </div>
+              </article>
+            </ScrollReveal>
+
+            <ScrollReveal delay="delay-2">
+              <article className="atelier-material-card">
+                <img src={customEmbroidery} alt="Embroidery detail" />
+                <div className="atelier-material-card__body">
+                  <h3>Craft details</h3>
+                  <p>
+                    Embroidery, print placement, and embellishment choices
+                    deserve a more tactile presentation than generic cards.
+                  </p>
+                </div>
+              </article>
+            </ScrollReveal>
+
+            <ScrollReveal delay="delay-3">
+              <article className="atelier-panel h-100">
+                <span className="editorial-kicker">Trend signal</span>
+                <h3>Warm, human, and materially specific.</h3>
+                <p>
+                  That is the direction standing apart from the flattened AI
+                  look in 2026. It fits custom fashion far better than cold
+                  futuristic UI tropes.
+                </p>
+              </article>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="container">
+          <ScrollReveal>
+            <div className="atelier-cta">
+              <div className="atelier-cta__grid">
+                <div>
+                  <span className="editorial-kicker">For designers</span>
+                  <h2>Bring your signature into a marketplace that feels more curated.</h2>
+                  <p>
+                    Profiles, pricing, and specialization should feel considered
+                    enough to support real creative trust. Join the directory and
+                    meet customers looking for thoughtful custom work.
+                  </p>
+                  <Link
+                    to="/signup?role=designer"
+                    className="btn btn-primary mt-2"
+                  >
+                    Join as designer
+                  </Link>
+                </div>
+
+                <div className="atelier-cta__metrics">
+                  <article className="atelier-cta__metric">
+                    <strong>Keep pricing visible</strong>
+                    <p>Show design fees clearly instead of burying them in the flow.</p>
+                  </article>
+                  <article className="atelier-cta__metric">
+                    <strong>Lead with specialization</strong>
+                    <p>Streetwear, formalwear, sustainable fashion, or embroidery-led work.</p>
+                  </article>
+                  <article className="atelier-cta__metric">
+                    <strong>Reduce marketplace sameness</strong>
+                    <p>Make identity, craft, and reliability easy to feel at first glance.</p>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+    </div>
   );
 };
 

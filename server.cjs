@@ -7,6 +7,62 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
+const Redis = require("ioredis");
+
+// =============================================================================
+// REDIS CACHE SETUP
+// =============================================================================
+let redisClient = null;
+let redisAvailable = false;
+
+try {
+  redisClient = new Redis({
+    host: process.env.REDIS_HOST || "127.0.0.1",
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    password: process.env.REDIS_PASSWORD || undefined,
+    lazyConnect: true,
+    connectTimeout: 3000,
+    maxRetriesPerRequest: 1,
+  });
+  redisClient.on("connect", () => {
+    redisAvailable = true;
+    console.log("[Redis] Connected — caching enabled");
+  });
+  redisClient.on("error", () => {
+    redisAvailable = false;
+  });
+  redisClient.connect().catch(() => {
+    redisAvailable = false;
+    console.log("[Redis] Not available — running without cache");
+  });
+} catch (_) {
+  console.log("[Redis] Skipping — ioredis not configured");
+}
+
+async function cacheGet(key) {
+  if (!redisAvailable) return null;
+  try {
+    const v = await redisClient.get(key);
+    return v ? JSON.parse(v) : null;
+  } catch (_) { return null; }
+}
+
+async function cacheSet(key, value, ttlSeconds = 60) {
+  if (!redisAvailable) return;
+  try {
+    await redisClient.setex(key, ttlSeconds, JSON.stringify(value));
+  } catch (_) {}
+}
+
+async function cacheDel(pattern) {
+  if (!redisAvailable) return;
+  try {
+    const keys = await redisClient.keys(pattern);
+    if (keys.length) await redisClient.del(...keys);
+  } catch (_) {}
+}
 
 // =============================================================================
 // MIDDLEWARE IMPORTS - Individual Contributions (Role-Based)
@@ -35,8 +91,20 @@ const multer = require("multer"); // Handle design file uploads
 const cookieParser = require("cookie-parser"); // Manage cart sessions and cookies
 // Custom CSRF protection for secure checkout process
 
+const net = require("net");
+
 const app = express();
-const PORT = process.env.PORT || 5174;
+const PREFERRED_PORT = parseInt(process.env.PORT, 10) || 5174;
+
+function findFreePort(startPort) {
+  return new Promise((resolve) => {
+    const srv = net.createServer();
+    srv.listen(startPort, "0.0.0.0", () => {
+      srv.close(() => resolve(startPort));
+    });
+    srv.on("error", () => resolve(findFreePort(startPort + 1)));
+  });
+}
 
 // Email transporter setup using Gmail
 // Set environment variables: EMAIL_USER and EMAIL_PASS
@@ -718,6 +786,30 @@ const notificationSchema = new mongoose.Schema({
 
 const Notification = mongoose.model("Notification", notificationSchema);
 
+// =============================================================================
+// DB INDEXES — Query optimization (compound + single field)
+// =============================================================================
+userSchema.index({ email: 1 }, { unique: true, sparse: true });
+userSchema.index({ role: 1, approved: 1 });
+userSchema.index({ "designerProfile.isAvailable": 1, "designerProfile.rating": -1 });
+
+productSchema.index({ category: 1, gender: 1 });
+productSchema.index({ featured: 1 });
+productSchema.index({ inStock: 1, price: 1 });
+productSchema.index({ name: "text", description: "text" });
+
+orderSchema.index({ userId: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ designerId: 1, status: 1 });
+orderSchema.index({ deliveryPersonId: 1, status: 1 });
+orderSchema.index({ managerId: 1, status: 1 });
+orderSchema.index({ orderNumber: 1 }, { unique: true, sparse: true });
+
+cartSchema.index({ userId: 1 }, { unique: true, sparse: true });
+wishlistSchema.index({ userId: 1, designId: 1 });
+designSchema.index({ userId: 1, createdAt: -1 });
+notificationSchema.index({ userId: 1, read: 1, createdAt: -1 });
+
 // Review Schema
 const reviewSchema = new mongoose.Schema({
   productId: {
@@ -1231,6 +1323,782 @@ app.use(
     },
   }),
 );
+
+// =============================================================================
+// SWAGGER / OPENAPI DOCUMENTATION
+// =============================================================================
+
+const apiServerUrl = process.env.API_BASE_URL || `http://localhost:${PREFERRED_PORT}`;
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.3",
+    info: {
+      title: "DesignDen API",
+      version: "2.0.0",
+      description: `
+# DesignDen REST API - Complete Documentation
+
+DesignDen is a custom clothing design platform with role-based access control (RBAC).
+
+## Authentication
+All authenticated endpoints use **session-based authentication** with cookies.
+1. Call \`POST /api/auth/login\` with email/password
+2. The server sets a \`connect.sid\` session cookie
+3. Include this cookie in subsequent requests
+4. For state-changing operations (POST/PUT/DELETE), include CSRF token in \`x-csrf-token\` header
+
+## User Roles
+| Role | Description | Access Level |
+|------|-------------|--------------|
+| **customer** | End users who shop and create custom designs | Cart, Orders, Wishlist, Design Studio |
+| **designer** | Professional designers who fulfill custom orders | Design orders, Portfolio, Earnings |
+| **manager** | Staff who manage production workflow | Assign orders, Track production, Manage inventory |
+| **admin** | System administrators | Full access to all resources |
+| **delivery** | Delivery personnel | Pickup and deliver orders |
+
+## 2FA Support
+Two-factor authentication via email is supported. When enabled:
+1. Login returns \`requires2FA: true\`
+2. User receives verification code via email
+3. Resend with \`POST /api/auth/2fa/send-login-code\`
+4. Complete login by including \`twoFactorCode\` in login request
+      `,
+      contact: {
+        name: "DesignDen Support",
+        email: "kumaritsme1510@gmail.com",
+      },
+    },
+    servers: [
+      {
+        url: apiServerUrl,
+        description: "Active API server",
+      },
+    ],
+    tags: [
+      { name: "Auth", description: "Authentication and session management" },
+      { name: "2FA", description: "Two-factor authentication" },
+      { name: "Security", description: "CSRF tokens and security utilities" },
+      { name: "Shop", description: "Public product catalog" },
+      { name: "Cart", description: "Shopping cart operations (Customer)" },
+      { name: "Checkout", description: "Order placement (Customer)" },
+      { name: "Customer Orders", description: "Order management for customers" },
+      { name: "Design Studio", description: "Custom design creation (Customer)" },
+      { name: "Wishlist", description: "Product wishlist (Customer)" },
+      { name: "Addresses", description: "Shipping addresses (Customer)" },
+      { name: "Reviews", description: "Product reviews" },
+      { name: "Designer Dashboard", description: "Designer order management" },
+      { name: "Designer Portfolio", description: "Designer profile and portfolio" },
+      { name: "Designer Earnings", description: "Designer payouts and earnings" },
+      { name: "Manager Dashboard", description: "Production management" },
+      { name: "Manager - Designers", description: "Designer assignment and management" },
+      { name: "Manager - Delivery", description: "Delivery assignment" },
+      { name: "Manager - Products", description: "Product inventory management" },
+      { name: "Admin Dashboard", description: "System administration" },
+      { name: "Admin - Users", description: "User management" },
+      { name: "Admin - Payouts", description: "Payout processing" },
+      { name: "Delivery Dashboard", description: "Delivery person operations" },
+      { name: "Order Tracking", description: "Order status and tracking" },
+      { name: "Messaging", description: "Order-related communication" },
+      { name: "Production", description: "Production milestones" },
+      { name: "Marketplace", description: "Public designer marketplace" },
+      { name: "Feedback", description: "Customer feedback" },
+    ],
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: "apiKey",
+          in: "cookie",
+          name: "connect.sid",
+        },
+        csrfHeader: {
+          type: "apiKey",
+          in: "header",
+          name: "x-csrf-token",
+        },
+      },
+      schemas: {
+        // ===== USER & AUTH SCHEMAS =====
+        UserSession: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "User MongoDB ObjectId" },
+            username: { type: "string" },
+            name: { type: "string" },
+            email: { type: "string", format: "email" },
+            role: {
+              type: "string",
+              enum: ["customer", "designer", "manager", "admin", "delivery"],
+              description: "User role determining access permissions",
+            },
+            contactNumber: { type: "string" },
+            approved: { type: "boolean", description: "Whether account is approved (designers/managers require approval)" },
+            twoFactorEnabled: { type: "boolean" },
+          },
+        },
+        LoginRequest: {
+          type: "object",
+          required: ["email", "password"],
+          properties: {
+            email: { type: "string", format: "email", example: "customer@example.com" },
+            password: { type: "string", example: "password123" },
+            twoFactorCode: { type: "string", description: "6-digit 2FA code (required if 2FA enabled)", example: "123456" },
+          },
+        },
+        SignupRequest: {
+          type: "object",
+          required: ["username", "email", "password"],
+          properties: {
+            username: { type: "string", example: "johndoe" },
+            name: { type: "string", example: "John Doe" },
+            email: { type: "string", format: "email", example: "john@example.com" },
+            password: { type: "string", minLength: 6, example: "password123" },
+            contactNumber: { type: "string", example: "+91 9876543210" },
+            role: {
+              type: "string",
+              enum: ["customer", "designer", "manager", "delivery"],
+              default: "customer",
+              description: "Designer/Manager roles require admin approval",
+            },
+          },
+        },
+        
+        // ===== PRODUCT SCHEMAS =====
+        Product: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            name: { type: "string", example: "Cotton T-Shirt" },
+            description: { type: "string" },
+            category: { type: "string", example: "T-Shirt" },
+            gender: { type: "string", enum: ["Men", "Women", "Unisex"] },
+            price: { type: "number", example: 599 },
+            sizes: { type: "array", items: { type: "string" }, example: ["S", "M", "L", "XL"] },
+            colors: { type: "array", items: { type: "string" }, example: ["White", "Black", "Blue"] },
+            images: { type: "array", items: { type: "string" } },
+            inStock: { type: "boolean" },
+            stockQuantity: { type: "integer" },
+            featured: { type: "boolean" },
+            customizable: { type: "boolean" },
+          },
+        },
+        ProductCreateRequest: {
+          type: "object",
+          required: ["name", "price", "category"],
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            category: { type: "string" },
+            gender: { type: "string" },
+            price: { type: "number" },
+            sizes: { type: "array", items: { type: "string" } },
+            colors: { type: "array", items: { type: "string" } },
+            images: { type: "array", items: { type: "string" } },
+            inStock: { type: "boolean", default: true },
+            stockQuantity: { type: "integer", default: 0 },
+          },
+        },
+        
+        // ===== CART SCHEMAS =====
+        CartItem: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            productId: { type: "string", description: "Product ObjectId for shop items" },
+            designId: { type: "string", description: "Design ObjectId for custom items" },
+            quantity: { type: "integer", minimum: 1 },
+            size: { type: "string" },
+            color: { type: "string" },
+            addedAt: { type: "string", format: "date-time" },
+          },
+        },
+        CartResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            cart: {
+              type: "object",
+              properties: {
+                _id: { type: "string" },
+                userId: { type: "string" },
+                items: { type: "array", items: { $ref: "#/components/schemas/CartItem" } },
+                updatedAt: { type: "string", format: "date-time" },
+              },
+            },
+          },
+        },
+        AddToCartRequest: {
+          type: "object",
+          required: ["quantity"],
+          properties: {
+            productId: { type: "string", description: "Product ObjectId (for shop items)" },
+            designId: { type: "string", description: "Design ObjectId (for custom items)" },
+            quantity: { type: "integer", minimum: 1, example: 1 },
+            size: { type: "string", example: "M" },
+            color: { type: "string", example: "Blue" },
+          },
+        },
+        
+        // ===== ADDRESS SCHEMAS =====
+        ShippingAddress: {
+          type: "object",
+          required: ["name", "phone", "street", "city", "state", "zipCode"],
+          properties: {
+            name: { type: "string", example: "John Doe" },
+            email: { type: "string", format: "email" },
+            phone: { type: "string", example: "+91 9876543210" },
+            alternativePhone: { type: "string" },
+            street: { type: "string", example: "123 Main Street" },
+            landmark: { type: "string" },
+            city: { type: "string", example: "Mumbai" },
+            state: { type: "string", example: "Maharashtra" },
+            zipCode: { type: "string", example: "400001" },
+            country: { type: "string", default: "India" },
+            addressType: { type: "string", enum: ["home", "work", "other"], default: "home" },
+          },
+        },
+        SavedAddress: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            street: { type: "string" },
+            city: { type: "string" },
+            state: { type: "string" },
+            pincode: { type: "string" },
+            isDefault: { type: "boolean" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        
+        // ===== ORDER SCHEMAS =====
+        OrderStatus: {
+          type: "string",
+          enum: [
+            "pending", "assigned_to_manager", "confirmed", "processing",
+            "assigned_to_designer", "designer_accepted", "design_in_progress",
+            "design_pending_customer_approval", "design_approved_by_customer", "design_rejected_by_customer",
+            "design_ready", "design_approved", "design_rejected",
+            "in_production", "production_milestone", "production_completed",
+            "ready_for_pickup", "picked_up", "in_transit", "out_for_delivery", "delivered",
+            "cancelled", "return_requested", "returned"
+          ],
+          description: "Order workflow status",
+        },
+        OrderSummary: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            orderNumber: { type: "string", example: "DD-20260302-0001" },
+            status: { $ref: "#/components/schemas/OrderStatus" },
+            orderType: { type: "string", enum: ["shop", "custom"] },
+            totalAmount: { type: "number" },
+            paymentMethod: { type: "string", enum: ["card", "upi", "netbanking", "cod", "wallet"] },
+            paymentStatus: { type: "string", enum: ["pending", "completed", "failed", "refunded"] },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        OrderDetail: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            orderNumber: { type: "string" },
+            userId: { $ref: "#/components/schemas/UserSession" },
+            items: { type: "array", items: { $ref: "#/components/schemas/OrderItem" } },
+            totalAmount: { type: "number" },
+            status: { $ref: "#/components/schemas/OrderStatus" },
+            orderType: { type: "string", enum: ["shop", "custom"] },
+            designerId: { type: "string", description: "Assigned designer (custom orders)" },
+            deliveryPersonId: { type: "string", description: "Assigned delivery person" },
+            shippingAddress: { $ref: "#/components/schemas/ShippingAddress" },
+            paymentMethod: { type: "string" },
+            paymentStatus: { type: "string" },
+            progressPercentage: { type: "integer", minimum: 0, maximum: 100 },
+            designProgress: { type: "integer", minimum: 0, maximum: 100 },
+            timeline: { type: "array", items: { $ref: "#/components/schemas/TimelineEvent" } },
+            designFiles: { type: "array", items: { $ref: "#/components/schemas/DesignFile" } },
+            deliveryOTP: { type: "object", properties: { code: { type: "string" } } },
+            estimatedDelivery: { type: "object", properties: { from: { type: "string", format: "date" }, to: { type: "string", format: "date" } } },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        OrderItem: {
+          type: "object",
+          properties: {
+            productId: { type: "string" },
+            designId: { type: "string" },
+            quantity: { type: "integer" },
+            size: { type: "string" },
+            color: { type: "string" },
+            price: { type: "number" },
+          },
+        },
+        TimelineEvent: {
+          type: "object",
+          properties: {
+            status: { type: "string" },
+            message: { type: "string" },
+            timestamp: { type: "string", format: "date-time" },
+            actor: { type: "string" },
+          },
+        },
+        
+        // ===== DESIGN SCHEMAS =====
+        Design: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            name: { type: "string", example: "Custom Dragon T-Shirt" },
+            category: { type: "string" },
+            gender: { type: "string" },
+            fabric: { type: "string" },
+            color: { type: "string" },
+            pattern: { type: "string" },
+            size: { type: "string" },
+            graphic: { type: "string" },
+            customText: { type: "string" },
+            estimatedPrice: { type: "number" },
+            previewImage: { type: "string", description: "Base64 encoded preview" },
+            userId: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        DesignCreateRequest: {
+          type: "object",
+          required: ["name", "category"],
+          properties: {
+            name: { type: "string" },
+            category: { type: "string" },
+            gender: { type: "string" },
+            fabric: { type: "string" },
+            color: { type: "string" },
+            pattern: { type: "string" },
+            size: { type: "string" },
+            graphic: { type: "string" },
+            customText: { type: "string" },
+            estimatedPrice: { type: "number" },
+            previewImage: { type: "string" },
+          },
+        },
+        DesignFile: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            name: { type: "string" },
+            type: { type: "string", enum: ["image", "file"] },
+            uploadedAt: { type: "string", format: "date-time" },
+          },
+        },
+        DesignSubmitRequest: {
+          type: "object",
+          properties: {
+            notes: { type: "string", example: "Design completed as per requirements" },
+            files: { type: "array", items: { $ref: "#/components/schemas/DesignFile" } },
+          },
+        },
+        DesignProgressRequest: {
+          type: "object",
+          properties: {
+            progress: { type: "integer", minimum: 0, maximum: 100, example: 50 },
+            note: { type: "string", example: "Initial concept completed" },
+          },
+        },
+        
+        // ===== DESIGNER SCHEMAS =====
+        DesignerProfile: {
+          type: "object",
+          properties: {
+            bio: { type: "string" },
+            specializations: { type: "array", items: { type: "string" }, example: ["T-Shirts", "Ethnic Wear"] },
+            experience: { type: "integer", description: "Years of experience" },
+            rating: { type: "number", minimum: 0, maximum: 5 },
+            totalRatings: { type: "integer" },
+            completedOrders: { type: "integer" },
+            isAvailable: { type: "boolean" },
+            availabilityStatus: { type: "string", enum: ["available", "busy", "not_accepting"] },
+            designFee: { type: "number" },
+            priceRange: { type: "object", properties: { min: { type: "number" }, max: { type: "number" } } },
+            turnaroundDays: { type: "integer" },
+            badges: { type: "array", items: { type: "string" } },
+          },
+        },
+        Designer: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            name: { type: "string" },
+            email: { type: "string" },
+            approved: { type: "boolean" },
+            designerProfile: { $ref: "#/components/schemas/DesignerProfile" },
+          },
+        },
+        DesignerProfileUpdateRequest: {
+          type: "object",
+          properties: {
+            designerProfile: {
+              type: "object",
+              properties: {
+                bio: { type: "string" },
+                specializations: { type: "array", items: { type: "string" } },
+                designFee: { type: "number" },
+                priceRange: { type: "object", properties: { min: { type: "number" }, max: { type: "number" } } },
+              },
+            },
+          },
+        },
+        DesignerAvailabilityRequest: {
+          type: "object",
+          properties: {
+            status: { type: "string", enum: ["available", "busy", "not_accepting"] },
+            isAvailable: { type: "boolean" },
+          },
+        },
+        PortfolioItem: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            title: { type: "string" },
+            description: { type: "string" },
+            image: { type: "string" },
+            category: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        
+        // ===== EARNINGS & PAYOUT SCHEMAS =====
+        EarningsSummary: {
+          type: "object",
+          properties: {
+            totalEarnings: { type: "number" },
+            availableForPayout: { type: "number" },
+            pendingEarnings: { type: "number" },
+            completedPayouts: { type: "number" },
+            designerRate: { type: "number", description: "Platform commission percentage" },
+          },
+        },
+        PayoutRequest: {
+          type: "object",
+          required: ["amount", "upiId"],
+          properties: {
+            amount: { type: "number", example: 5000 },
+            upiId: { type: "string", example: "designer@upi" },
+          },
+        },
+        Payout: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            designerId: { type: "string" },
+            amount: { type: "number" },
+            upiId: { type: "string" },
+            status: { type: "string", enum: ["pending", "approved", "completed", "rejected"] },
+            processedAt: { type: "string", format: "date-time" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        
+        // ===== PRODUCTION SCHEMAS =====
+        ProductionMilestone: {
+          type: "string",
+          enum: ["design_review", "fabric_selection", "cutting", "stitching", "embroidery", "finishing", "quality_check", "packaging", "ready_for_pickup"],
+        },
+        ProductionProgressRequest: {
+          type: "object",
+          properties: {
+            progressPercentage: { type: "integer", minimum: 0, maximum: 100, example: 50 },
+            currentMilestone: { $ref: "#/components/schemas/ProductionMilestone" },
+            notes: { type: "string" },
+          },
+        },
+        MilestoneRecord: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            orderId: { type: "string" },
+            milestone: { $ref: "#/components/schemas/ProductionMilestone" },
+            status: { type: "string", enum: ["pending", "in_progress", "completed"] },
+            notes: { type: "string" },
+            images: { type: "array", items: { type: "string" } },
+            completedAt: { type: "string", format: "date-time" },
+          },
+        },
+        
+        // ===== DELIVERY SCHEMAS =====
+        DeliveryOrder: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            orderNumber: { type: "string" },
+            status: { type: "string" },
+            shippingAddress: { $ref: "#/components/schemas/ShippingAddress" },
+            deliveryOTP: { type: "object", properties: { code: { type: "string" } } },
+            deliverySlot: { type: "object", properties: { date: { type: "string", format: "date" }, timeSlot: { type: "string" } } },
+            customerPhone: { type: "string" },
+          },
+        },
+        DeliveryStatusUpdateRequest: {
+          type: "object",
+          properties: {
+            status: { type: "string", enum: ["picked_up", "in_transit", "out_for_delivery"] },
+            notes: { type: "string" },
+          },
+        },
+        DeliveryVerifyOTPRequest: {
+          type: "object",
+          required: ["otp"],
+          properties: {
+            otp: { type: "string", example: "1234" },
+          },
+        },
+        DeliveryStatistics: {
+          type: "object",
+          properties: {
+            totalDeliveries: { type: "integer" },
+            completedToday: { type: "integer" },
+            pending: { type: "integer" },
+            inTransit: { type: "integer" },
+          },
+        },
+        
+        // ===== REVIEW SCHEMAS =====
+        Review: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            userId: { $ref: "#/components/schemas/UserSession" },
+            productId: { type: "string" },
+            rating: { type: "integer", minimum: 1, maximum: 5 },
+            title: { type: "string" },
+            comment: { type: "string" },
+            verified: { type: "boolean", description: "Whether user purchased the product" },
+            helpful: { type: "array", items: { type: "string" }, description: "User IDs who found review helpful" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        ReviewCreateRequest: {
+          type: "object",
+          required: ["rating"],
+          properties: {
+            rating: { type: "integer", minimum: 1, maximum: 5 },
+            title: { type: "string" },
+            comment: { type: "string" },
+          },
+        },
+        ReviewStats: {
+          type: "object",
+          properties: {
+            average: { type: "number" },
+            total: { type: "integer" },
+            distribution: { type: "object", additionalProperties: { type: "integer" } },
+          },
+        },
+        
+        // ===== WISHLIST SCHEMAS =====
+        WishlistItem: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            productId: { $ref: "#/components/schemas/Product" },
+            designId: { $ref: "#/components/schemas/Design" },
+            addedAt: { type: "string", format: "date-time" },
+          },
+        },
+        WishlistAddRequest: {
+          type: "object",
+          properties: {
+            productId: { type: "string" },
+            designId: { type: "string" },
+          },
+        },
+        
+        // ===== MESSAGING SCHEMAS =====
+        Message: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            orderId: { type: "string" },
+            senderId: { type: "string" },
+            senderRole: { type: "string", enum: ["customer", "designer", "manager"] },
+            receiverId: { type: "string" },
+            receiverRole: { type: "string", enum: ["customer", "designer", "manager"] },
+            message: { type: "string" },
+            attachments: { type: "array", items: { $ref: "#/components/schemas/DesignFile" } },
+            read: { type: "boolean" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        SendMessageRequest: {
+          type: "object",
+          required: ["receiverId", "message"],
+          properties: {
+            receiverId: { type: "string" },
+            receiverRole: { type: "string", enum: ["customer", "designer", "manager"] },
+            message: { type: "string" },
+            attachments: { type: "array", items: { $ref: "#/components/schemas/DesignFile" } },
+          },
+        },
+        
+        // ===== FEEDBACK SCHEMAS =====
+        Feedback: {
+          type: "object",
+          properties: {
+            _id: { type: "string" },
+            userId: { $ref: "#/components/schemas/UserSession" },
+            orderId: { type: "string" },
+            rating: { type: "integer", minimum: 1, maximum: 5 },
+            comment: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
+        FeedbackSubmitRequest: {
+          type: "object",
+          required: ["rating", "comment"],
+          properties: {
+            rating: { type: "integer", minimum: 1, maximum: 5 },
+            comment: { type: "string" },
+            orderId: { type: "string" },
+          },
+        },
+        
+        // ===== TRACKING SCHEMAS =====
+        TrackingInfo: {
+          type: "object",
+          properties: {
+            orderId: { type: "string" },
+            orderNumber: { type: "string" },
+            currentStatus: { $ref: "#/components/schemas/OrderStatus" },
+            statusLabel: { type: "string" },
+            progressPercentage: { type: "integer" },
+            timeline: { type: "array", items: { $ref: "#/components/schemas/TimelineEvent" } },
+            estimatedDelivery: { type: "object", properties: { from: { type: "string", format: "date" }, to: { type: "string", format: "date" } } },
+            deliveryPartner: { type: "object", properties: { name: { type: "string" }, trackingNumber: { type: "string" }, trackingUrl: { type: "string" } } },
+          },
+        },
+        
+        // ===== ADMIN SCHEMAS =====
+        UserStats: {
+          type: "object",
+          properties: {
+            totalUsers: { type: "integer" },
+            customers: { type: "integer" },
+            designers: { type: "integer" },
+            managers: { type: "integer" },
+            deliveryPersons: { type: "integer" },
+            pendingApprovals: { type: "integer" },
+          },
+        },
+        DashboardStats: {
+          type: "object",
+          properties: {
+            totalOrders: { type: "integer" },
+            totalRevenue: { type: "number" },
+            pendingOrders: { type: "integer" },
+            completedOrders: { type: "integer" },
+            activeDesigners: { type: "integer" },
+            recentOrders: { type: "array", items: { $ref: "#/components/schemas/OrderSummary" } },
+          },
+        },
+        
+        // ===== CHECKOUT SCHEMAS =====
+        CheckoutRequest: {
+          type: "object",
+          required: ["paymentMethod", "shippingAddress"],
+          properties: {
+            paymentMethod: { type: "string", enum: ["card", "upi", "netbanking", "cod", "wallet"] },
+            shippingAddress: { $ref: "#/components/schemas/ShippingAddress" },
+            notes: { type: "string" },
+            items: { type: "array", items: { $ref: "#/components/schemas/CartItem" }, description: "Optional - if not provided, uses cart items" },
+          },
+        },
+        
+        // ===== COMMON RESPONSE SCHEMAS =====
+        SuccessMessageResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: true },
+            message: { type: "string" },
+          },
+        },
+        ErrorResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: false },
+            message: { type: "string" },
+            error: {
+              type: "object",
+              properties: {
+                code: { type: "string" },
+                details: { type: "string" },
+              },
+            },
+          },
+        },
+        AuthSuccessResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: true },
+            message: { type: "string" },
+            user: { $ref: "#/components/schemas/UserSession" },
+          },
+        },
+        TwoFactorRequiredResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: false },
+            requires2FA: { type: "boolean", example: true },
+            message: { type: "string", example: "2FA code sent to your email" },
+          },
+        },
+        PaginatedResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+            total: { type: "integer" },
+            page: { type: "integer" },
+            limit: { type: "integer" },
+            totalPages: { type: "integer" },
+          },
+        },
+      },
+    },
+  },
+  apis: [path.join(__dirname, "docs/swagger/openapi.annotations.cjs")],
+};
+
+const openapiSpec = swaggerJSDoc(swaggerOptions);
+const swaggerEnabled = process.env.NODE_ENV !== "production";
+
+if (swaggerEnabled) {
+  // Dynamic OpenAPI spec that uses the actual request host
+  app.get("/openapi.json", (req, res) => {
+    const protocol = req.protocol;
+    const host = req.get("host");
+    const dynamicSpec = {
+      ...openapiSpec,
+      servers: [{ url: `${protocol}://${host}`, description: "Current server" }],
+    };
+    res.setHeader("Content-Type", "application/json");
+    res.send(dynamicSpec);
+  });
+
+  // Swagger UI with dynamic spec URL
+  app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(null, {
+      explorer: true,
+      customSiteTitle: "DesignDen API Docs",
+      swaggerOptions: {
+        url: "/openapi.json",
+        withCredentials: true, // ✅ Enable sending cookies with requests
+        persistAuthorization: true, // ✅ Remember authorization between page refreshes
+      },
+    }),
+  );
+
+  console.log(
+    "✅ Swagger docs enabled at /api-docs (OpenAPI JSON: /openapi.json)",
+  );
+}
 
 // =============================================================================
 // AUTHENTICATION MIDDLEWARE
@@ -2667,6 +3535,10 @@ app.get("/api/shop/products", async (req, res) => {
       featured,
     } = req.query;
 
+    const cacheKey = `products:${JSON.stringify(req.query)}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return res.json(cached);
+
     let query = {};
 
     // Case-insensitive category filter
@@ -2710,7 +3582,9 @@ app.get("/api/shop/products", async (req, res) => {
     }
 
     const products = await Product.find(query).sort(sortOption);
-    res.json({ success: true, products });
+    const result = { success: true, products };
+    if (!search) await cacheSet(cacheKey, result, 120);
+    res.json(result);
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -2734,8 +3608,12 @@ app.get("/api/shop/products/:id", async (req, res) => {
 
 app.get("/api/shop/featured", async (req, res) => {
   try {
+    const cached = await cacheGet("products:featured");
+    if (cached) return res.json(cached);
     const products = await Product.find({ featured: true }).limit(6);
-    res.json({ success: true, products });
+    const result = { success: true, products };
+    await cacheSet("products:featured", result, 300);
+    res.json(result);
   } catch (error) {
     console.error("Error fetching featured products:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -3638,9 +4516,45 @@ app.post("/feedback/submit", async (req, res) => {
 
     await feedback.save();
 
-    // Update order to mark that feedback has been submitted
+    // Update order to mark that feedback has been submitted, and auto-gen reviews for shop items
     if (orderId) {
-      await Order.findByIdAndUpdate(orderId, { hasFeedback: true });
+      const order = await Order.findById(orderId);
+      if (order) {
+        order.hasFeedback = true;
+        await order.save();
+
+        // Target: Auto-generate Product Reviews for any shop items within this order
+        for (const item of order.items) {
+          // If the item has a productId, it is a shop product
+          if (item.productId) {
+            // Confirm a review hasn't already been submitted to prevent duplicates
+            const existingReview = await Review.findOne({
+              productId: item.productId,
+              userId: req.session.user.id,
+              orderId: orderId,
+            });
+
+            if (!existingReview) {
+              const reviewTitle =
+                comment.length > 30
+                  ? comment.substring(0, 30) + "..."
+                  : "Product Feedback";
+
+              const newReview = new Review({
+                productId: item.productId,
+                userId: req.session.user.id,
+                orderId: orderId,
+                rating: rating,
+                title: reviewTitle,
+                comment: comment,
+                verified: true, // It's from an explicitly verified delivered order
+              });
+
+              await newReview.save();
+            }
+          }
+        }
+      }
     }
 
     res.json({
@@ -3896,7 +4810,7 @@ app.get("/designer/api/orders", async (req, res) => {
     const orders = await Order.find({
       designerId: req.session.user.id,
     })
-      .populate("userId", "username email contactNumber")
+      .populate("userId", "username name email contactNumber")
       .populate("items.productId", "name images price")
       .populate(
         "items.designId",
@@ -4426,6 +5340,11 @@ app.get("/api/marketplace/designers", async (req, res) => {
     if (sortBy === "newest") sortOption = { createdAt: -1 };
 
     const skip = (Number(page) - 1) * Number(limit);
+
+    const cacheKey = `marketplace:designers:${JSON.stringify({ page, limit, specialization, minRating, maxPrice, available, sortBy, search })}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return res.json(cached);
+
     const total = await User.countDocuments(filter);
 
     const designers = await User.find(filter)
@@ -4467,7 +5386,7 @@ app.get("/api/marketplace/designers", async (req, res) => {
       joinedAt: d.createdAt,
     }));
 
-    res.json({
+    const result = {
       success: true,
       designers: formattedDesigners,
       pagination: {
@@ -4475,7 +5394,9 @@ app.get("/api/marketplace/designers", async (req, res) => {
         totalPages: Math.ceil(total / Number(limit)),
         totalDesigners: total,
       },
-    });
+    };
+    if (!search) await cacheSet(cacheKey, result, 60);
+    res.json(result);
   } catch (error) {
     console.error("Error fetching marketplace designers:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -5202,12 +6123,12 @@ app.get("/manager/api/orders", async (req, res) => {
     }
 
     const orders = await Order.find({})
-      .populate("userId", "username email")
+      .populate("userId", "username name email")
       .populate("items.productId", "name images price")
       .populate("items.designId", "name graphic basePrice estimatedPrice")
-      .populate("managerId", "username email")
-      .populate("designerId", "username email")
-      .populate("deliveryPersonId", "username email")
+      .populate("managerId", "username name email")
+      .populate("designerId", "username name email")
+      .populate("deliveryPersonId", "username name email")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -5501,7 +6422,7 @@ app.post("/manager/order/:id/assign-delivery", async (req, res) => {
     await Notification.create({
       userId: order.userId._id,
       orderId: order._id,
-      message: `🚚 Delivery Assigned - Your ${
+      message: `Delivery Assigned - Your ${
         isCustomOrder ? "custom design" : ""
       } order will be delivered by ${deliveryPerson.trim()}`,
       type: "info",
@@ -5512,7 +6433,7 @@ app.post("/manager/order/:id/assign-delivery", async (req, res) => {
       await Notification.create({
         userId: order.designerId._id,
         orderId: order._id,
-        message: `📦 Your completed design for Order #${order._id
+        message: `Your completed design for Order #${order._id
           .toString()
           .substring(0, 8)} has been dispatched for delivery`,
         type: "success",
@@ -5924,7 +6845,7 @@ app.post("/designer/order/:id/start-production", async (req, res) => {
     await Notification.create({
       userId: order.userId._id,
       orderId: order._id,
-      message: `🎨 Production Started! Designer has started working on your custom design.`,
+      message: `Production Started! Designer has started working on your custom design.`,
       type: "info",
     });
 
@@ -6005,7 +6926,7 @@ app.post("/designer/order/:id/mark-ready", async (req, res) => {
       await Notification.create({
         userId: manager._id,
         orderId: order._id,
-        message: `📦 Order #${order._id
+        message: `Order #${order._id
           .toString()
           .substring(
             0,
@@ -6150,7 +7071,7 @@ app.post("/delivery/order/:id/update-status", async (req, res) => {
       await Notification.create({
         userId: order.userId._id,
         orderId: order._id,
-        message: `🚚 Your ${
+        message: `Your ${
           isCustomOrder ? "custom design " : ""
         }order is on the way! Your delivery OTP is: ${
           order.deliveryOTP?.code
@@ -6188,7 +7109,7 @@ app.post("/delivery/order/:id/update-status", async (req, res) => {
         await Notification.create({
           userId: manager._id,
           orderId: order._id,
-          message: `📦 Order #${order._id
+          message: `Order #${order._id
             .toString()
             .substring(0, 8)} delivered successfully by ${
             req.session.user.username
@@ -6393,6 +7314,20 @@ app.get("/customer/order/:id", async (req, res) => {
     const db = mongoose.connection.db;
     const ordersCollection = db.collection("orders");
     const usersCollection = db.collection("users");
+    const productsCollection = db.collection("products");
+    const designsCollection = db.collection("designs");
+
+    const toObjectId = (value) => {
+      if (!value) return null;
+
+      try {
+        return new mongoose.Types.ObjectId(
+          typeof value === "object" && value._id ? value._id : value,
+        );
+      } catch {
+        return null;
+      }
+    };
 
     const order = await ordersCollection.findOne({
       _id: new mongoose.Types.ObjectId(req.params.id),
@@ -6407,12 +7342,90 @@ app.get("/customer/order/:id", async (req, res) => {
 
     // Manually populate delivery person info
     if (order.deliveryPersonId) {
-      const deliveryPerson = await usersCollection.findOne(
-        { _id: new mongoose.Types.ObjectId(order.deliveryPersonId) },
-        { projection: { name: 1, contactNumber: 1 } },
-      );
-      order.deliveryPersonId = deliveryPerson || order.deliveryPersonId;
+      const deliveryPersonId = toObjectId(order.deliveryPersonId);
+      if (deliveryPersonId) {
+        const deliveryPerson = await usersCollection.findOne(
+          { _id: deliveryPersonId },
+          { projection: { name: 1, contactNumber: 1 } },
+        );
+        order.deliveryPersonId = deliveryPerson || order.deliveryPersonId;
+      }
     }
+
+    const productIds = [
+      ...new Set(
+        (order.items || [])
+          .map((item) => {
+            const objectId = toObjectId(item.productId);
+            return objectId ? String(objectId) : null;
+          })
+          .filter(Boolean),
+      ),
+    ];
+
+    const designIds = [
+      ...new Set(
+        (order.items || [])
+          .map((item) => {
+            const objectId = toObjectId(item.designId);
+            return objectId ? String(objectId) : null;
+          })
+          .filter(Boolean),
+      ),
+    ];
+
+    const [products, designs] = await Promise.all([
+      productIds.length
+        ? productsCollection
+            .find({
+              _id: { $in: productIds.map((id) => new mongoose.Types.ObjectId(id)) },
+            })
+            .project({ name: 1, images: 1, price: 1, description: 1 })
+            .toArray()
+        : [],
+      designIds.length
+        ? designsCollection
+            .find({
+              _id: { $in: designIds.map((id) => new mongoose.Types.ObjectId(id)) },
+            })
+            .project({
+              name: 1,
+              graphic: 1,
+              previewImage: 1,
+              basePrice: 1,
+              estimatedPrice: 1,
+              category: 1,
+              fabric: 1,
+              color: 1,
+              size: 1,
+              pattern: 1,
+              customText: 1,
+            })
+            .toArray()
+        : [],
+    ]);
+
+    const productMap = new Map(
+      products.map((product) => [String(product._id), product]),
+    );
+    const designMap = new Map(
+      designs.map((design) => [String(design._id), design]),
+    );
+
+    order.items = (order.items || []).map((item) => {
+      const productId = toObjectId(item.productId);
+      const designId = toObjectId(item.designId);
+
+      return {
+        ...item,
+        productId: productId
+          ? productMap.get(String(productId)) || item.productId
+          : item.productId,
+        designId: designId
+          ? designMap.get(String(designId)) || item.designId
+          : item.designId,
+      };
+    });
 
     // Debug OTP
     console.log("=== Customer Order Details ===");
@@ -7294,7 +8307,7 @@ app.post("/customer/api/process-checkout", async (req, res) => {
         await Notification.create({
           userId: selectedDesigner._id,
           orderId: order._id,
-          message: `🎨 New custom order #${order._id
+          message: `New custom order #${order._id
             .toString()
             .substring(
               0,
@@ -7472,6 +8485,10 @@ app.post("/manager/api/order/:id/assign-delivery", async (req, res) => {
     }
 
     const { deliveryPersonId } = req.body;
+
+    if (!deliveryPersonId) {
+      return res.status(400).json({ success: false, message: "Delivery person ID is required" });
+    }
 
     // Use raw MongoDB to avoid Mongoose CastError with designFiles
     const mongoose = require("mongoose");
@@ -7905,9 +8922,15 @@ app.put("/designer/api/order/:id/design-progress", async (req, res) => {
       updateData,
     );
 
+    // Return updated order so frontend can update Redux state immediately
+    const updatedOrder = await ordersCollection.findOne({
+      _id: new mongoose.Types.ObjectId(req.params.id),
+    });
+
     res.json({
       success: true,
       message: "Design progress updated",
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("Error updating design progress:", error);
@@ -10255,11 +11278,83 @@ async function initializeSampleDesigners() {
   }
 }
 
+// Ensure at least one delivery user exists for the manager to assign orders
+async function ensureDeliveryUser() {
+  try {
+    const exists = await User.findOne({ role: "delivery" });
+    if (!exists) {
+      const hashed = await bcrypt.hash("delivery123", 10);
+      await User.create({
+        username: "delivery",
+        name: "Delivery Person",
+        email: "delivery@designden.com",
+        password: hashed,
+        contactNumber: "9876543210",
+        role: "delivery",
+        approved: true,
+      });
+      console.log("✅ Default delivery user created (delivery@designden.com / delivery123)");
+    }
+  } catch (err) {
+    console.error("Error ensuring delivery user:", err.message);
+  }
+}
+
+// Health + cache-status endpoint
+app.get("/api/health", async (req, res) => {
+  const mongoState = mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  res.json({
+    status: "ok",
+    mongodb: mongoState,
+    redis: redisAvailable ? "connected" : "unavailable",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Redis benchmark endpoint (for evaluation demo)
+app.get("/api/cache/benchmark", async (req, res) => {
+  const results = {};
+
+  // Without cache: direct DB query
+  const t0 = Date.now();
+  await Product.find({ featured: true }).limit(6).lean();
+  results.dbQueryMs = Date.now() - t0;
+
+  // With cache
+  if (redisAvailable) {
+    await cacheSet("bench:featured", await Product.find({ featured: true }).limit(6).lean(), 30);
+    const t1 = Date.now();
+    await cacheGet("bench:featured");
+    results.cacheHitMs = Date.now() - t1;
+    results.improvementPct = Math.round((1 - results.cacheHitMs / results.dbQueryMs) * 100);
+  } else {
+    results.cacheHitMs = null;
+    results.note = "Redis not running — start Redis to see cache benchmark";
+  }
+
+  res.json({ success: true, benchmark: results });
+});
+
 // Run initialization when server starts
 mongoose.connection.once("open", () => {
   initializeSampleDesigners();
+  ensureDeliveryUser();
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+findFreePort(PREFERRED_PORT).then((PORT) => {
+  app.listen(PORT, "0.0.0.0", () => {
+    // Write actual port so Vite and start.cjs can read it
+    fs.writeFileSync(".port", String(PORT));
+    // Override VITE_API_URL so frontend always calls the right port
+    fs.writeFileSync(".env.local", `VITE_API_URL=http://localhost:${PORT}\n`);
+
+    console.log(`✅ Server running on port ${PORT}`);
+    if (PORT !== PREFERRED_PORT) {
+      console.log(
+        `ℹ️  Port ${PREFERRED_PORT} was busy — using port ${PORT} instead`,
+      );
+      console.log(`   .env.local updated with correct API URL for Vite`);
+    }
+  });
 });

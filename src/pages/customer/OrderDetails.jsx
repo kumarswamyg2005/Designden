@@ -4,6 +4,8 @@ import { customerAPI } from "../../services/api";
 import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
+
 const OrderDetails = () => {
   const { id } = useParams();
   const { showFlash } = useFlash();
@@ -13,6 +15,9 @@ const OrderDetails = () => {
   const [feedback, setFeedback] = useState({ rating: 5, comment: "" });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [cancellingOrder, setCancellingOrder] = useState(false);
+  const [designAction, setDesignAction] = useState(null); // 'approve' | 'reject'
+  const [rejectReason, setRejectReason] = useState("");
+  const [designActionLoading, setDesignActionLoading] = useState(false);
 
   useEffect(() => {
     fetchOrderDetails();
@@ -24,7 +29,10 @@ const OrderDetails = () => {
       const response = await customerAPI.getOrderDetails(id);
       setOrder(response.data.order);
     } catch (error) {
-      showFlash("Failed to load order details", "error");
+      showFlash(
+        error.response?.data?.message || "Failed to load order details",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -89,9 +97,45 @@ const OrderDetails = () => {
       setShowFeedbackForm(false);
       fetchOrderDetails(); // Refresh order data
     } catch (error) {
-      showFlash("Failed to submit feedback", "error");
+      showFlash(
+        error.response?.data?.message || "Failed to submit feedback",
+        "error",
+      );
     } finally {
       setSubmittingFeedback(false);
+    }
+  };
+
+  const handleDesignApprove = async () => {
+    try {
+      setDesignActionLoading(true);
+      await customerAPI.approveDesign(order._id);
+      showFlash("Design approved! The designer will now submit it to the manager.", "success");
+      setDesignAction(null);
+      fetchOrderDetails();
+    } catch (error) {
+      showFlash(error.response?.data?.message || "Failed to approve design", "error");
+    } finally {
+      setDesignActionLoading(false);
+    }
+  };
+
+  const handleDesignReject = async () => {
+    if (!rejectReason.trim()) {
+      showFlash("Please provide a reason for rejection", "error");
+      return;
+    }
+    try {
+      setDesignActionLoading(true);
+      await customerAPI.rejectDesign(order._id, rejectReason);
+      showFlash("Design rejected. The designer will revise and resubmit.", "success");
+      setDesignAction(null);
+      setRejectReason("");
+      fetchOrderDetails();
+    } catch (error) {
+      showFlash(error.response?.data?.message || "Failed to reject design", "error");
+    } finally {
+      setDesignActionLoading(false);
     }
   };
 
@@ -113,6 +157,55 @@ const OrderDetails = () => {
     } finally {
       setCancellingOrder(false);
     }
+  };
+
+  const resolveAssetUrl = (path, graphicFallback = false) => {
+    if (!path) return null;
+
+    if (
+      path.startsWith("data:") ||
+      path.startsWith("http://") ||
+      path.startsWith("https://")
+    ) {
+      return path;
+    }
+
+    if (path.startsWith("/")) {
+      return `${API_BASE_URL}${path}`;
+    }
+
+    if (graphicFallback) {
+      return `${API_BASE_URL}/images/graphics/${path}`;
+    }
+
+    return `${API_BASE_URL}/${path}`;
+  };
+
+  const getOrderItemImage = (item) => {
+    const design =
+      item.designId && typeof item.designId === "object" ? item.designId : null;
+    const product =
+      item.productId && typeof item.productId === "object"
+        ? item.productId
+        : null;
+
+    if (
+      design?.previewImage &&
+      design.previewImage !== "data:," &&
+      design.previewImage.length > 32
+    ) {
+      return design.previewImage;
+    }
+
+    if (design?.graphic && design.graphic !== "None") {
+      return resolveAssetUrl(design.graphic, true);
+    }
+
+    if (product?.images?.[0]) {
+      return resolveAssetUrl(product.images[0]);
+    }
+
+    return resolveAssetUrl("/images/casual-tshirt.jpeg");
   };
 
   if (loading) {
@@ -172,25 +265,22 @@ const OrderDetails = () => {
             <div className="card-body">
               {order.items && order.items.length > 0 ? (
                 <div className="list-group list-group-flush">
-                  {order.items.map((item, idx) => (
+                  {order.items.map((item, idx) => {
+                    const imageUrl = getOrderItemImage(item);
+
+                    return (
                     <div key={idx} className="list-group-item">
                       <div className="row align-items-center">
                         {/* Product/Design Image */}
                         <div className="col-md-2">
-                          {item.designId?.graphic ? (
+                          {imageUrl ? (
                             <img
-                              src={`/images/graphics/${item.designId.graphic}`}
-                              alt="Design"
-                              className="img-fluid rounded"
-                              style={{
-                                maxHeight: "80px",
-                                objectFit: "contain",
-                              }}
-                            />
-                          ) : item.productId?.images?.[0] ? (
-                            <img
-                              src={item.productId.images[0]}
-                              alt="Product"
+                              src={imageUrl}
+                              alt={
+                                item.designId?.name ||
+                                item.productId?.name ||
+                                "Order item"
+                              }
                               className="img-fluid rounded"
                               style={{
                                 maxHeight: "80px",
@@ -278,7 +368,8 @@ const OrderDetails = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-muted">No items found</p>
@@ -378,6 +469,123 @@ const OrderDetails = () => {
         </div>
 
         <div className="col-md-4">
+          {/* Design Approval - Show when designer submitted design for customer review */}
+          {order.status === "design_pending_customer_approval" && (
+            <div className="card shadow-sm mb-3 border-primary">
+              <div className="card-header bg-primary text-white">
+                <h5 className="mb-0">
+                  <i className="fas fa-paint-brush me-2"></i>
+                  Design Ready for Review
+                </h5>
+              </div>
+              <div className="card-body">
+                <p className="text-muted mb-3">
+                  The designer has submitted your custom design. Please review the design files below and approve or reject.
+                </p>
+
+                {/* Design Files */}
+                {order.designFiles && order.designFiles.length > 0 && (
+                  <div className="mb-3">
+                    <strong className="d-block mb-2">Design Files:</strong>
+                    {order.designFiles.map((file, idx) => (
+                      <div key={idx} className="mb-2">
+                        {file.url && (file.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || file.url.startsWith("data:image")) ? (
+                          <img
+                            src={file.url.startsWith("/uploads") ? file.url : file.url}
+                            alt={`Design ${idx + 1}`}
+                            className="img-fluid rounded border mb-1"
+                            style={{ maxHeight: "200px", objectFit: "contain" }}
+                          />
+                        ) : (
+                          <a href={file.url} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline-secondary w-100">
+                            <i className="fas fa-file me-1"></i>
+                            Design File {idx + 1}
+                            {file.name && ` — ${file.name}`}
+                          </a>
+                        )}
+                        {file.notes && <small className="text-muted d-block">{file.notes}</small>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {designAction === null && (
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-success"
+                      onClick={() => setDesignAction("approve")}
+                    >
+                      <i className="fas fa-check me-2"></i>Approve Design
+                    </button>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={() => setDesignAction("reject")}
+                    >
+                      <i className="fas fa-times me-2"></i>Request Revision
+                    </button>
+                  </div>
+                )}
+
+                {designAction === "approve" && (
+                  <div>
+                    <p className="text-success fw-bold">
+                      <i className="fas fa-check-circle me-1"></i>
+                      Confirm you are happy with this design?
+                    </p>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-success flex-grow-1"
+                        onClick={handleDesignApprove}
+                        disabled={designActionLoading}
+                      >
+                        {designActionLoading ? "Approving..." : "Yes, Approve"}
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={() => setDesignAction(null)}
+                        disabled={designActionLoading}
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {designAction === "reject" && (
+                  <div>
+                    <p className="text-danger fw-bold">
+                      <i className="fas fa-exclamation-circle me-1"></i>
+                      What needs to be changed?
+                    </p>
+                    <textarea
+                      className="form-control mb-2"
+                      rows="3"
+                      placeholder="Describe what you'd like changed..."
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                    />
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-danger flex-grow-1"
+                        onClick={handleDesignReject}
+                        disabled={designActionLoading || !rejectReason.trim()}
+                      >
+                        {designActionLoading ? "Submitting..." : "Request Revision"}
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={() => { setDesignAction(null); setRejectReason(""); }}
+                        disabled={designActionLoading}
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* OTP Display - Show prominently when order is being delivered */}
           {order.deliveryOTPCode &&
             [

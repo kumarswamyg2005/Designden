@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -60,6 +61,7 @@ const Dashboard = () => {
   const [designProgress, setDesignProgress] = useState(0);
   const [designNote, setDesignNote] = useState("");
   const [showDesignModal, setShowDesignModal] = useState(false);
+  const [savingProgress, setSavingProgress] = useState(false);
   const [showSubmitDesignModal, setShowSubmitDesignModal] = useState(false);
   const [designSubmissionNotes, setDesignSubmissionNotes] = useState("");
   const [designFiles, setDesignFiles] = useState([]);
@@ -230,6 +232,20 @@ const Dashboard = () => {
 
   // ===== NEW DESIGN WORKFLOW HANDLERS =====
 
+  const handleStartDesignWork = async (order) => {
+    try {
+      await designerAPI.updateDesignProgress(
+        order._id,
+        order.designProgress || 0,
+        "Started working on your design",
+      );
+      await dispatch(fetchDesignerOrders()).unwrap();
+    } catch (error) {
+      console.error("Failed to start design work:", error);
+      alert("Failed to start design work: " + (error?.message || "Please try again"));
+    }
+  };
+
   const openDesignProgressModal = (order) => {
     setSelectedOrder(order);
     setDesignProgress(order.designProgress || 0);
@@ -241,6 +257,7 @@ const Dashboard = () => {
     if (!selectedOrder) return;
 
     try {
+      setSavingProgress(true);
       await designerAPI.updateDesignProgress(
         selectedOrder._id,
         designProgress,
@@ -252,7 +269,7 @@ const Dashboard = () => {
         await dispatch(
           sendOrderMessage({
             orderId: selectedOrder._id,
-            message: `🎨 Design Update: ${designProgress}% complete${
+            message: `Design Update: ${designProgress}% complete${
               designNote ? ` - ${designNote}` : ""
             }`,
           }),
@@ -260,10 +277,12 @@ const Dashboard = () => {
       }
 
       setShowDesignModal(false);
-      dispatch(fetchDesignerOrders());
+      dispatch(fetchDesignerOrders()); // refresh in background, don't block
     } catch (error) {
       console.error("Failed to update design progress:", error);
-      alert("Failed to update design progress");
+      alert("Failed to save progress: " + (error?.response?.data?.message || error?.message || "Please try again"));
+    } finally {
+      setSavingProgress(false);
     }
   };
 
@@ -920,6 +939,36 @@ const Dashboard = () => {
                         ))}
                       </div>
 
+                      {/* Design Progress Section */}
+                      {shouldUseDesignWorkflow(order) &&
+                        (order.status === "design_in_progress" ||
+                          order.status === "design_rejected" ||
+                          order.status === "design_rejected_by_customer") && (
+                          <div className="progress-section mb-3">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <small className="text-muted">
+                                <i className="fas fa-palette me-1"></i> Design
+                                Progress
+                              </small>
+                              <span className="badge bg-info">
+                                {order.designProgress || 0}%
+                              </span>
+                            </div>
+                            <div className="progress mb-1" style={{ height: "10px" }}>
+                              <div
+                                className="progress-bar bg-info progress-bar-striped progress-bar-animated"
+                                style={{ width: `${order.designProgress || 0}%` }}
+                              ></div>
+                            </div>
+                            {order.designProgress >= 100 && (
+                              <small className="text-success fw-medium">
+                                <i className="fas fa-check-circle me-1"></i>
+                                Design complete — ready to submit
+                              </small>
+                            )}
+                          </div>
+                        )}
+
                       {/* Progress Section (for in production orders) */}
                       {order.status === "in_production" && (
                         <div className="progress-section mb-3">
@@ -1089,7 +1138,7 @@ const Dashboard = () => {
                               {order.status === "designer_accepted" && (
                                 <button
                                   className="btn btn-primary flex-grow-1"
-                                  onClick={() => openDesignProgressModal(order)}
+                                  onClick={() => handleStartDesignWork(order)}
                                 >
                                   <i className="fas fa-palette me-2"></i>
                                   Start Design Work
@@ -1300,7 +1349,7 @@ const Dashboard = () => {
       {/* ===== NEW DESIGN WORKFLOW MODALS ===== */}
 
       {/* Design Progress Modal */}
-      {showDesignModal && selectedOrder && (
+      {showDesignModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1435,18 +1484,29 @@ const Dashboard = () => {
                 <button
                   className="btn btn-info"
                   onClick={handleUpdateDesignProgress}
+                  disabled={savingProgress}
                 >
-                  <i className="fas fa-save me-2"></i>
-                  Update Progress
+                  {savingProgress ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-save me-2"></i>
+                      Update Progress
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Submit Design for Approval Modal */}
-      {showSubmitDesignModal && selectedOrder && (
+      {showSubmitDesignModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1595,13 +1655,14 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ===== END DESIGN WORKFLOW MODALS ===== */}
 
       {/* Progress Update Modal with Milestones */}
-      {showProgressModal && selectedOrder && (
+      {showProgressModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1755,11 +1816,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Complete Production Modal */}
-      {showCompleteModal && selectedOrder && (
+      {showCompleteModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1831,11 +1893,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Shop Status Change Confirmation Modal */}
-      {showStatusModal && pendingStatus && (
+      {showStatusModal && pendingStatus && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -1936,7 +1999,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

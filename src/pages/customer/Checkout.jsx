@@ -69,22 +69,13 @@ const Checkout = () => {
     // Check if cart items already have a designer assigned
     const checkDesignerInCart = async () => {
       if (hasCustomDesigns && cart.items) {
-        console.log("=== CHECKING DESIGNER IN CART ===");
-        console.log("Cart items:", cart.items);
-        console.log("Has custom designs:", hasCustomDesigns);
-
         // Check if any design already has a designer
         for (const item of cart.items) {
           if (item.designId) {
-            console.log("Processing cart item:", item);
             try {
               // item.designId is already populated as an object from the backend
               const design =
                 typeof item.designId === "object" ? item.designId : null;
-
-              console.log("Design object:", design);
-              console.log("Designer ID in design:", design?.designerId);
-              console.log("Type of designerId:", typeof design?.designerId);
 
               if (design?.designerId) {
                 // designerId could be either an object (populated) or just an ID string
@@ -93,47 +84,21 @@ const Checkout = () => {
                     ? design.designerId._id
                     : design.designerId;
 
-                console.log("Designer ID to fetch:", designerIdToFetch);
-
                 // Fetch designer info
                 try {
                   const designerResponse = await axios.get(
                     `${import.meta.env.VITE_API_URL}/api/marketplace/designers/${designerIdToFetch}`,
                     { withCredentials: true },
                   );
-                  console.log("Designer response:", designerResponse.data);
 
                   if (designerResponse.data.success) {
                     setSelectedDesigner(designerResponse.data.designer);
                     setShowDesignerSelection(false);
-                    console.log(
-                      "✅ Designer set successfully, hiding selection",
-                    );
-                    console.log("=================================");
                     return;
-                  } else {
-                    console.log(
-                      "❌ Designer fetch failed:",
-                      designerResponse.data.message,
-                    );
                   }
                 } catch (designerError) {
-                  console.error(
-                    "❌ Error fetching designer info:",
-                    designerError,
-                  );
-                  console.error("Designer ID that failed:", designerIdToFetch);
-                  if (designerError.response) {
-                    console.error(
-                      "Error response:",
-                      designerError.response.status,
-                      designerError.response.data,
-                    );
-                  }
                   // Continue to show designer selection if fetch fails
                 }
-              } else {
-                console.log("❌ No designer ID in design");
               }
             } catch (error) {
               console.error("Error checking designer:", error);
@@ -141,8 +106,6 @@ const Checkout = () => {
           }
         }
         // No designer found, show selection
-        console.log("❌ No designer found in any cart item, showing selection");
-        console.log("=================================");
         setShowDesignerSelection(true);
       }
     };
@@ -170,40 +133,32 @@ const Checkout = () => {
   const fetchSavedAddresses = async () => {
     try {
       const response = await customerAPI.getAddresses();
-      console.log("Fetched addresses:", response.data);
-      setSavedAddresses(response.data.addresses || []);
+      const addresses = response.data.addresses || [];
+      setSavedAddresses(addresses);
 
       // Auto-select default address if exists
-      const defaultAddr = response.data.addresses?.find(
-        (addr) => addr.isDefault,
-      );
+      const defaultAddr = addresses.find((addr) => addr.isDefault);
       if (defaultAddr) {
-        console.log("Auto-selecting default address:", defaultAddr);
-        handleSelectAddress(defaultAddr._id);
-      } else if (
-        response.data.addresses &&
-        response.data.addresses.length > 0
-      ) {
+        handleSelectAddress(defaultAddr._id, addresses);
+      } else if (addresses.length > 0) {
         // If no default, select the first address
-        console.log(
-          "Auto-selecting first address:",
-          response.data.addresses[0],
-        );
-        handleSelectAddress(response.data.addresses[0]._id);
+        handleSelectAddress(addresses[0]._id, addresses);
       }
+      return addresses;
     } catch (error) {
       console.error("Error fetching addresses:", error);
+      return [];
     }
   };
 
   // Handle designer selection for custom orders
   const handleDesignerSelect = (designer) => {
     setSelectedDesigner(designer);
+    setShowDesignerSelection(false);
     showFlash(`Designer ${designer.name} selected!`, "success");
   };
 
-  const handleSelectAddress = (addressId) => {
-    console.log("handleSelectAddress called with:", addressId);
+  const handleSelectAddress = (addressId, addressSource = savedAddresses) => {
     if (addressId === "new") {
       setSelectedAddressId("new");
       setShowAddressForm(true);
@@ -219,8 +174,7 @@ const Checkout = () => {
       return;
     }
 
-    const address = savedAddresses.find((addr) => addr._id === addressId);
-    console.log("Found address:", address);
+    const address = addressSource.find((addr) => addr._id === addressId);
     if (address) {
       setSelectedAddressId(addressId);
       setShowAddressForm(false);
@@ -233,12 +187,6 @@ const Checkout = () => {
         state: address.state,
         pincode: address.pincode,
       }));
-      console.log("Address set to formData:", {
-        deliveryAddress: address.street,
-        city: address.city,
-        state: address.state,
-        pincode: address.pincode,
-      });
     }
   };
 
@@ -271,10 +219,6 @@ const Checkout = () => {
   };
 
   const handleSaveAddress = async () => {
-    console.log("handleSaveAddress called");
-    console.log("Current formData:", formData);
-    console.log("saveAddress checkbox:", saveAddress);
-
     // Validate address fields first
     if (
       !formData.deliveryAddress ||
@@ -283,7 +227,6 @@ const Checkout = () => {
       !formData.pincode
     ) {
       showFlash("Please fill all address fields", "error");
-      console.log("Validation failed - missing fields");
       return;
     }
 
@@ -302,15 +245,8 @@ const Checkout = () => {
         isDefault: saveAddress,
       };
 
-      console.log("Sending address data:", addressData);
-
       if (editingAddressId) {
-        console.log("Updating address:", editingAddressId);
-        const response = await customerAPI.updateAddress(
-          editingAddressId,
-          addressData,
-        );
-        console.log("Update response:", response);
+        await customerAPI.updateAddress(editingAddressId, addressData);
         showFlash(
           saveAddress
             ? "Address updated and set as default successfully!"
@@ -318,9 +254,7 @@ const Checkout = () => {
           "success",
         );
       } else {
-        console.log("Adding new address");
-        const response = await customerAPI.addAddress(addressData);
-        console.log("Add response:", response);
+        await customerAPI.addAddress(addressData);
         showFlash(
           saveAddress
             ? "Address saved and set as default successfully!"
@@ -333,18 +267,6 @@ const Checkout = () => {
       setShowAddressForm(false);
       setEditingAddressId(null);
       setSaveAddress(false);
-
-      // Auto-select the newly saved/updated address
-      setTimeout(() => {
-        const addresses = savedAddresses;
-        if (addresses.length > 0) {
-          const defaultAddr = addresses.find((a) => a.isDefault);
-          const addrToSelect = defaultAddr || addresses[0];
-          if (addrToSelect) {
-            handleSelectAddress(addrToSelect._id);
-          }
-        }
-      }, 500);
     } catch (error) {
       console.error("Error saving address:", error);
       console.error("Error details:", error.response?.data);
@@ -517,10 +439,10 @@ const Checkout = () => {
   const total = subtotal + designerFee + tax + shipping;
 
   return (
-    <div className="container my-4">
+    <div className="container my-4 checkout-shell">
       <div className="row mb-4">
         <div className="col-md-12">
-          <div className="card shadow-sm">
+          <div className="card shadow-sm checkout-header-card">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <h2 className="card-title mb-0">Checkout</h2>
@@ -537,14 +459,8 @@ const Checkout = () => {
       {hasCustomDesigns && showDesignerSelection && (
         <div className="row mb-4">
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div
-                className="card-header bg-gradient"
-                style={{
-                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                  color: "white",
-                }}
-              >
+            <div className="card shadow-sm checkout-panel">
+              <div className="card-header">
                 <div className="d-flex justify-content-between align-items-center">
                   <h3 className="mb-0">
                     <i className="fas fa-palette me-2"></i>
@@ -573,55 +489,44 @@ const Checkout = () => {
       {hasCustomDesigns && selectedDesigner && (
         <div className="row mb-4">
           <div className="col-12">
-            <div className="alert alert-success d-flex align-items-center">
-              <div className="me-3">
-                {selectedDesigner.profilePicture ? (
-                  <img
-                    src={selectedDesigner.profilePicture}
-                    alt={selectedDesigner.name}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontSize: "1.25rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {selectedDesigner.name?.charAt(0)?.toUpperCase() || "D"}
-                  </div>
-                )}
+            <div className="card shadow-sm checkout-designer-summary">
+              <div className="card-body d-flex flex-column flex-md-row align-items-md-center gap-3">
+                <div className="checkout-designer-avatar">
+                  {selectedDesigner.profilePicture ? (
+                    <img
+                      src={selectedDesigner.profilePicture}
+                      alt={selectedDesigner.name}
+                    />
+                  ) : (
+                    <div className="checkout-designer-avatar--fallback">
+                      {selectedDesigner.name?.charAt(0)?.toUpperCase() || "D"}
+                    </div>
+                  )}
+                </div>
+                <div className="checkout-designer-meta flex-grow-1">
+                  <span className="checkout-designer-eyebrow">
+                    Designer selected
+                  </span>
+                  <h5 className="mb-1">{selectedDesigner.name}</h5>
+                  <p className="mb-0 text-muted">
+                    Design fee: {formatPrice(designerFee)}
+                  </p>
+                  <small className="checkout-designer-stats d-md-none">
+                    ⭐ {(selectedDesigner.rating || 0).toFixed(1)} rating • 📦{" "}
+                    {selectedDesigner.completedOrders || 0} completed • ⏱️ ~
+                    {selectedDesigner.turnaroundDays || 7} days
+                  </small>
+                </div>
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => {
+                    setSelectedDesigner(null);
+                    setShowDesignerSelection(true);
+                  }}
+                >
+                  Change Designer
+                </button>
               </div>
-              <div className="flex-grow-1">
-                <h5 className="mb-1">
-                  <i className="fas fa-check-circle text-success me-2"></i>
-                  Designer Selected: {selectedDesigner.name}
-                </h5>
-                <small className="text-muted">
-                  ⭐ {(selectedDesigner.rating || 0).toFixed(1)} rating • 📦{" "}
-                  {selectedDesigner.completedOrders || 0} orders completed • ⏱️
-                  ~{selectedDesigner.turnaroundDays || 7} days turnaround
-                </small>
-              </div>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => setSelectedDesigner(null)}
-              >
-                Change Designer
-              </button>
             </div>
           </div>
         </div>
@@ -629,7 +534,7 @@ const Checkout = () => {
 
       <div className="row">
         <div className="col-md-8">
-          <div className="card shadow-sm mb-4">
+          <div className="card shadow-sm mb-4 checkout-section-card">
             <div className="card-header">
               <h3>
                 {hasCustomDesigns ? (
@@ -760,7 +665,7 @@ const Checkout = () => {
 
                   {/* Helpful guide for first-time users */}
                   {savedAddresses.length === 0 && (
-                    <div className="alert alert-primary mb-3">
+                    <div className="alert alert-primary mb-3 checkout-note">
                       <i className="fas fa-lightbulb me-2"></i>
                       <strong>Tip:</strong> Save your address to make future
                       checkouts faster! You can save multiple addresses and set
@@ -775,20 +680,12 @@ const Checkout = () => {
                         {savedAddresses.map((addr) => (
                           <div key={addr._id} className="col-md-6">
                             <div
-                              className={`card h-100 cursor-pointer ${
+                              className={`card h-100 checkout-address-card ${
                                 selectedAddressId === addr._id
-                                  ? "border-success border-2 shadow-sm"
-                                  : "border"
+                                  ? "is-selected"
+                                  : ""
                               }`}
                               onClick={() => handleSelectAddress(addr._id)}
-                              style={{
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                backgroundColor:
-                                  selectedAddressId === addr._id
-                                    ? "#f0fff4"
-                                    : "white",
-                              }}
                             >
                               <div className="card-body">
                                 <div className="d-flex justify-content-between align-items-start mb-2">
@@ -857,13 +754,8 @@ const Checkout = () => {
                         {/* Add New Address Card */}
                         <div className="col-md-6">
                           <div
-                            className="card h-100 border-dashed cursor-pointer"
+                            className="card h-100 checkout-address-card checkout-address-card--add"
                             onClick={() => handleSelectAddress("new")}
-                            style={{
-                              cursor: "pointer",
-                              borderStyle: "dashed",
-                              borderWidth: "2px",
-                            }}
                           >
                             <div className="card-body d-flex flex-column align-items-center justify-content-center text-center">
                               <i className="fas fa-plus-circle fa-3x text-primary mb-3"></i>
@@ -876,7 +768,7 @@ const Checkout = () => {
                   )}
 
                   {savedAddresses.length === 0 && (
-                    <div className="alert alert-info">
+                    <div className="alert alert-info checkout-note">
                       <i className="fas fa-info-circle me-2"></i>
                       No saved addresses. Please add a new address below.
                     </div>
@@ -888,7 +780,7 @@ const Checkout = () => {
                 {(showAddressForm || savedAddresses.length === 0) && (
                   <>
                     {showAddressForm && savedAddresses.length > 0 && (
-                      <div className="alert alert-info mb-3">
+                      <div className="alert alert-info mb-3 checkout-note">
                         <i className="fas fa-info-circle me-2"></i>
                         {editingAddressId
                           ? "Editing address"
@@ -1012,7 +904,7 @@ const Checkout = () => {
                     </div>
 
                     <div className="mb-3">
-                      <div className="alert alert-info">
+                      <div className="alert alert-info checkout-note">
                         <i className="fas fa-lightbulb me-2"></i>
                         <small>
                           {editingAddressId
@@ -1116,7 +1008,7 @@ const Checkout = () => {
         </div>
 
         <div className="col-md-4">
-          <div className="card shadow-sm mb-3">
+          <div className="card shadow-sm mb-3 checkout-sidebar-card checkout-payment-card">
             <div className="card-body">
               <h6 className="card-title">
                 <i className="fas fa-info-circle text-primary me-2"></i>
@@ -1143,7 +1035,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="card shadow-sm">
+          <div className="card shadow-sm checkout-sidebar-card checkout-summary-card">
             <div className="card-header">
               <h3>Order Summary</h3>
             </div>
@@ -1177,7 +1069,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="card shadow-sm mt-3">
+          <div className="card shadow-sm mt-3 checkout-sidebar-card">
             <div className="card-header">
               <h5>Items ({cart?.items?.length || 0})</h5>
             </div>

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { shopAPI } from "../../services/api";
 import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
+import ScrollReveal from "../../components/ScrollReveal";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 
@@ -91,94 +92,124 @@ const ShopIndex = () => {
   };
 
   return (
-    <div className="container my-4">
-      <div className="row mb-4">
-        <div className="col-md-12">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title">Shop Ready-Made Designs</h2>
-              <p className="card-text">
-                Browse our collection of pre-designed clothing items for men and
-                women.
-              </p>
-            </div>
+    <div className="container-fluid px-4 my-5 py-4">
+      <ScrollReveal>
+        <div className="row mb-5 text-center">
+          <div className="col-md-8 mx-auto">
+            <h1 className="display-4 fw-bold mb-3">Shop Ready-Made Designs</h1>
+            <p className="lead text-muted">
+              Browse our exclusive collection of pre-designed clothing. Quality materials and expert craftsmanship in every piece.
+            </p>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {!filters.gender && (
-        <div className="row mb-4">
+        <div className="row mb-5">
           <div className="col-md-6 mb-4">
-            <div className="card overflow-hidden">
-              <div className="position-relative">
-                <img
-                  src={`${API_BASE_URL}/images/mens-collection-banner.webp`}
-                  className="img-fluid w-100"
-                  alt="Men's Collection"
-                />
-                <div className="position-absolute bottom-0 start-0 p-4">
-                  <Link to="/shop?gender=Men" className="btn btn-light">
-                    Shop Men
-                  </Link>
+            <ScrollReveal delay="delay-1">
+              <div className="card h-100 overflow-hidden border-0 shadow-lg rounded-4">
+                <div className="position-relative">
+                  <img
+                    src={`${API_BASE_URL}/images/mens-collection-banner.webp`}
+                    className="img-fluid w-100"
+                    alt="Men's Collection"
+                  />
+                  <div
+                    className="position-absolute bottom-0 start-0 w-100 h-50"
+                    style={{ backgroundColor: "rgba(31, 26, 23, 0.38)" }}
+                  ></div>
+                  <div className="position-absolute bottom-0 start-0 p-4">
+                    <Link to="/shop?gender=Men" className="btn btn-light px-4 fw-bold">
+                      Shop Men
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
           <div className="col-md-6 mb-4">
-            <div className="card overflow-hidden">
-              <div className="position-relative">
-                <img
-                  src={`${API_BASE_URL}/images/womens-collection-banner.webp`}
-                  className="img-fluid w-100"
-                  alt="Women's Collection"
-                />
-                <div className="position-absolute bottom-0 start-0 p-4">
-                  <Link to="/shop?gender=Women" className="btn btn-light">
-                    Shop Women
-                  </Link>
+            <ScrollReveal delay="delay-2">
+              <div className="card h-100 overflow-hidden border-0 shadow-lg rounded-4">
+                <div className="position-relative">
+                  <img
+                    src={`${API_BASE_URL}/images/womens-collection-banner.webp`}
+                    className="img-fluid w-100"
+                    alt="Women's Collection"
+                  />
+                  <div
+                    className="position-absolute bottom-0 start-0 w-100 h-50"
+                    style={{ backgroundColor: "rgba(31, 26, 23, 0.38)" }}
+                  ></div>
+                  <div className="position-absolute bottom-0 start-0 p-4">
+                    <Link to="/shop?gender=Women" className="btn btn-light px-4 fw-bold">
+                      Shop Women
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       )}
 
       {filters.gender === "Men" && (
-        <div className="row mb-4">
-          <div className="col-md-12">
-            <div className="card overflow-hidden">
-              <div className="position-relative">
-                <img
-                  src={`${API_BASE_URL}/images/mens-collection-banner.webp`}
-                  className="img-fluid w-100"
-                  alt="Men's Collection"
-                />
+        <ScrollReveal delay="delay-1">
+          <div className="row mb-5">
+            <div className="col-md-12">
+              <div className="card overflow-hidden shadow border-0 rounded-4">
+                <div className="position-relative">
+                  <img
+                    src={`${API_BASE_URL}/images/mens-collection-banner.webp`}
+                    className="img-fluid w-100"
+                    alt="Men's Collection"
+                    style={{ maxHeight: '300px', objectFit: 'cover' }}
+                  />
+                  <div
+                    className="position-absolute bottom-0 start-0 w-100 h-100"
+                    style={{ backgroundColor: "rgba(31, 26, 23, 0.34)" }}
+                  ></div>
+                  <div className="position-absolute top-50 start-0 translate-middle-y p-5">
+                      <h2 className="display-4 fw-bold text-white mb-0">Men's Collection</h2>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       )}
 
       {filters.gender === "Women" && (
-        <div className="row mb-4">
-          <div className="col-md-12">
-            <div className="card overflow-hidden">
-              <div className="position-relative">
-                <img
-                  src={`${API_BASE_URL}/images/womens-collection-banner.webp`}
-                  className="img-fluid w-100"
-                  alt="Women's Collection"
-                />
+        <ScrollReveal delay="delay-1">
+          <div className="row mb-5">
+            <div className="col-md-12">
+              <div className="card overflow-hidden shadow border-0 rounded-4">
+                <div className="position-relative">
+                  <img
+                    src={`${API_BASE_URL}/images/womens-collection-banner.webp`}
+                    className="img-fluid w-100"
+                    alt="Women's Collection"
+                    style={{ maxHeight: '300px', objectFit: 'cover' }}
+                  />
+                  <div
+                    className="position-absolute bottom-0 start-0 w-100 h-100"
+                    style={{ backgroundColor: "rgba(31, 26, 23, 0.34)" }}
+                  ></div>
+                  <div className="position-absolute top-50 start-0 translate-middle-y p-5">
+                      <h2 className="display-4 fw-bold text-white mb-0">Women's Collection</h2>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       )}
 
       <div className="row">
         {/* Filters Sidebar */}
         <div className="col-md-3 mb-4">
-          <div className="card shadow-sm">
+          <ScrollReveal delay="delay-2">
+            <div className="card shadow-sm border-0 rounded-4">
             <div className="card-header">
               <h3 className="h5 mb-0">Filters</h3>
             </div>
@@ -358,12 +389,14 @@ const ShopIndex = () => {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         </div>
 
         {/* Products Grid */}
         <div className="col-md-9">
-          {/* Sort Options */}
-          <div className="card shadow-sm mb-4">
+          <ScrollReveal delay="delay-3">
+            {/* Sort Options */}
+            <div className="card shadow-sm mb-4 border-0 rounded-4">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <div>
@@ -386,6 +419,7 @@ const ShopIndex = () => {
               </div>
             </div>
           </div>
+          </ScrollReveal>
 
           {/* Products */}
           {loading ? (
@@ -401,49 +435,53 @@ const ShopIndex = () => {
             </div>
           ) : (
             <div className="row">
-              {products.map((product) => (
+              {products.map((product, index) => (
                 <div className="col-md-4 mb-4" key={product._id}>
-                  <div className="card h-100 shadow-sm">
-                    <img
-                      src={`${API_BASE_URL}${
-                        product.images?.[0] || "/images/casual-tshirt.jpeg"
-                      }`}
-                      className="card-img-top"
-                      alt={product.name}
-                      style={{ height: "250px", objectFit: "cover" }}
-                      onError={(e) => {
-                        // Prevent infinite loop by checking if already using fallback
-                        if (!e.target.dataset.fallback) {
-                          e.target.dataset.fallback = "true";
-                          e.target.src = `${API_BASE_URL}/images/casual-tshirt.jpeg`;
-                        }
-                      }}
-                    />
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{product.name}</h5>
-                      <p className="card-text text-muted small">
-                        {product.category} - {product.gender}
-                      </p>
-                      <div className="mt-auto">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <span className="h5 mb-0">
-                            {formatPrice(product.price)}
-                          </span>
-                          {product.sizes && product.sizes.length > 0 && (
-                            <small className="text-muted">
-                              Sizes: {product.sizes.join(", ")}
-                            </small>
-                          )}
+                  <ScrollReveal delay={`delay-${(index % 3) + 1}`}>
+                    <div className="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                      <img
+                        src={`${API_BASE_URL}${
+                          product.images?.[0] || "/images/casual-tshirt.jpeg"
+                        }`}
+                        className="card-img-top"
+                        alt={product.name}
+                        style={{ height: "250px", objectFit: "cover", transition: "transform 0.5s ease" }}
+                        onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.05)"; }}
+                        onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+                        onError={(e) => {
+                          // Prevent infinite loop by checking if already using fallback
+                          if (!e.target.dataset.fallback) {
+                            e.target.dataset.fallback = "true";
+                            e.target.src = `${API_BASE_URL}/images/casual-tshirt.jpeg`;
+                          }
+                        }}
+                      />
+                      <div className="card-body d-flex flex-column bg-white">
+                        <h5 className="card-title fw-bold mb-1">{product.name}</h5>
+                        <p className="card-text text-muted small mb-3">
+                          {product.category} • {product.gender}
+                        </p>
+                        <div className="mt-auto">
+                          <div className="d-flex justify-content-between align-items-end mb-3">
+                            <span className="h5 mb-0 text-primary fw-bold">
+                              {formatPrice(product.price)}
+                            </span>
+                            {product.sizes && product.sizes.length > 0 && (
+                              <small className="text-muted bg-light px-2 py-1 rounded">
+                                {product.sizes.length} Sizes
+                              </small>
+                            )}
+                          </div>
+                          <Link
+                            to={`/shop/product/${product._id}`}
+                            className="btn btn-primary w-100 fw-bold"
+                          >
+                            View Details
+                          </Link>
                         </div>
-                        <Link
-                          to={`/shop/product/${product._id}`}
-                          className="btn btn-primary w-100"
-                        >
-                          View Details
-                        </Link>
                       </div>
                     </div>
-                  </div>
+                  </ScrollReveal>
                 </div>
               ))}
             </div>

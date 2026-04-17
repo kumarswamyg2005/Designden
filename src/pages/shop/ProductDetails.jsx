@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useCartAnimation } from "../../hooks/useCartAnimation";
 import ProductReviews from "../../components/ProductReviews";
+import ScrollReveal from "../../components/ScrollReveal";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
 
@@ -178,7 +179,8 @@ function ProductDetails() {
       <div className="row">
         {/* Product Images */}
         <div className="col-lg-6 mb-4">
-          <div className="card shadow-sm">
+          <ScrollReveal>
+            <div className="card shadow-sm">
             <div className="position-relative">
               {product.images && product.images.length > 0 ? (
                 <>
@@ -249,11 +251,13 @@ function ProductDetails() {
               </div>
             )}
           </div>
+          </ScrollReveal>
         </div>
 
         {/* Product Info */}
         <div className="col-lg-6">
-          <div className="card shadow-sm">
+          <ScrollReveal delay="delay-1">
+            <div className="card shadow-sm">
             <div className="card-body">
               <h1 className="card-title h2 mb-3">{product.name}</h1>
 
@@ -383,9 +387,11 @@ function ProductDetails() {
               )}
             </div>
           </div>
+          </ScrollReveal>
 
           {/* Additional Details */}
-          <div className="card shadow-sm mt-3">
+          <ScrollReveal delay="delay-2">
+            <div className="card shadow-sm mt-3">
             <div className="card-body">
               <h5 className="card-title">Product Details</h5>
               <ul className="list-unstyled mb-0">
@@ -414,12 +420,15 @@ function ProductDetails() {
               </ul>
             </div>
           </div>
+          </ScrollReveal>
         </div>
 
         {/* Reviews Section */}
         <div className="row mt-5">
           <div className="col-12">
-            <ProductReviews productId={id} />
+            <ScrollReveal delay="delay-3">
+              <ProductReviews productId={id} />
+            </ScrollReveal>
           </div>
         </div>
       </div>

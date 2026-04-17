@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchDeliveryOrders,
@@ -630,7 +631,7 @@ const Dashboard = () => {
       </div>
 
       {/* Deliver Modal with OTP */}
-      {showDeliverModal && selectedOrder && (
+      {showDeliverModal && selectedOrder && createPortal(
         <div
           className="modal show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
@@ -752,11 +753,12 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Delivery Success Animation Modal */}
-      {showSuccessAnimation && (
+      {showSuccessAnimation && createPortal(
         <div className="delivery-success-overlay">
           <div className="delivery-success-modal">
             <div className="success-animation">
@@ -818,7 +820,8 @@ const Dashboard = () => {
               Great!
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

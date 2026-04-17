@@ -107,10 +107,10 @@ const DesignerPayouts = () => {
           <div
             className="card shadow-sm"
             style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: "#efe6da",
             }}
           >
-            <div className="card-body text-white">
+            <div className="card-body">
               <h2 className="mb-1">
                 <i className="fas fa-users-cog me-2"></i>
                 Designer & Payout Management

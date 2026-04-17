@@ -8,6 +8,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Toast from "./components/Toast";
 import LoadingSpinner from "./components/LoadingSpinner";
 import LogoutAnimation from "./components/LogoutAnimation";
+import OnboardingTour from "./components/OnboardingTour";
+import PageLoader from "./components/PageLoader";
+import GlobalEffects from "./components/GlobalEffects";
 import "./styles/cartAnimation.css";
 
 // Public Pages
@@ -64,6 +67,8 @@ import AdminAnalytics from "./pages/admin/Analytics";
 import AdminDesigners from "./pages/admin/Designers";
 
 import "./styles/styles.css";
+import "./styles/effects.css";
+import "./styles/editorial.css";
 
 // Component to handle logout animation
 const AppWrapper = ({ children }) => {
@@ -76,12 +81,15 @@ const AppWrapper = ({ children }) => {
 
   return (
     <>
+      <PageLoader />
+      <GlobalEffects />
       {children}
       <LogoutAnimation
         isVisible={showLogoutAnimation}
         onComplete={handleLogoutComplete}
         userName={logoutUserName}
       />
+      <OnboardingTour />
     </>
   );
 };

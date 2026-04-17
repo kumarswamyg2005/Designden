@@ -2,9 +2,39 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import ScrollReveal from "../../components/ScrollReveal";
 import "../../styles/DesignerMarketplace.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5174";
+
+const specializations = [
+  "T-Shirts",
+  "Formal Wear",
+  "Casual Wear",
+  "Ethnic Wear",
+  "Streetwear",
+  "Sustainable Fashion",
+  "Kids Wear",
+  "Hoodies",
+];
+
+const availabilityMeta = {
+  available: {
+    label: "Available now",
+    className: "designer-card__status designer-card__status--available",
+    icon: "fa-check-circle",
+  },
+  busy: {
+    label: "Busy",
+    className: "designer-card__status designer-card__status--busy",
+    icon: "fa-clock",
+  },
+  not_accepting: {
+    label: "Shop closed",
+    className: "designer-card__status designer-card__status--closed",
+    icon: "fa-store-slash",
+  },
+};
 
 const DesignerMarketplace = () => {
   const [designers, setDesigners] = useState([]);
@@ -23,17 +53,6 @@ const DesignerMarketplace = () => {
     totalDesigners: 0,
   });
 
-  const specializations = [
-    "T-Shirts",
-    "Formal Wear",
-    "Casual Wear",
-    "Ethnic Wear",
-    "Streetwear",
-    "Sustainable Fashion",
-    "Kids Wear",
-    "Hoodies",
-  ];
-
   const fetchDesigners = useCallback(async () => {
     setLoading(true);
     try {
@@ -49,13 +68,6 @@ const DesignerMarketplace = () => {
       );
 
       if (response.data.success) {
-        console.log("=== DESIGNERS DATA ===");
-        console.log("First designer:", response.data.designers[0]);
-        console.log(
-          "availabilityStatus:",
-          response.data.designers[0]?.availabilityStatus,
-        );
-        console.log("=====================");
         setDesigners(response.data.designers);
         setPagination(response.data.pagination);
       }
@@ -84,68 +96,88 @@ const DesignerMarketplace = () => {
       sortBy: "rating",
       search: "",
     });
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
   return (
-    <div className="designer-marketplace">
-      {/* Hero Section */}
-      <div className="marketplace-hero">
+    <div className="designer-marketplace marketplace-shell">
+      <section className="marketplace-hero">
         <div className="container">
-          <h1 className="display-4 fw-bold text-white">
-            Discover Talented Designers
-          </h1>
-          <p className="lead text-white mb-4">
-            Connect with skilled freelance fashion designers ready to bring your
-            vision to life
-          </p>
-          <div className="hero-search">
-            <div className="input-group input-group-lg">
-              <span className="input-group-text bg-white border-0">
-                <i className="fas fa-search"></i>
-              </span>
-              <input
-                type="text"
-                className="form-control border-0"
-                placeholder="Search designers by name, skills, or specialization..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-              />
+          <div className="row g-4 align-items-end">
+            <div className="col-lg-7">
+              <ScrollReveal className="marketplace-heading">
+                <p className="directory-note">Designer directory</p>
+                <h1>Find fashion designers by style, pace, and craft fit.</h1>
+                <p>
+                  Browse a more curated directory of specialists across
+                  streetwear, formalwear, embroidery, sustainable fashion, and
+                  custom clothing work.
+                </p>
+              </ScrollReveal>
+            </div>
+
+            <div className="col-lg-5">
+              <ScrollReveal delay="delay-1">
+                <div className="marketplace-search-panel">
+                  <label className="marketplace-search-label" htmlFor="directorySearch">
+                    Search designer directory
+                  </label>
+                  <div className="marketplace-search">
+                    <i className="fas fa-search"></i>
+                    <input
+                      id="directorySearch"
+                      type="text"
+                      className="form-control"
+                      placeholder="Search by name, skill, or specialization"
+                      value={filters.search}
+                      onChange={(e) =>
+                        handleFilterChange("search", e.target.value)
+                      }
+                    />
+                  </div>
+                  <p className="mt-3 mb-0">
+                    Use filters for specialization, rating, availability, and
+                    price range to narrow the directory.
+                  </p>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="container mt-5">
-        <div className="row">
-          {/* Filters Sidebar */}
-          <div className="col-lg-3 mb-4">
-            <div className="card shadow-sm sticky-top" style={{ top: "20px" }}>
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="card-title mb-0">Filters</h5>
+      <div className="container">
+        <div className="row g-4">
+          <div className="col-lg-3">
+            <ScrollReveal delay="delay-1">
+              <aside className="filters-panel">
+                <div className="filters-panel__header">
+                  <div>
+                    <p className="directory-note mb-1">Filter</p>
+                    <h2 className="h5 mb-0">Refine the list</h2>
+                  </div>
                   <button
-                    className="btn btn-sm btn-link text-decoration-none"
+                    type="button"
+                    className="btn btn-link btn-sm"
                     onClick={clearFilters}
                   >
-                    Clear All
+                    Clear
                   </button>
                 </div>
 
-                <hr />
-
-                {/* Specialization Filter */}
                 <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-tag me-2"></i>Specialization
+                  <label className="form-label" htmlFor="specialization">
+                    Specialization
                   </label>
                   <select
+                    id="specialization"
                     className="form-select"
                     value={filters.specialization}
                     onChange={(e) =>
                       handleFilterChange("specialization", e.target.value)
                     }
                   >
-                    <option value="">All Specializations</option>
+                    <option value="">All specializations</option>
                     {specializations.map((spec) => (
                       <option key={spec} value={spec}>
                         {spec}
@@ -154,39 +186,39 @@ const DesignerMarketplace = () => {
                   </select>
                 </div>
 
-                {/* Rating Filter */}
                 <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-star me-2"></i>Minimum Rating
+                  <label className="form-label" htmlFor="rating">
+                    Minimum rating
                   </label>
                   <select
+                    id="rating"
                     className="form-select"
                     value={filters.minRating}
                     onChange={(e) =>
                       handleFilterChange("minRating", e.target.value)
                     }
                   >
-                    <option value="">Any Rating</option>
-                    <option value="4.5">4.5+ Stars</option>
-                    <option value="4.0">4.0+ Stars</option>
-                    <option value="3.5">3.5+ Stars</option>
-                    <option value="3.0">3.0+ Stars</option>
+                    <option value="">Any rating</option>
+                    <option value="4.5">4.5 and above</option>
+                    <option value="4.0">4.0 and above</option>
+                    <option value="3.5">3.5 and above</option>
+                    <option value="3.0">3.0 and above</option>
                   </select>
                 </div>
 
-                {/* Price Filter */}
                 <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-rupee-sign me-2"></i>Max Price
+                  <label className="form-label" htmlFor="price">
+                    Max price
                   </label>
                   <select
+                    id="price"
                     className="form-select"
                     value={filters.maxPrice}
                     onChange={(e) =>
                       handleFilterChange("maxPrice", e.target.value)
                     }
                   >
-                    <option value="">Any Price</option>
+                    <option value="">Any price</option>
                     <option value="1000">Under ₹1,000</option>
                     <option value="2000">Under ₹2,000</option>
                     <option value="3000">Under ₹3,000</option>
@@ -194,273 +226,172 @@ const DesignerMarketplace = () => {
                   </select>
                 </div>
 
-                {/* Availability Filter */}
                 <div className="mb-4">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="availableOnly"
-                      checked={filters.available}
-                      onChange={(e) =>
-                        handleFilterChange("available", e.target.checked)
-                      }
-                    />
-                    <label className="form-check-label" htmlFor="availableOnly">
-                      <i className="fas fa-check-circle me-2"></i>Available Now
-                    </label>
-                  </div>
-                </div>
-
-                {/* Sort By */}
-                <div className="mb-3">
-                  <label className="form-label fw-bold">
-                    <i className="fas fa-sort me-2"></i>Sort By
+                  <label className="form-label" htmlFor="sortBy">
+                    Sort by
                   </label>
                   <select
+                    id="sortBy"
                     className="form-select"
                     value={filters.sortBy}
                     onChange={(e) =>
                       handleFilterChange("sortBy", e.target.value)
                     }
                   >
-                    <option value="rating">Highest Rated</option>
-                    <option value="experience">Most Experienced</option>
-                    <option value="orders">Most Orders</option>
-                    <option value="price_low">Price: Low to High</option>
-                    <option value="price_high">Price: High to Low</option>
+                    <option value="rating">Highest rated</option>
+                    <option value="experience">Most experienced</option>
+                    <option value="orders">Most orders</option>
+                    <option value="price_low">Price: low to high</option>
+                    <option value="price_high">Price: high to low</option>
                   </select>
                 </div>
-              </div>
-            </div>
+
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="availableOnly"
+                    checked={filters.available}
+                    onChange={(e) =>
+                      handleFilterChange("available", e.target.checked)
+                    }
+                  />
+                  <label className="form-check-label" htmlFor="availableOnly">
+                    Show only designers currently accepting briefs
+                  </label>
+                </div>
+              </aside>
+            </ScrollReveal>
           </div>
 
-          {/* Designers Grid */}
           <div className="col-lg-9">
-            {/* Results Count */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h4>
-                {pagination.totalDesigners} Designer
-                {pagination.totalDesigners !== 1 ? "s" : ""} Found
-              </h4>
+            <div className="results-bar">
+              <div>
+                <h2>
+                  {pagination.totalDesigners} designer
+                  {pagination.totalDesigners !== 1 ? "s" : ""} found
+                </h2>
+                <p>
+                  Browse by fit, turnaround, and garment specialization instead
+                  of generic cards.
+                </p>
+              </div>
             </div>
 
             {loading ? (
-              <LoadingSpinner />
+              <LoadingSpinner local message="Loading designer directory..." />
             ) : designers.length === 0 ? (
-              <div className="text-center py-5">
-                <i className="fas fa-search fa-3x text-muted mb-3"></i>
-                <h4>No designers found</h4>
-                <p className="text-muted">
-                  Try adjusting your filters to see more results
-                </p>
+              <div className="marketplace-empty">
+                <i className="fas fa-search fa-2x mb-3"></i>
+                <h3>No designers match these filters</h3>
+                <p>Clear or widen the filters to explore more profiles.</p>
                 <button className="btn btn-primary" onClick={clearFilters}>
-                  Clear Filters
+                  Reset filters
                 </button>
               </div>
             ) : (
               <>
                 <div className="row g-4">
-                  {designers.map((designer) => {
-                    console.log(
-                      `Designer ${designer.name} - availabilityStatus:`,
-                      designer.availabilityStatus,
-                    );
+                  {designers.map((designer, index) => {
+                    const availability =
+                      availabilityMeta[
+                        designer.availabilityStatus || "available"
+                      ] || availabilityMeta.available;
+                    const rating = designer.designerProfile?.rating || 0;
+                    const reviewCount =
+                      designer.designerProfile?.totalRatings || 0;
+                    const avatar = (designer.name || designer.username || "D")
+                      .charAt(0)
+                      .toUpperCase();
+
                     return (
-                      <div key={designer._id} className="col-md-6 col-lg-4">
-                        <div
-                          className={`designer-card card h-100 shadow-sm ${designer.availabilityStatus === "not_accepting" ? "designer-unavailable" : ""}`}
-                        >
-                          {/* Unavailable Overlay */}
-                          {designer.availabilityStatus === "not_accepting" && (
-                            <div className="unavailable-overlay">
-                              <div className="unavailable-badge">
-                                <i className="fas fa-store-slash me-2"></i>
-                                Shop Closed
-                              </div>
+                      <div key={designer._id} className="col-md-6 col-xl-4">
+                        <ScrollReveal delay={`delay-${(index % 3) + 1}`}>
+                          <article
+                            className={`designer-card ${
+                              designer.availabilityStatus === "not_accepting"
+                                ? "designer-card--closed"
+                                : ""
+                            }`}
+                          >
+                            <div className={availability.className}>
+                              <i className={`fas ${availability.icon}`}></i>
+                              <span>{availability.label}</span>
                             </div>
-                          )}
-                          <div className="card-body">
-                            {/* Designer Header */}
-                            <div className="text-center mb-3">
-                              <div className="designer-avatar mb-2">
-                                <i
-                                  className={`fas fa-user-circle fa-4x ${
-                                    designer.availabilityStatus === "available"
-                                      ? "text-primary"
-                                      : designer.availabilityStatus === "busy"
-                                        ? "text-warning"
-                                        : "text-muted"
-                                  }`}
-                                ></i>
-                              </div>
-                              <h5 className="card-title mb-1">
-                                {designer.name}
-                              </h5>
-                              <p className="text-muted small mb-2">
-                                @{designer.username}
-                              </p>
 
-                              {/* Rating */}
-                              <div className="rating mb-2">
-                                <span className="text-warning">
-                                  {"★".repeat(
-                                    Math.floor(
-                                      designer.designerProfile?.rating || 0,
-                                    ),
-                                  )}
-                                  {"☆".repeat(
-                                    5 -
-                                      Math.floor(
-                                        designer.designerProfile?.rating || 0,
-                                      ),
-                                  )}
-                                </span>
-                                <span className="ms-2 fw-bold">
-                                  {designer.designerProfile?.rating?.toFixed(
-                                    1,
-                                  ) || "0.0"}
-                                </span>
-                                <span className="text-muted small ms-1">
-                                  ({designer.designerProfile?.totalRatings || 0}
-                                  )
-                                </span>
-                              </div>
-
-                              {/* Badges */}
-                              {designer.designerProfile?.badges?.length > 0 && (
-                                <div className="badges mb-3">
-                                  {designer.designerProfile.badges
-                                    .slice(0, 2)
-                                    .map((badge, idx) => (
-                                      <span
-                                        key={idx}
-                                        className="badge bg-success me-1 mb-1"
-                                      >
-                                        {badge}
-                                      </span>
-                                    ))}
+                            <div className="designer-card__top">
+                              <span className="designer-card__avatar">{avatar}</span>
+                              <div className="designer-card__identity">
+                                <h3>{designer.name}</h3>
+                                <p>@{designer.username}</p>
+                                <div className="designer-card__rating">
+                                  <span className="designer-card__stars">
+                                    {"★".repeat(Math.floor(rating))}
+                                    {"☆".repeat(5 - Math.floor(rating))}
+                                  </span>
+                                  <strong>{rating.toFixed(1)}</strong>
+                                  <small>({reviewCount})</small>
                                 </div>
-                              )}
+                              </div>
                             </div>
 
-                            {/* Bio */}
-                            <p className="card-text small text-muted mb-3">
-                              {designer.bio?.substring(0, 100)}
-                              {designer.bio?.length > 100 && "..."}
+                            <p className="designer-card__bio">
+                              {designer.bio?.substring(0, 120) ||
+                                "Custom fashion designer with platform experience across made-to-order work."}
+                              {designer.bio?.length > 120 ? "..." : ""}
                             </p>
 
-                            {/* Stats */}
-                            <div className="designer-stats mb-3">
-                              <div className="stat-item">
-                                <i className="fas fa-briefcase text-primary me-2"></i>
-                                <span className="fw-bold">
-                                  {designer.completedOrders || 0}
-                                </span>
-                                <span className="text-muted small">
-                                  {" "}
-                                  orders
-                                </span>
+                            <div className="designer-card__stats">
+                              <div className="designer-card__stat">
+                                <strong>{designer.completedOrders || 0}</strong>
+                                <span>orders</span>
                               </div>
-                              <div className="stat-item">
-                                <i className="fas fa-clock text-primary me-2"></i>
-                                <span className="fw-bold">
-                                  {designer.turnaroundDays || 7}
-                                </span>
-                                <span className="text-muted small"> days</span>
+                              <div className="designer-card__stat">
+                                <strong>{designer.turnaroundDays || 7}d</strong>
+                                <span>turnaround</span>
                               </div>
-                              <div className="stat-item">
-                                <i className="fas fa-medal text-primary me-2"></i>
-                                <span className="fw-bold">
-                                  {designer.experience || 0}
-                                </span>
-                                <span className="text-muted small">
-                                  {" "}
-                                  yrs exp
-                                </span>
+                              <div className="designer-card__stat">
+                                <strong>{designer.experience || 0}y</strong>
+                                <span>experience</span>
                               </div>
                             </div>
 
-                            {/* Price Range */}
-                            <div className="price-range mb-3">
-                              <div className="d-flex justify-content-between align-items-center">
-                                <span className="text-muted small">
-                                  Price Range:
-                                </span>
-                                <span className="fw-bold text-success">
-                                  ₹{designer.priceRange?.min || 500} - ₹
-                                  {designer.priceRange?.max || 5000}
-                                </span>
-                              </div>
+                            <div className="designer-card__price">
+                              <span>Typical price range</span>
+                              <strong>
+                                ₹{designer.priceRange?.min || 500} - ₹
+                                {designer.priceRange?.max || 5000}
+                              </strong>
                             </div>
 
-                            {/* Specializations */}
                             {designer.specializations?.length > 0 && (
-                              <div className="specializations mb-3">
+                              <div className="designer-card__tags">
                                 {designer.specializations
                                   .slice(0, 3)
-                                  .map((spec, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="badge bg-light text-dark me-1 mb-1"
-                                    >
-                                      {spec}
+                                  .map((specialization) => (
+                                    <span className="meta-chip" key={specialization}>
+                                      {specialization}
                                     </span>
                                   ))}
                               </div>
                             )}
 
-                            {/* Availability */}
-                            <div className="availability mb-3">
-                              {(!designer.availabilityStatus ||
-                                designer.availabilityStatus ===
-                                  "available") && (
-                                <span className="badge bg-success">
-                                  <i className="fas fa-check-circle me-1"></i>
-                                  Available Now
-                                </span>
-                              )}
-                              {designer.availabilityStatus === "busy" && (
-                                <span className="badge bg-warning text-dark">
-                                  <i className="fas fa-clock me-1"></i>
-                                  Busy
-                                </span>
-                              )}
-                              {designer.availabilityStatus ===
-                                "not_accepting" && (
-                                <span className="badge bg-danger">
-                                  <i className="fas fa-store-slash me-1"></i>
-                                  Shop Closed
-                                </span>
-                              )}
-                            </div>
-
-                            {/* View Profile Button */}
                             <Link
                               to={`/marketplace/designer/${designer._id}`}
-                              className={`btn w-100 ${designer.availabilityStatus === "available" ? "btn-primary" : "btn-outline-secondary"}`}
-                              onClick={() => {
-                                console.log("=== DESIGNER CARD CLICKED ===");
-                                console.log("Designer:", designer.name);
-                                console.log("Designer ID:", designer._id);
-                                console.log("Type:", typeof designer._id);
-                                console.log("=============================");
-                              }}
+                              className="btn btn-primary designer-card__action"
                             >
-                              View Profile
-                              <i className="fas fa-arrow-right ms-2"></i>
+                              View profile
                             </Link>
-                          </div>
-                        </div>
+                          </article>
+                        </ScrollReveal>
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Pagination */}
                 {pagination.totalPages > 1 && (
                   <div className="d-flex justify-content-center mt-5">
-                    <nav>
+                    <nav aria-label="Designer directory pages">
                       <ul className="pagination">
                         <li
                           className={`page-item ${
@@ -483,7 +414,6 @@ const DesignerMarketplace = () => {
 
                         {[...Array(pagination.totalPages)].map((_, idx) => {
                           const pageNum = idx + 1;
-                          // Show first, last, current, and pages around current
                           if (
                             pageNum === 1 ||
                             pageNum === pagination.totalPages ||
@@ -511,7 +441,9 @@ const DesignerMarketplace = () => {
                                 </button>
                               </li>
                             );
-                          } else if (
+                          }
+
+                          if (
                             pageNum === pagination.currentPage - 2 ||
                             pageNum === pagination.currentPage + 2
                           ) {
@@ -521,6 +453,7 @@ const DesignerMarketplace = () => {
                               </li>
                             );
                           }
+
                           return null;
                         })}
 

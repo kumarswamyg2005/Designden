@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { useTheme } from "../context/ThemeContext";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 import EditProfileModal from "./EditProfileModal";
 
 const Header = () => {
+  const location = useLocation();
   const {
     user,
     isAuthenticated,
@@ -18,22 +18,41 @@ const Header = () => {
     logout,
   } = useAuth();
   const { cartCount } = useCart();
-  const { isDark, toggleTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowUserMenu(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const dashboardPath = useMemo(() => {
+    if (isCustomer) return "/customer/dashboard";
+    if (isDesigner) return "/designer/dashboard";
+    if (isManager) return "/manager/dashboard";
+    if (isAdmin) return "/admin/dashboard";
+    if (isDelivery) return "/delivery/dashboard";
+    return "/";
+  }, [isAdmin, isCustomer, isDelivery, isDesigner, isManager]);
+
+  const avatarLetter = (user?.name || user?.username || "D")
+    .charAt(0)
+    .toUpperCase();
+
+  const isActive = (path, exact = false) => {
+    if (exact) return location.pathname === path;
+    return (
+      location.pathname === path || location.pathname.startsWith(`${path}/`)
+    );
+  };
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -44,49 +63,58 @@ const Header = () => {
     setShowLogoutConfirm(false);
     try {
       await logout();
-      // Navigation will happen after animation completes
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  const cancelLogout = () => {
-    setShowLogoutConfirm(false);
-  };
-
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
-          <i className="fas fa-tshirt me-2"></i>DesignDen
+    <nav className="navbar navbar-expand-lg editorial-navbar">
+      <div className="container editorial-navbar__inner">
+        <Link className="navbar-brand editorial-brand" to="/">
+          <span className="editorial-brand__mark">DD</span>
+          <span className="editorial-brand__text">
+            <span>DesignDen</span>
+            <small>Custom clothing atelier</small>
+          </span>
         </Link>
+
         <button
-          className="navbar-toggler"
+          className="navbar-toggler editorial-navbar__toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav editorial-nav">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className={`nav-link ${isActive("/", true) ? "active" : ""}`} to="/">
                 Home
               </Link>
             </li>
-            {/* Hide Browse Designers from designers - they shouldn't see other designers */}
+
             {!isDesigner && (
               <li className="nav-item">
-                <Link className="nav-link" to="/marketplace">
-                  <i className="fas fa-users me-1"></i>
-                  Browse Designers
+                <Link
+                  className={`nav-link ${isActive("/marketplace") ? "active" : ""}`}
+                  to="/marketplace"
+                >
+                  Designers
                 </Link>
               </li>
             )}
+
             <li className="nav-item">
-              <Link className="nav-link" to="/shop">
+              <Link
+                className={`nav-link ${isActive("/shop") ? "active" : ""}`}
+                to="/shop"
+              >
                 Shop
               </Link>
             </li>
@@ -96,33 +124,23 @@ const Header = () => {
                 {isCustomer && (
                   <>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/customer/design-studio">
+                      <Link
+                        className={`nav-link ${
+                          isActive("/customer/design-studio") ? "active" : ""
+                        }`}
+                        to="/customer/design-studio"
+                      >
                         Design Studio
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/customer/dashboard">
+                      <Link
+                        className={`nav-link ${
+                          isActive("/customer/dashboard") ? "active" : ""
+                        }`}
+                        to="/customer/dashboard"
+                      >
                         Dashboard
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/customer/wishlist">
-                        <i className="fas fa-heart"></i> Wishlist
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/customer/cart">
-                        <span className="cart-icon-wrapper" data-cart-icon>
-                          <i className="fas fa-shopping-cart"></i> Cart
-                          {cartCount > 0 && (
-                            <span
-                              className="badge bg-danger ms-1"
-                              id="cart-badge"
-                            >
-                              {cartCount}
-                            </span>
-                          )}
-                        </span>
                       </Link>
                     </li>
                   </>
@@ -131,13 +149,22 @@ const Header = () => {
                 {isDesigner && (
                   <>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/designer/dashboard">
+                      <Link
+                        className={`nav-link ${
+                          isActive("/designer/dashboard") ? "active" : ""
+                        }`}
+                        to="/designer/dashboard"
+                      >
                         Dashboard
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/designer/earnings">
-                        <i className="fas fa-wallet me-1"></i>
+                      <Link
+                        className={`nav-link ${
+                          isActive("/designer/earnings") ? "active" : ""
+                        }`}
+                        to="/designer/earnings"
+                      >
                         Earnings
                       </Link>
                     </li>
@@ -146,7 +173,12 @@ const Header = () => {
 
                 {isManager && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/manager">
+                    <Link
+                      className={`nav-link ${
+                        isActive("/manager/dashboard") ? "active" : ""
+                      }`}
+                      to="/manager/dashboard"
+                    >
                       Manager
                     </Link>
                   </li>
@@ -154,447 +186,159 @@ const Header = () => {
 
                 {isDelivery && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/delivery/dashboard">
-                      <i className="fas fa-truck me-1"></i>
+                    <Link
+                      className={`nav-link ${
+                        isActive("/delivery/dashboard") ? "active" : ""
+                      }`}
+                      to="/delivery/dashboard"
+                    >
                       Deliveries
                     </Link>
                   </li>
                 )}
 
                 {isAdmin && (
-                  <>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/admin/dashboard">
-                        Dashboard
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/admin/feedbacks">
-                        Feedbacks
-                      </Link>
-                    </li>
-                  </>
+                  <li className="nav-item">
+                    <Link
+                      className={`nav-link ${
+                        isActive("/admin/dashboard") ? "active" : ""
+                      }`}
+                      to="/admin/dashboard"
+                    >
+                      Admin
+                    </Link>
+                  </li>
+                )}
+              </>
+            ) : (
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${
+                    isActive("/customer/design-studio") ? "active" : ""
+                  }`}
+                  to="/customer/design-studio"
+                >
+                  Design Studio
+                </Link>
+              </li>
+            )}
+          </ul>
+
+          <div className="editorial-nav__actions">
+            {isAuthenticated ? (
+              <>
+                {isCustomer && (
+                  <Link className="btn btn-light btn-sm" to="/customer/cart">
+                    Cart
+                    {cartCount > 0 && (
+                      <span id="cart-badge" className="meta-chip ms-2">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
                 )}
 
-                {/* User Profile Dropdown */}
-                <li
-                  className="nav-item dropdown position-relative"
-                  ref={dropdownRef}
-                >
+                <div className="editorial-user-menu" ref={dropdownRef}>
                   <button
-                    className="nav-link btn btn-link d-flex align-items-center px-2"
-                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    type="button"
+                    className="btn editorial-avatar-button"
                     aria-expanded={showUserMenu}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
+                    onClick={() => setShowUserMenu((prev) => !prev)}
                   >
-                    <div
-                      style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "50%",
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "white",
-                        fontWeight: "bold",
-                        fontSize: "14px",
-                        border: "2px solid #fff",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                      }}
-                    >
-                      {(user?.name || user?.username || "U")
-                        .charAt(0)
-                        .toUpperCase()}
-                    </div>
+                    <span className="editorial-avatar">{avatarLetter}</span>
+                    <span className="editorial-avatar-meta d-none d-lg-flex">
+                      <strong>{user?.name || user?.username}</strong>
+                      <small>{user?.email}</small>
+                    </span>
+                    <i className="fas fa-chevron-down"></i>
                   </button>
+
                   {showUserMenu && (
-                    <div
-                      className="dropdown-menu dropdown-menu-end show"
-                      style={{
-                        minWidth: "280px",
-                        backgroundColor: isDark ? "#242526" : "#ffffff",
-                        border: "none",
-                        borderRadius: "12px",
-                        boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-                        position: "absolute",
-                        right: 0,
-                        top: "calc(100% + 8px)",
-                        zIndex: 1050,
-                        padding: "8px",
-                      }}
-                    >
-                      {/* Profile Header */}
-                      <div
-                        style={{
-                          padding: "12px",
-                          borderRadius: "8px",
-                          backgroundColor: isDark ? "#3a3b3c" : "#f0f2f5",
-                          marginBottom: "8px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          window.location.href = "/customer/dashboard";
-                        }}
-                      >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "50%",
-                              background:
-                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: "white",
-                              fontWeight: "bold",
-                              fontSize: "20px",
-                              marginRight: "12px",
-                            }}
-                          >
-                            {(user?.name || user?.username || "U")
-                              .charAt(0)
-                              .toUpperCase()}
-                          </div>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: "600",
-                                fontSize: "16px",
-                                color: isDark ? "#e4e6eb" : "#1c1e21",
-                              }}
-                            >
-                              {user?.name || user?.username}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "13px",
-                                color: isDark ? "#b0b3b8" : "#65676b",
-                              }}
-                            >
-                              {user?.email}
-                            </div>
-                          </div>
-                        </div>
+                    <div className="editorial-menu">
+                      <div className="editorial-menu__header">
+                        <strong>{user?.name || user?.username}</strong>
+                        <span>{user?.email}</span>
+                        <small>Manage your orders, studio drafts, and account.</small>
                       </div>
 
-                      {/* Menu Items */}
+                      <Link
+                        to={dashboardPath}
+                        className="editorial-menu__item"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <i className="fas fa-compass"></i>
+                        <span>Go to dashboard</span>
+                      </Link>
+
                       <button
+                        type="button"
+                        className="editorial-menu__item"
                         onClick={() => {
                           setShowUserMenu(false);
                           setShowEditProfile(true);
                         }}
-                        className="d-flex align-items-center justify-content-between w-100"
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: "8px",
-                          textDecoration: "none",
-                          color: isDark ? "#e4e6eb" : "#1c1e21",
-                          transition: "background 0.2s",
-                          border: "none",
-                          background: "transparent",
-                          cursor: "pointer",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.backgroundColor = isDark
-                            ? "#3a3b3c"
-                            : "#f0f2f5")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.backgroundColor = "transparent")
-                        }
                       >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "50%",
-                              backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: "12px",
-                            }}
-                          >
-                            <i
-                              className="fas fa-user"
-                              style={{ color: isDark ? "#e4e6eb" : "#1c1e21" }}
-                            ></i>
-                          </div>
-                          <span>Edit Profile</span>
-                        </div>
-                        <i
-                          className="fas fa-chevron-right"
-                          style={{
-                            fontSize: "12px",
-                            color: isDark ? "#b0b3b8" : "#65676b",
-                          }}
-                        ></i>
+                        <i className="fas fa-user-pen"></i>
+                        <span>Edit profile</span>
                       </button>
 
                       <Link
                         to="/security"
+                        className="editorial-menu__item"
                         onClick={() => setShowUserMenu(false)}
-                        className="d-flex align-items-center justify-content-between"
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: "8px",
-                          textDecoration: "none",
-                          color: isDark ? "#e4e6eb" : "#1c1e21",
-                          transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.backgroundColor = isDark
-                            ? "#3a3b3c"
-                            : "#f0f2f5")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.backgroundColor = "transparent")
-                        }
                       >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "50%",
-                              backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: "12px",
-                            }}
-                          >
-                            <i
-                              className="fas fa-cog"
-                              style={{ color: isDark ? "#e4e6eb" : "#1c1e21" }}
-                            ></i>
-                          </div>
-                          <span>Settings & Privacy</span>
-                        </div>
-                        <i
-                          className="fas fa-chevron-right"
-                          style={{
-                            fontSize: "12px",
-                            color: isDark ? "#b0b3b8" : "#65676b",
-                          }}
-                        ></i>
+                        <i className="fas fa-shield-halved"></i>
+                        <span>Security settings</span>
                       </Link>
 
                       <Link
                         to="/help"
+                        className="editorial-menu__item"
                         onClick={() => setShowUserMenu(false)}
-                        className="d-flex align-items-center justify-content-between"
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: "8px",
-                          textDecoration: "none",
-                          color: isDark ? "#e4e6eb" : "#1c1e21",
-                          transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.backgroundColor = isDark
-                            ? "#3a3b3c"
-                            : "#f0f2f5")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.backgroundColor = "transparent")
-                        }
                       >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "50%",
-                              backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: "12px",
-                            }}
-                          >
-                            <i
-                              className="fas fa-question-circle"
-                              style={{ color: isDark ? "#e4e6eb" : "#1c1e21" }}
-                            ></i>
-                          </div>
-                          <span>Help & Support</span>
-                        </div>
-                        <i
-                          className="fas fa-chevron-right"
-                          style={{
-                            fontSize: "12px",
-                            color: isDark ? "#b0b3b8" : "#65676b",
-                          }}
-                        ></i>
+                        <i className="fas fa-circle-question"></i>
+                        <span>Help and support</span>
                       </Link>
 
-                      <div
-                        onClick={toggleTheme}
-                        className="d-flex align-items-center justify-content-between"
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: "8px",
-                          cursor: "pointer",
-                          color: isDark ? "#e4e6eb" : "#1c1e21",
-                          transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.backgroundColor = isDark
-                            ? "#3a3b3c"
-                            : "#f0f2f5")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.backgroundColor = "transparent")
-                        }
-                      >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "50%",
-                              backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: "12px",
-                            }}
-                          >
-                            <i
-                              className={`fas ${isDark ? "fa-sun" : "fa-moon"}`}
-                              style={{ color: isDark ? "#e4e6eb" : "#1c1e21" }}
-                            ></i>
-                          </div>
-                          <span>Display & Accessibility</span>
-                        </div>
-                        <i
-                          className="fas fa-chevron-right"
-                          style={{
-                            fontSize: "12px",
-                            color: isDark ? "#b0b3b8" : "#65676b",
-                          }}
-                        ></i>
-                      </div>
+                      <div className="editorial-menu__divider"></div>
 
-                      <div
-                        style={{
-                          height: "1px",
-                          backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                          margin: "8px 0",
-                        }}
-                      ></div>
-
-                      <div
+                      <button
+                        type="button"
+                        className="editorial-menu__item editorial-menu__item--danger"
                         onClick={handleLogout}
-                        className="d-flex align-items-center justify-content-between"
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: "8px",
-                          cursor: "pointer",
-                          color: isDark ? "#e4e6eb" : "#1c1e21",
-                          transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.backgroundColor = isDark
-                            ? "#3a3b3c"
-                            : "#f0f2f5")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.backgroundColor = "transparent")
-                        }
                       >
-                        <div className="d-flex align-items-center">
-                          <div
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "50%",
-                              backgroundColor: isDark ? "#3a3b3c" : "#e4e6eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: "12px",
-                            }}
-                          >
-                            <i
-                              className="fas fa-sign-out-alt"
-                              style={{ color: isDark ? "#e4e6eb" : "#1c1e21" }}
-                            ></i>
-                          </div>
-                          <span>Logout</span>
-                        </div>
-                        <i
-                          className="fas fa-chevron-right"
-                          style={{
-                            fontSize: "12px",
-                            color: isDark ? "#b0b3b8" : "#65676b",
-                          }}
-                        ></i>
-                      </div>
+                        <i className="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                      </button>
                     </div>
                   )}
-                </li>
+                </div>
               </>
             ) : (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/customer/design-studio">
-                    Design Studio
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">
-                    Login
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/signup">
-                    Sign Up
-                  </Link>
-                </li>
-              </>
+              <div className="editorial-auth-actions">
+                <Link className="btn btn-outline-primary btn-sm" to="/login">
+                  Login
+                </Link>
+                <Link className="btn btn-primary btn-sm" to="/signup">
+                  Create Account
+                </Link>
+              </div>
             )}
-          </ul>
-        </div>
-
-        {/* Theme toggle button */}
-        <div className="d-flex align-items-center ms-3">
-          <button
-            className="btn btn-sm btn-outline-secondary"
-            aria-label="Toggle theme"
-            onClick={toggleTheme}
-          >
-            <i className={`fas ${isDark ? "fa-moon" : "fa-sun"}`}></i>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
       <LogoutConfirmModal
         isOpen={showLogoutConfirm}
         onConfirm={confirmLogout}
-        onCancel={cancelLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
         userName={user?.name || user?.username || "User"}
       />
 
-      {/* Edit Profile Modal */}
       <EditProfileModal
         isOpen={showEditProfile}
         onClose={() => setShowEditProfile(false)}
-        onSuccess={() => {
-          // Optionally refresh or show success message
-        }}
+        onSuccess={() => {}}
       />
     </nav>
   );
