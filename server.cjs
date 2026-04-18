@@ -1330,12 +1330,14 @@ app.use("/models", express.static(path.join(__dirname, "public/models")));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Session configuration
-const isProd = process.env.NODE_ENV === "production";
+// isProd: true when running on Render (RENDER env var) or NODE_ENV=production
+const isProd = process.env.NODE_ENV === "production" || !!process.env.RENDER;
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "designden_secret_key_12345",
     resave: true,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       secure: isProd,
       httpOnly: true,
@@ -11330,6 +11332,24 @@ app.get("/api/health", async (req, res) => {
     redis: redisAvailable ? "connected" : "unavailable",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
+  });
+});
+
+// Session debug — verify session config and proxy detection
+app.get("/api/session-debug", (req, res) => {
+  res.json({
+    NODE_ENV: process.env.NODE_ENV,
+    RENDER_set: !!process.env.RENDER,
+    isProd,
+    trustProxy: app.get("trust proxy"),
+    reqSecure: req.secure,
+    proto: req.headers["x-forwarded-proto"],
+    sessionUser: req.session.user ? req.session.user.email : null,
+    sessionID: req.sessionID,
+    cookieConfig: {
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+    },
   });
 });
 
