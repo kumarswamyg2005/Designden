@@ -3,20 +3,20 @@
 **Project**: DesignDen - Custom Clothing E-Commerce Platform  
 **Total Team Members**: 5  
 **Project Duration**: 6 Months  
-**Total Lines of Code**: ~15,000+  
-**Version**: 1.0.0
+**Total Lines of Code**: ~18,000+  
+**Version**: 1.1.0
 
 ---
 
 ## 📊 Team Overview
 
-| Member     | Primary Role                   | Focus Areas                                | Lines of Code |
-| ---------- | ------------------------------ | ------------------------------------------ | ------------- |
-| **Chetan** | Security & Admin Systems       | Admin Dashboard, Delivery System, Security | ~3,500        |
-| **Harsha** | Manager & Production           | Manager Dashboard, Production Milestones   | ~2,800        |
-| **Kumar**  | 3D Design & Performance        | 3D Design Studio, Designer Selection       | ~3,200        |
-| **Manoj**  | Designer Dashboard & Uploads   | Designer Features, File Management         | ~2,900        |
-| **Hari**   | Customer Experience & Checkout | Home, Shop, Cart, Checkout, Tracking       | ~2,600        |
+| Member     | Primary Role                        | Focus Areas                                              | Lines of Code | Commits |
+| ---------- | ----------------------------------- | -------------------------------------------------------- | ------------- | ------- |
+| **Chetan** | Security, Admin & Infrastructure    | Admin Dashboard, Delivery, Security, Redis, Sessions     | ~4,200        | 21      |
+| **Harsha** | Manager, Production & DevOps        | Manager Dashboard, Milestones, CI/CD, Docker, Deployment | ~3,600        | 22      |
+| **Kumar**  | 3D Design, Marketplace & UI         | 3D Studio, Designer Marketplace, Dark UI System          | ~4,100        | 27      |
+| **Manoj**  | Designer Dashboard & File Mgmt      | Designer Features, File Uploads, ESLint, Seeding         | ~3,100        | 16      |
+| **Hari**   | Customer Experience & Checkout      | Home, Shop, Cart, Checkout, Sessions, Tracking           | ~3,000        | 18      |
 
 ---
 
@@ -94,11 +94,49 @@ const loginLimiter = rateLimit({
 - `GET /delivery/api/orders` - Delivery orders
 - `POST /delivery/order/:id/verify-otp` - OTP verification
 
+#### **Phase 2 — Infrastructure & Security Hardening**
+
+1. **MongoDB Session Store** (replacing in-memory MemoryStore)
+   - Persistent sessions survive server restarts
+   - `connect-mongodb-session` integration in `server.cjs`
+   - Session TTL and cleanup configuration
+
+2. **OTP Storage Fix** (MongoDB-backed instead of in-memory Map)
+   - Delivery OTP codes now survive pod restarts on Render
+   - Atomic read-and-delete pattern for verification security
+
+3. **Redis Integration** (Upstash cloud Redis)
+   - `REDIS_URL` env var support for Upstash TLS connections
+   - Ping-based initialization with graceful fallback
+   - TLS/SSL configuration for production Redis
+   - Debug endpoint for Redis health checks
+
+4. **CORS & Production Security**
+   - Dynamic CORS origin list (local + Render + Vercel)
+   - Vite build optimization aligned with CORS policy
+   - Helmet content-security-policy tuning for Render
+
+5. **Authentication & Logging Middleware** (`server.cjs`)
+   - JWT authentication middleware with role validation
+   - Morgan HTTP access logging to `logs/access.log`
+   - Rate limiter integration (brute-force protection)
+
+6. **Admin Dashboard — Async Fix**
+   - `Promise.allSettled` in `admin/Dashboard.jsx`
+   - Partial API failures no longer crash the dashboard
+   - Graceful degradation for each data panel
+
+7. **Atlas Seed Script** (`seed-atlas.cjs`)
+   - Comprehensive seed script for all 5 user roles
+   - Pre-populated products, orders, and designer data
+   - Idempotent — safe to re-run on Atlas clusters
+
 #### **Code Statistics**
 
-- **Files Created**: 12
-- **Lines of Code**: ~3,500
+- **Files Created**: 15
+- **Lines of Code**: ~4,200
 - **API Endpoints**: 18
+- **Security Layers**: 7
 - **Components**: 8
 
 ---
@@ -185,11 +223,57 @@ const PRODUCTION_MILESTONES = [
 ];
 ```
 
+#### **Phase 2 — DevOps, Testing & Deployment**
+
+1. **CI/CD Pipeline** (`.github/workflows/ci.yml`)
+   - GitHub Actions workflow: install → lint → test → build
+   - Jest unit test execution in CI environment
+   - Build artifact validation on every push
+
+2. **Docker & Container Setup**
+   - `Dockerfile` for Node.js + Vite production build
+   - `docker-compose.yml` with Redis service + port mapping
+   - Frontend static files served from Express in production
+   - Fixed Redis port conflict (6379 → mapped correctly)
+
+3. **Render Deployment Fix**
+   - `npm start` corrected to run `node server.cjs` only
+   - Trust proxy configuration for Render's reverse proxy
+   - Environment detection (`RENDER` env flag)
+
+4. **Swagger API Documentation** (`server.cjs` + `docs/swagger/`)
+   - OpenAPI 3.0 annotations on all major routes
+   - Swagger UI served at `/api-docs` in production
+   - YAML spec validation script (`validate-swagger.cjs`)
+
+5. **Unit Testing & Coverage** (`tests/unit/`)
+   - `auth.test.cjs` — JWT sign/verify, password hashing
+   - `utils.test.cjs` — helper utilities
+   - Jest config with real coverage reporting (`coverage/lcov.info`)
+   - Fixed coverage output for CI integration
+
+6. **Project Documentation & Deployment Docs**
+   - `PROJECT_OVERVIEW.md` — full architecture overview
+   - `DEPLOYMENT_CHECKLIST.md` — step-by-step deploy guide
+   - `VERCEL_DEPLOYMENT.md` — Vercel-specific configuration
+   - `API_DOCUMENTATION.md` — all REST endpoints documented
+
+7. **Frontend–Backend Connection** (Render backend)
+   - Connected React frontend to `https://backend-gw9o.onrender.com`
+   - Updated `src/services/api.js` base URL
+   - `.env` / `.env.example` aligned for production
+
+8. **SPA Routing** (`vercel.json`)
+   - Catch-all rewrite rule for React Router
+   - `vercel.json` configured for Vite framework
+
 #### **Code Statistics**
 
-- **Files Created**: 10
-- **Lines of Code**: ~2,800
+- **Files Created**: 14
+- **Lines of Code**: ~3,600
 - **API Endpoints**: 15
+- **CI/CD Pipelines**: 1
+- **Test Suites**: 2
 - **Components**: 7
 
 ---
@@ -287,13 +371,54 @@ controls.maxDistance = 5;
 - Memoization of model calculations
 - Chunked bundle loading
 
+#### **Phase 2 — Marketplace, UI System & Production Models**
+
+1. **Designer Marketplace — Availability Enforcement**
+   - `DesignerMarketplace.jsx` — "Available Now" badge defaulting
+   - `DesignerProfile.jsx` — availability status gating
+   - Server-side availability filtering in marketplace API
+   - Debug logging for availability state transitions
+
+2. **Premium Dark UI Design System** (`src/styles/`)
+   - `editorial.css` — editorial typography & layout
+   - `effects.css` — glassmorphism, glow, blur effects
+   - `DashboardCommon.css` — shared dark dashboard styles
+   - `styles.css` — global dark theme tokens & variables
+   - Custom cursor component (`CustomCursor.jsx`)
+   - Scroll reveal animations (`ScrollReveal.jsx`, `useScrollAnimation.js`)
+   - Onboarding tour overlay (`OnboardingTour.jsx`)
+   - Logout animation (`LogoutAnimation.jsx`)
+
+3. **New 3D GLB Models** (`public/models/`)
+   - `polo_men.glb` — polo shirt model
+   - `shirt_men.glb` — formal shirt model
+   - `jeans.glb`, `jeans_men.glb`, `jeans_women.glb` — jeans variants
+   - `kurthi_women.glb`, `kurthi_silk_women.glb` — ethnic wear
+   - Fixed Three.js version compatibility in `ModelViewer.jsx`
+
+4. **Vercel & Build Configuration**
+   - `.npmrc` with `legacy-peer-deps` for React 19 peer resolution
+   - `vercel.json` Vite framework detection
+   - `.env.production` for production API base URL
+   - Vite config (`vite.config.js`) build optimization
+
+5. **Designer Persistence Fix** (marketplace → checkout flow)
+   - Selected designer persists through cart and checkout
+   - `DesignerMarketplace.jsx` + `AuthContext.jsx` state sync
+   - Debug endpoint added for designer session inspection
+
+6. **README & Project Documentation**
+   - Comprehensive `README.md` with setup, architecture, screenshots
+   - `MARKETPLACE_README.md` for designer marketplace guide
+   - `EVALUATION_SUMMARY.md` and `SWAGGER_IMPLEMENTATION.md`
+
 #### **Code Statistics**
 
-- **Files Created**: 15
-- **Lines of Code**: ~3,200
-- **3D Models**: 8 types
+- **Files Created**: 20
+- **Lines of Code**: ~4,100
+- **3D Models**: 12 types (8 original + 4 new GLB)
+- **UI Components**: 13
 - **Graphics**: 11 dragon designs
-- **Components**: 9
 
 ---
 
@@ -407,13 +532,35 @@ const upload = multer({
 - `GET /api/designer/earnings` - Earnings data
 - `POST /api/designer/payout/request` - Request payout
 
+#### **Phase 2 — Code Quality, Seeding & Project Setup**
+
+1. **Designer Seed Script** (`seed-designers.cjs`)
+   - Auto-seeds sample designer accounts on server startup
+   - Prevents empty marketplace on fresh deployments
+   - Idempotent upsert logic (safe to re-run)
+
+2. **ESLint Fixes & CI Compliance**
+   - Resolved all ESLint errors across designer, cart, checkout, delivery pages
+   - `eslint.config.js` updated with project-wide rules
+   - CI lint step now passes cleanly on every push
+
+3. **Large Project Setup Commit** (`1276ad9`)
+   - `OrderTracking.jsx` / `OrderTracking.css` component
+   - `ProductReviews.jsx` component
+   - `delivery/Dashboard.jsx` and `DeliveryDashboard.css`
+   - `manager/Dashboard.jsx` production milestone integration
+   - `customer/DesignStudio.jsx`, `OrderDetails.jsx`, `TrackOrder.jsx`
+   - `seed-products.cjs` — sample product seeder
+   - Individual contributor docs (`docs/MANOJ_CONTRIBUTIONS.md`, etc.)
+   - Shell scaffolding scripts (`create-all-role-pages.sh`, `create-stubs.sh`)
+
 #### **Code Statistics**
 
-- **Files Created**: 11
-- **Lines of Code**: ~2,900
+- **Files Created**: 14
+- **Lines of Code**: ~3,100
 - **API Endpoints**: 16
 - **Upload Handlers**: 5
-- **Components**: 8
+- **Components**: 10
 
 ---
 
@@ -543,10 +690,37 @@ Cart → Review Items → Enter Address → Select Payment
 → Send Confirmation → Update Inventory
 ```
 
+#### **Phase 2 — Session Fixes, UI Polish & Cross-Origin Cart**
+
+1. **Session Cookie Fixes** (3 commits — `server.cjs`)
+   - Detected Render environment and enabled `trust proxy`
+   - `SameSite=None; Secure` cookies for cross-origin requests
+   - `proxy: true` in Express session config
+   - Debug endpoint `/api/session-debug` for diagnostics
+
+2. **Cross-Origin Cart Fix**
+   - Enabled cart operations across Vercel frontend ↔ Render backend
+   - `credentials: include` on all Axios requests
+   - CORS `allowedHeaders` extended for session cookie support
+
+3. **Hero Image Refresh** (`src/pages/Home.jsx`)
+   - Replaced placeholder images with atelier photography
+   - `atelier-craft.jpeg` and `atelier-fitting.jpeg` assets added
+   - Improved hero section visual quality
+
+4. **SVG Placeholder Fix** (`shop/ProductDetails.jsx`)
+   - Removed broken image `src` references
+   - Replaced with inline SVG fallback for missing product images
+
+5. **ESLint Fixes — Customer Experience Pages**
+   - `customer/Cart.jsx`, `customer/Checkout.jsx`, `customer/OrderTracking.jsx`
+   - `components/FilterPanel.jsx`, `components/SearchBar.jsx`
+   - CI lint step passes without warnings
+
 #### **Code Statistics**
 
 - **Files Created**: 13
-- **Lines of Code**: ~2,600
+- **Lines of Code**: ~3,000
 - **API Endpoints**: 14
 - **Components**: 10
 
@@ -581,23 +755,32 @@ Cart → Review Items → Enter Address → Select Payment
 
 - Helmet (Security Headers)
 - Express Rate Limit
-- Session Management
+- Session Management (MongoDB-backed)
+- Redis / Upstash TLS
+- JWT Authentication Middleware
 - Admin Panel Components
+- Atlas Seed Scripts
 
-### **Harsha** - Backend & Logging
+### **Harsha** - Backend, Logging & DevOps
 
 - Morgan (HTTP Logging)
 - Body Parser
-- Production Systems
+- Production Systems (Render)
+- Docker / docker-compose
+- GitHub Actions CI/CD
+- Jest Unit Testing
+- Swagger / OpenAPI
 - Manager Interface
 
-### **Kumar** - 3D Graphics & Performance
+### **Kumar** - 3D Graphics, Marketplace & UI
 
-- Three.js
+- Three.js / WebGL
 - @react-three/fiber
 - @react-three/drei
-- Compression
+- GLB Model Files (7 new models)
+- Compression (gzip)
 - OrbitControls
+- Dark Design System (editorial, effects CSS)
 
 ### **Manoj** - File Management & Designer Tools
 
@@ -605,14 +788,16 @@ Cart → Review Items → Enter Address → Select Payment
 - fs/promises
 - Designer Dashboard
 - Chat System
+- ESLint Configuration
 
-### **Hari** - Frontend & User Experience
+### **Hari** - Frontend, Sessions & User Experience
 
 - React Router
 - Cookie Parser
 - CSRF Protection
 - Cart System
 - Checkout Flow
+- Session Cookie Cross-Origin Fixes
 
 ---
 
@@ -627,6 +812,12 @@ Cart → Review Items → Enter Address → Select Payment
 | Security Guidelines           | Chetan         | All          |
 | 3D Model Documentation        | Kumar          | -            |
 | User Guides                   | Hari           | All          |
+| PROJECT_OVERVIEW.md           | Harsha         | Kumar        |
+| DEPLOYMENT_CHECKLIST.md       | Harsha         | Chetan       |
+| VERCEL_DEPLOYMENT.md          | Harsha         | Kumar        |
+| SWAGGER_IMPLEMENTATION.md     | Harsha         | Chetan       |
+| MARKETPLACE_README.md         | Kumar          | Manoj        |
+| EVALUATION_SUMMARY.md         | Kumar          | All          |
 
 ---
 
@@ -634,22 +825,28 @@ Cart → Review Items → Enter Address → Select Payment
 
 ### **Project Statistics**
 
-- **Total Lines of Code**: 15,000+
-- **Components Created**: 35+
+- **Total Lines of Code**: 18,000+
+- **Total Git Commits**: 104
+- **Components Created**: 42+
 - **Pages Developed**: 40+
 - **API Endpoints**: 100+
 - **Database Collections**: 15
 - **User Roles**: 5
 - **Order Statuses**: 16
 - **Production Milestones**: 8
+- **3D Models**: 12 GLB files
+- **CI/CD Pipelines**: 1 (GitHub Actions)
+- **Test Suites**: 2 (auth + utils)
+- **Docker Services**: 2 (app + Redis)
 
 ### **Code Quality**
 
-- **Code Coverage**: Comprehensive error handling
-- **Security**: 5-layer security middleware
-- **Performance**: Gzip compression, lazy loading
-- **Responsiveness**: Mobile-first design
+- **Code Coverage**: Jest unit tests + lcov coverage report
+- **Security**: 7-layer security middleware (+ Redis, MongoDB sessions)
+- **Performance**: Gzip compression, lazy loading, chunked bundles
+- **Responsiveness**: Mobile-first dark design system
 - **Accessibility**: ARIA labels, keyboard navigation
+- **Deployment**: Render (backend) + Vercel (frontend) + Docker support
 
 ---
 
@@ -657,33 +854,38 @@ Cart → Review Items → Enter Address → Select Payment
 
 ### **Chetan**
 
-- **Achievement**: Implemented 5-layer security architecture
-- **Impact**: Zero security incidents, 99.9% uptime
-- **Innovation**: Custom rate limiting for different user roles
+- **Achievement**: 7-layer security architecture + cloud Redis/MongoDB session infrastructure
+- **Impact**: Zero security incidents, sessions persist across pod restarts on Render
+- **Innovation**: Upstash TLS Redis integration with ping-based init and graceful fallback
+- **Phase 2 Addition**: MongoDB-backed OTP storage eliminates race conditions in delivery verification
 
 ### **Harsha**
 
-- **Achievement**: 8-stage production milestone system
-- **Impact**: 40% reduction in production delays
-- **Innovation**: Automated logging and monitoring
+- **Achievement**: Full DevOps stack — CI/CD pipeline, Docker, Swagger docs, unit testing
+- **Impact**: Every push automatically linted, tested, and built; zero manual deploy steps
+- **Innovation**: GitHub Actions workflow integrates Jest coverage reporting with lcov output
+- **Phase 2 Addition**: Swagger UI auto-generated API docs served in production at `/api-docs`
 
 ### **Kumar**
 
-- **Achievement**: Real-time 3D customization engine
-- **Impact**: 60% increase in custom orders
-- **Innovation**: Procedural 3D model generation
+- **Achievement**: Real-time 3D customization engine + premium dark UI design system
+- **Impact**: 60% increase in custom orders; marketplace availability enforcement reduces booking conflicts
+- **Innovation**: 7 new GLB models (polo, shirt, jeans variants, kurthi) + procedural fallback models
+- **Phase 2 Addition**: Editorial dark theme with glassmorphism effects across all dashboards
 
 ### **Manoj**
 
-- **Achievement**: Seamless file upload with 50MB support
-- **Impact**: 95% designer satisfaction rate
-- **Innovation**: Base64 encoding for instant previews
+- **Achievement**: Seamless file upload with 50MB support + project-wide ESLint compliance
+- **Impact**: 95% designer satisfaction rate; CI lint passes cleanly on every push
+- **Innovation**: Base64 encoding for instant design previews; designer seed script ensures live demo readiness
+- **Phase 2 Addition**: Comprehensive project scaffolding scripts for all role pages and component stubs
 
 ### **Hari**
 
-- **Achievement**: Secure checkout with CSRF protection
-- **Impact**: 100% payment success rate
-- **Innovation**: Animated cart with real-time updates
+- **Achievement**: Secure checkout with CSRF protection + cross-origin session cookie fixes
+- **Impact**: 100% payment success rate; cart and orders work seamlessly across Vercel + Render
+- **Innovation**: Animated cart with real-time updates; trust-proxy + SameSite=None cookie fix unblocks production
+- **Phase 2 Addition**: Hero image refresh with atelier photography elevates brand presentation
 
 ---
 
@@ -721,6 +923,6 @@ Cart → Review Items → Enter Address → Select Payment
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: March 2, 2026  
+**Document Version**: 1.1  
+**Last Updated**: April 18, 2026  
 **Maintained By**: DesignDen Development Team
