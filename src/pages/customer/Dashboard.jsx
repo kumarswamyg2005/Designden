@@ -19,14 +19,14 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // Fetch orders and wishlist separately
-      const [ordersResponse, wishlistResponse] = await Promise.all([
+      const [ordersResult, wishlistResult] = await Promise.allSettled([
         customerAPI.getOrders(),
         customerAPI.getWishlist(),
       ]);
-
-      setOrders(ordersResponse.data.orders || []);
-      setWishlist(wishlistResponse.data.wishlist || []);
+      if (ordersResult.status === "fulfilled")
+        setOrders(ordersResult.value.data.orders || []);
+      if (wishlistResult.status === "fulfilled")
+        setWishlist(wishlistResult.value.data.wishlist || []);
     } catch (error) {
       showFlash("Failed to load dashboard data", "error");
       console.error("Error:", error);
