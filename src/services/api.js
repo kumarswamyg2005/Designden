@@ -23,7 +23,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response interceptor — save token returned by server for Safari fallback
+// Response interceptor — save X-Auth-Token for Safari fallback, handle errors
 api.interceptors.response.use(
   (response) => {
     const token = response.headers["x-auth-token"];
@@ -31,7 +31,7 @@ api.interceptors.response.use(
       try {
         sessionStorage.setItem("dd_auth_token", token);
         localStorage.setItem("dd_auth_token", token);
-      } catch { /* storage blocked — ignore */ }
+      } catch { /* storage blocked in private mode — ignore */ }
     }
     return response;
   },
@@ -40,24 +40,6 @@ api.interceptors.response.use(
       console.error("❌ Cannot connect to backend server");
       return Promise.reject(new Error("Cannot connect to backend server. Please try again later."));
     }
-    return Promise.reject(error);
-  },
-);
-
-// Response interceptor
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Check if it's a network error (backend not running)
-    if (!error.response) {
-      console.error("❌ Cannot connect to backend server");
-      return Promise.reject(
-        new Error("Cannot connect to backend server. Please try again later."),
-      );
-    }
-
-    // Don't auto-redirect on 401 - let the ProtectedRoute handle it
-    // This prevents back button from going to login
     return Promise.reject(error);
   },
 );
