@@ -14,7 +14,7 @@ const ShopIndex = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories] = useState([
-    "t-Shirt",
+    "T-Shirt",
     "Shirt",
     "Hoodie",
     "Kurthi",
