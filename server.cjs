@@ -1343,6 +1343,7 @@ app.use(
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    exposedHeaders: ["X-Cache", "X-Cache-Key", "X-Cache-TTL"],
   }),
 );
 
@@ -3602,7 +3603,11 @@ app.get("/api/shop/products", async (req, res) => {
 
     const cacheKey = `products:${JSON.stringify(req.query)}`;
     const cached = await cacheGet(cacheKey);
-    if (cached) return res.json(cached);
+    res.setHeader("X-Cache-Key", cacheKey);
+    if (cached) {
+      res.setHeader("X-Cache", "HIT");
+      return res.json(cached);
+    }
 
     let query = {};
 
@@ -3648,7 +3653,13 @@ app.get("/api/shop/products", async (req, res) => {
 
     const products = await Product.find(query).sort(sortOption);
     const result = { success: true, products };
-    if (!search) await cacheSet(cacheKey, result, 120);
+    if (!search) {
+      await cacheSet(cacheKey, result, 120);
+      res.setHeader("X-Cache", "MISS");
+      res.setHeader("X-Cache-TTL", "120");
+    } else {
+      res.setHeader("X-Cache", "BYPASS");
+    }
     res.json(result);
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -3674,10 +3685,16 @@ app.get("/api/shop/products/:id", async (req, res) => {
 app.get("/api/shop/featured", async (req, res) => {
   try {
     const cached = await cacheGet("products:featured");
-    if (cached) return res.json(cached);
+    res.setHeader("X-Cache-Key", "products:featured");
+    if (cached) {
+      res.setHeader("X-Cache", "HIT");
+      return res.json(cached);
+    }
     const products = await Product.find({ featured: true }).limit(6);
     const result = { success: true, products };
     await cacheSet("products:featured", result, 300);
+    res.setHeader("X-Cache", "MISS");
+    res.setHeader("X-Cache-TTL", "300");
     res.json(result);
   } catch (error) {
     console.error("Error fetching featured products:", error);
@@ -5408,7 +5425,11 @@ app.get("/api/marketplace/designers", async (req, res) => {
 
     const cacheKey = `marketplace:designers:${JSON.stringify({ page, limit, specialization, minRating, maxPrice, available, sortBy, search })}`;
     const cached = await cacheGet(cacheKey);
-    if (cached) return res.json(cached);
+    res.setHeader("X-Cache-Key", cacheKey);
+    if (cached) {
+      res.setHeader("X-Cache", "HIT");
+      return res.json(cached);
+    }
 
     const total = await User.countDocuments(filter);
 
@@ -5460,7 +5481,13 @@ app.get("/api/marketplace/designers", async (req, res) => {
         totalDesigners: total,
       },
     };
-    if (!search) await cacheSet(cacheKey, result, 60);
+    if (!search) {
+      await cacheSet(cacheKey, result, 60);
+      res.setHeader("X-Cache", "MISS");
+      res.setHeader("X-Cache-TTL", "60");
+    } else {
+      res.setHeader("X-Cache", "BYPASS");
+    }
     res.json(result);
   } catch (error) {
     console.error("Error fetching marketplace designers:", error);
