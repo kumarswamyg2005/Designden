@@ -5,7 +5,22 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // localStorage
+// Safe storage wrapper — falls back to noop if localStorage is blocked (Safari private mode)
+function createSafeStorage() {
+  try {
+    window.localStorage.setItem("__persist_test__", "1");
+    window.localStorage.removeItem("__persist_test__");
+    return window.localStorage;
+  } catch {
+    // localStorage blocked (private mode, Safari ITP) — use no-op storage
+    return {
+      getItem: () => Promise.resolve(null),
+      setItem: (_k, v) => Promise.resolve(v),
+      removeItem: () => Promise.resolve(),
+    };
+  }
+}
+const storage = createSafeStorage();
 import { combineReducers } from "@reduxjs/toolkit";
 
 // Import all slices

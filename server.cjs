@@ -1343,7 +1343,7 @@ app.use(
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    exposedHeaders: ["X-Cache", "X-Cache-Key", "X-Cache-TTL"],
+    exposedHeaders: ["X-Cache", "X-Cache-Key", "X-Cache-TTL", "X-Auth-Token"],
   }),
 );
 
@@ -1389,6 +1389,24 @@ app.use(
     },
   }),
 );
+
+// Safari ITP fallback: if session cookie was blocked, load session from X-Auth-Token header
+app.use(async (req, res, next) => {
+  if (!req.session.user) {
+    const token = req.headers["x-auth-token"];
+    if (token && token.length > 10) {
+      try {
+        await new Promise((resolve) => {
+          sessionStore.get(token, (err, sess) => {
+            if (!err && sess && sess.user) req.session.user = sess.user;
+            resolve();
+          });
+        });
+      } catch { /* ignore */ }
+    }
+  }
+  next();
+});
 
 // =============================================================================
 // SWAGGER / OPENAPI DOCUMENTATION
@@ -2336,6 +2354,8 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
           .json({ success: false, message: "Session error" });
       }
 
+      // Send session ID as header for Safari (which blocks cross-origin cookies via ITP)
+      res.setHeader("X-Auth-Token", req.sessionID);
       res.json({
         success: true,
         message: "Login successful",

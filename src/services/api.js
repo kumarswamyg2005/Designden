@@ -11,12 +11,35 @@ const api = axios.create({
   withCredentials: true, // Important for session cookies
 });
 
-// Request interceptor
+// Request interceptor — attach stored token for Safari (which blocks cross-origin cookies)
 api.interceptors.request.use(
   (config) => {
+    try {
+      const token = sessionStorage.getItem("dd_auth_token") || localStorage.getItem("dd_auth_token");
+      if (token) config.headers["X-Auth-Token"] = token;
+    } catch { /* storage blocked in private mode — ignore */ }
     return config;
   },
+  (error) => Promise.reject(error),
+);
+
+// Response interceptor — save token returned by server for Safari fallback
+api.interceptors.response.use(
+  (response) => {
+    const token = response.headers["x-auth-token"];
+    if (token) {
+      try {
+        sessionStorage.setItem("dd_auth_token", token);
+        localStorage.setItem("dd_auth_token", token);
+      } catch { /* storage blocked — ignore */ }
+    }
+    return response;
+  },
   (error) => {
+    if (!error.response) {
+      console.error("❌ Cannot connect to backend server");
+      return Promise.reject(new Error("Cannot connect to backend server. Please try again later."));
+    }
     return Promise.reject(error);
   },
 );
