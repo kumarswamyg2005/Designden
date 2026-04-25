@@ -4,6 +4,8 @@ import { formatPrice } from "../../utils/currency";
 import { useFlash } from "../../context/FlashContext";
 import { Link } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "";
+
 const Products = () => {
   const { showFlash } = useFlash();
   const [products, setProducts] = useState([]);
@@ -74,7 +76,7 @@ const Products = () => {
             <div className="col-md-4 mb-4" key={product._id}>
               <div className="card h-100 shadow-sm">
                 <img
-                  src={`http://localhost:3000${
+                  src={`${API_BASE}${
                     product.images?.[0] || "/images/casual-tshirt.jpeg"
                   }`}
                   className="card-img-top"
@@ -82,7 +84,7 @@ const Products = () => {
                   style={{ height: "250px", objectFit: "cover" }}
                   onError={(e) => {
                     e.target.src =
-                      "http://localhost:3000/images/casual-tshirt.jpeg";
+                      `${API_BASE}/images/casual-tshirt.jpeg`;
                   }}
                 />
                 <div className="card-body">

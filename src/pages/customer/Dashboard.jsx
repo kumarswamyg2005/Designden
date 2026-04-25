@@ -252,7 +252,7 @@ const Dashboard = () => {
                         <div className="card h-100 glass-card hover-tilt">
                           {graphicPath ? (
                             <img
-                              src={`http://localhost:3000${graphicPath}`}
+                              src={`${import.meta.env.VITE_API_URL || ""}${graphicPath}`}
                               className="card-img-top"
                               alt={item.designId?.name || "Design"}
                               style={{

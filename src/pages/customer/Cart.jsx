@@ -119,7 +119,7 @@ const Cart = () => {
                             )
                               ? design.graphic
                               : `/images/graphics/${design.graphic}`;
-                            imageUrl = `http://localhost:5174${graphicPath}`;
+                            imageUrl = `${import.meta.env.VITE_API_URL || ""}${graphicPath}`;
                           } else {
                             imageUrl = "/images/custom-design.png";
                           }
