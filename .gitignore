@@ -30,3 +30,12 @@ dist-ssr
 
 # Backend folder (separate repo)
 backend/
+
+# Sensitive local configuration and generated data
+.env
+.env.*
+!.env.example
+cookies.txt
+mongodb-backup/
+*.bson
+*.metadata.json
